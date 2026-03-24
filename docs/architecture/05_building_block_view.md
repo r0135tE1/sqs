@@ -3,7 +3,7 @@
 ## Whitebox Overall System
 
 ***\<Overview Diagram\>***
-
+![White Box Overall System](images/building_block_view/whitebox_overall_system.drawio.png)
 **Motivation**
 
 *\<text explanation\>*
