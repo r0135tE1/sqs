@@ -1,0 +1,15 @@
+# Cross-cutting Concepts
+
+*\<This section describes overall, principal regulations and solution ideas that are relevant in multiple parts (= cross-cutting) of your system. Such concepts are often related to multiple building blocks. They can include many different topics, such as: domain models, architecture patterns, rules for using specific technology, principal, often technical decisions of an overarching (= cross-cutting) nature, implementation rules.\>*
+
+## *\<Concept 1\>*
+
+*\<explanation\>*
+
+## *\<Concept 2\>*
+
+*\<explanation\>*
+
+## *\<Concept n\>*
+
+*\<explanation\>*
