@@ -7,15 +7,15 @@ nav:
   - Install: install.md
   - Usage: usage.md
   - Architecture:
-    - "1. Introduction and Goals": 01_introduction_and_goals.md
-    - "2. Architecture Constraints": 02_architecture_constraints.md
-    - "3. Context and Scope": 03_context_and_scope.md
-    - "4. Solution Strategy": 04_solution_strategy.md
-    - "5. Building Block View": 05_building_block_view.md
-    - "6. Runtime View": 06_runtime_view.md
-    - "7. Deployment View": 07_deployment_view.md
-    - "8. Cross-cutting Concepts": 08_crosscutting_concepts.md
-    - "9. Architecture Decisions": 09_architecture_decisions.md
-    - "10. Quality Requirements": 10_quality_requirements.md
-    - "11. Risks and Technical Debts": 11_risks_and_technical_debts.md
-    - "12. Glossary": 12_glossary.md
+      - Introduction and Goals: architecture/01_introduction_and_goals.md
+      - Architecture Constraints: architecture/02_architecture_constraints.md
+      - Context and Scope: architecture/03_context_and_scope.md
+      - Solution Strategy: architecture/04_solution_strategy.md
+      - Building Block View: architecture/05_building_block_view.md
+      - Runtime View: architecture/06_runtime_view.md
+      - Deployment View: architecture/07_deployment_view.md
+      - Cross-cutting Concepts: architecture/08_crosscutting_concepts.md
+      - Architecture Decisions: architecture/09_architecture_decisions.md
+      - Quality Requirements: architecture/10_quality_requirements.md
+      - Risks and Technical Debts: architecture/11_risks_and_technical_debts.md
+      - Glossary: architecture/12_glossary.md
