@@ -1,15 +1,17 @@
 # Quality Requirements
 
-*\<This section contains all quality requirements as quality tree with scenarios. The most important ones have already been described in section 1.2. (quality goals). Here you can also capture quality requirements with lesser priority, which will not create high risks when they are not fully achieved.\>*
-
 ## Quality Requirements Overview
 
-*\<The quality tree (as defined in ATAM — Architecture Tradeoff Analysis Method) with quality/evaluation scenarios as leaves.\>*
+The most important quality goals are defined in [Section 1 – Introduction and Goals](01_introduction_and_goals.md). This section adds concrete scenarios to make them measurable.
 
 ## Quality Scenarios
 
-*\<Concretization of (sometimes vague or implicit) quality requirements using (quality) scenarios. These scenarios describe what should happen when a stimulus arrives at the system.\>*
-
 | Quality Goal | Scenario | Priority |
 |-------------|----------|----------|
-| | | |
+| **Security** | An unauthenticated user calls `GET /api/highscore` → backend returns 401, no data is leaked | High |
+| **Security** | A user submits a manipulated JWT → backend rejects the request with 401 | High |
+| **Performance** | User requests a new quiz question → response arrives within 500ms under normal load | Medium |
+| **Performance** | restcountries.com is temporarily slow → cached country data is served without delay | Medium |
+| **Availability** | Backend process crashes and is restarted → application recovers without data loss | Medium |
+| **Availability** | Public API is down -> application can provde cached calls from the API as questions | Medium |
+| **Maintainability** | A developer adds a new endpoint → existing tests remain green, new endpoint follows existing API conventions | Low |

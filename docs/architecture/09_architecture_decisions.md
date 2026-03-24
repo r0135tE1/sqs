@@ -1,25 +1,59 @@
 # Architecture Decisions
 
-*\<Important, expensive, large scale or risky architecture decisions including rationales. With "decisions" we mean selecting one alternative based on given criteria. Please use your judgement to decide whether an architectural decision should be documented here in this central section or whether you better document it locally (e.g. within the white box template of one building block). Avoid redundancy. Refer to section 4, where you already captured the most important decisions of your architecture.\>*
+## ADR-001 Python Backend
 
-## ADR-001 \<Title\>
+**Status:** Accepted
 
-**Status:** \<Proposed / Accepted / Deprecated / Superseded\>
+**Context:** The course requires a backend service. Language choice was partly prescribed.
 
-**Context:** *\<Description of the problem and context\>*
+**Decision:** Use Python with FastAPI as the backend framework.
 
-**Decision:** *\<The decision that was made\>*
-
-**Consequences:** *\<The consequences of the decision\>*
+**Consequences:** FastAPI provides automatic OpenAPI documentation, async support, and built-in request validation via Pydantic — reducing boilerplate and making the API self-documenting.
 
 ---
 
-## ADR-002 \<Title\>
+## ADR-002 Vue 3 + TypeScript Frontend
 
-**Status:** \<Proposed / Accepted / Deprecated / Superseded\>
+**Status:** Accepted
 
-**Context:** *\<Description of the problem and context\>*
+**Context:** Frontend must be headless (data-driven only) and TypeScript was suggested.
 
-**Decision:** *\<The decision that was made\>*
+**Decision:** Use Vue 3 with TypeScript as the frontend framework.
 
-**Consequences:** *\<The consequences of the decision\>*
+**Consequences:** Type safety reduces runtime errors. Vue 3's Composition API is well-suited for reactive quiz state management.
+
+---
+
+## ADR-003 JWT for Authentication
+
+**Status:** Accepted
+
+**Context:** The highscore endpoint must be secured. Session-based auth would require server-side session storage.
+
+**Decision:** Use stateless JWT authentication.
+
+**Consequences:** No server-side session state needed. JWTs can be validated without a DB lookup. Downside: tokens cannot be invalidated before expiry without a blocklist.
+
+---
+
+## ADR-004 Backend as sole consumer of restcountries.com
+
+**Status:** Accepted
+
+**Context:** The external API could be called directly from the frontend, but this would expose the external dependency to the client and prevent caching.
+
+**Decision:** Only the backend calls restcountries.com. The frontend only communicates with the backend.
+
+**Consequences:** External API changes only affect the backend. Enables response caching to reduce external calls and improve performance.
+
+---
+
+## ADR-005 PostgreSQL for Persistence
+
+**Status:** Accepted
+
+**Context:** User data and highscores are structured and relational by nature.
+
+**Decision:** Use PostgreSQL as the persistence layer.
+
+**Consequences:** Reliable ACID-compliant storage. Well-supported by Python ORMs (e.g. SQLAlchemy). Slight operational overhead compared to SQLite, but necessary for production-readiness.
