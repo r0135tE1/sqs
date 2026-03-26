@@ -4,7 +4,7 @@
 
 | Constraint | Background / Motivation |
 |------------|------------------------|
-| **Programming Languages** | TypeScript was chosen for the frontend and Python for the backend|
+| **Programming Languages** | The possible languages consist of Typescript, Python, C# and Java. For this project typeScript was chosen for the frontend and python for the backend|
 | **3-Tier Architecture** | The system must be divided into at least three layers: Frontend, Backend, and a Persistence layer (database holding user information and highscores). |
 | **Endpoint Security** | The API must expose at least one publicly accessible endpoint and at least one secured endpoint (login). |
 | **External Service Integration** | The backend must communicate with at least one external service (`restcountries.com`).  |
@@ -22,8 +22,9 @@
 
 | Convention | Background / Motivation |
 |------------|------------------------|
-| **Documentation Standard** | The architecture must be documented following the arc42 standard. Important architectural decisions must be recorded in Architecture Decision Records (ADRs). The documentation must be well-structured and publicly available on `readthedocs`. The documentation is written in english |
+| **Documentation Standard** | Important architectural decisions must be recorded in Architecture Decision Records (ADRs). The documentation must be well-structured and publicly available on `readthedocs`. The documentation is written in english |
+<!--
 | **Quality Assurance & Testing** | The software must feature a documented and implemented test concept covering the complete test pyramid (Unit, Integration, e2e, Penetration for secured endpoints, and Load tests). |
 | **Static Code Analysis** | A static code analysis tool must be used, demonstrating 0 open issues and a minimum test coverage of 80%. |
 | **Architecture Modeling** | To provide an overview of the project structure and main components, a C4-model must be used. |
-| **Usage of AI Tools** | Tools like ChatGPT or Copilot are permitted, but the team must understand the generated code completely, as this will be evaluated. |
+| **Usage of AI Tools** | Tools like ChatGPT or Copilot are permitted, but the team must understand the generated code completely, as this will be evaluated. |-->

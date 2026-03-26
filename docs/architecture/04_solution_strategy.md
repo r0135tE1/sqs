@@ -30,6 +30,5 @@ The system is decomposed into 3 distinct layers:
 
 ## Organizational Decisions
 
-* **Architecture Documentation:** Important project decisions will be recorded in Architecture Decision Records (ADRs). 
 * **Tooling:**  AI assistants like ChatGPT and Copilot are permitted tools, but it is ensured that the generated code and documentation is fully understood.
 * **Presentation:** The architecture and implementation will be presented in a 15-minute presentation. This includes preparing a live demo, an overview of the static code analysis, an explanation of the project structure, and a walkthrough of the test concept, followed by 5 minutes of Q&A.
