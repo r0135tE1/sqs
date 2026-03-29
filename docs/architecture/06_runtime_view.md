@@ -16,3 +16,5 @@
 ![Runtime View Guess - Correct](images/runtime_view/runtimeviewguessincorrect.drawio.svg)
 *\<insert runtime diagram or textual description of the scenario\>*
 *\<insert runtime diagram or textual description of the scenario\>*
+## Login
+![Runtime View Login](images/runtime_view/runtimeviewlogin.drawio.svg)
