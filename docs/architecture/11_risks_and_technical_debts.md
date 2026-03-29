@@ -1,9 +1,22 @@
 # Risks and Technical Debts
 
-| Priority | Risk / Technical Debt | Description | Mitigation |
-|----------|-----------------------|-------------|------------|
-| 1 | **restcountries.com availability** | The application depends on a free, uncontrolled external API. If it goes down, no quiz questions can be served. | Cache country data on first fetch; serve cached data if API is unreachable |
-| 2 | **JWT without revocation** | Issued JWTs remain valid until expiry. A stolen token cannot be invalidated. | Keep token lifetime short (e.g. 1 hour); implement a token blocklist if needed in the future |
-| 3 | **No rate limiting (MVP)** | The API has no rate limiting, making it vulnerable to abuse or accidental overload. | Add rate limiting middleware (e.g. slowapi for FastAPI) post-MVP |
-| 4 | **Streak stored in memory** | Active streak is not persisted mid-session. A backend restart loses the current streak. | Acceptable for MVP; consider session persistence if user experience requires it |
-| 5 | **Single deployment environment** | MVP runs on a single server with no redundancy. | Acceptable for MVP scope; containerize with Docker for easier scaling later |
+## Overview
+
+This section documents known risks and technical debts accepted during development. 
+Items are prioritized by their potential impact on system stability and security.
+
+## Risks
+
+| Priority | Risk | Description | Mitigation |
+|----------|------|-------------|------------|
+| 1 | **API availability** | The application depends on a free, uncontrolled external API. If it goes down permanently, no new country data can be fetched. | Country data is prefetched and cached on startup. Cached data serves as fallback during outages. If cache is exhausted, the current streak is saved automatically and the user is notified. |
+| 2 | **JWT without revocation** | Issued JWTs remain valid until expiry. A stolen token cannot be invalidated server-side. | Keep token lifetime short; implement a token blocklist if required in the future. |
+| 3 | **No rate limiting** | The API has no rate limiting, making it vulnerable to abuse or accidental overload. Unauthenticated endpoints are particularly exposed. | Add rate limiting middleware |
+
+## Technical Debts
+
+| Priority | Technical Debt | Description | Mitigation |
+|----------|---------------|-------------|------------|
+| 1 | **Streak stored in memory only** | The active streak is not persisted mid-session. A backend restart loses the current streak. | Acceptable for MVP; consider session persistence or periodic DB writes if user experience requires it. |
+| 2 | **Single deployment environment** | The MVP runs on a single server with no redundancy or horizontal scaling. | Acceptable for MVP scope; Docker Compose setup makes it straightforward to extend toward a multi-instance deployment later. |
+| 3 | **No structured logging** | The backend has no centralized logging or observability tooling. Debugging in production relies on container stdout. | Introduce structured logging and consider a log aggregation solution post-MVP. |
