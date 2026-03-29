@@ -2,7 +2,7 @@
 
 ## Requirements Overview
 
-The project "Spaß mit Flaggen" is a web-based application where users can test their knowledge of national flags. The system presents a random flag, and the user must guess the corresponding country.
+The project "Fun with Flags" is a web-based application where users can test their knowledge of national flags. The system presents a random flag, and the user must guess the corresponding country.
 
 <!--Guests can play via a publicly accessible endpoint, while registered users can save their highscore streak in a database via a secured endpoint, that requires a login. The required flag and country data is dynamically fetched from an external service, called `restcountries.com`. In addition to the core functionality, the system is developed to meet the various quality standards that good software should have. This includes a documented test concept covering the complete test pyramid, a runnable GitHub pipeline, and static code analysis.-->
 
