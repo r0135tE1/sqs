@@ -1,15 +1,8 @@
 # Cross-cutting Concepts
 
-
-<!-- This section describes crosscutting concepts (practices, patterns, regulations or solution ideas). Such concepts are often related to multiple building blocks. They may include many different topics, such as the topics shown in the following diagram:-->
-
 ## Authentication & Authorization
-<!-- Calling services. need to authenticate themseves based upon remote procedure. Central authorization service has to be used --->
 
 JWT (JSON Web Tokens) are used for stateless authentication. The backend issues a JWT upon successful login. The frontend stores the token and sends it as a Bearer token in the `Authorization` header for protected endpoints.
-
-- Public endpoints (e.g. `GET /api/question`, `POST /api/guess`): no auth required
-- Protected endpoints (e.g. `GET /api/highscore`, `POST /api/highscore`): JWT required
 
 ## Error Handling
 
@@ -17,10 +10,9 @@ The backend returns standardized HTTP status codes and JSON error responses:
 
 | Scenario | HTTP Status |
 |----------|-------------|
-| Invalid guess input | 400 Bad Request |
 | Unauthenticated access to protected endpoint | 401 Unauthorized |
 | Resource not found | 404 Not Found |
-| restcountries.com unreachable | 502 Bad Gateway |
+| API unreachable | 502 Bad Gateway |
 
 ## External API Integration
 
@@ -28,12 +20,14 @@ The backend is the sole point of communication with restcountries.com. The front
 
 ## Configuration Management
 
-All sensitive configuration (DB credentials, JWT secret, API URLs) is stored in environment variables, never hardcoded. A `.env.example` file documents required variables without exposing values.
+All sensitive configuration (DB credentials, JWT secret, API URLs) is stored in environment variables, never hardcoded into the project files.
 
-## Streak Logic
+## Prefetch & Caching
 
-Streak state during an active session is managed in the backend. It is only persisted to the database when the user explicitly saves their highscore. This avoids unnecessary DB writes during gameplay.
+The backend caches responses from restcountries.com to improve resilience. If the external API is unreachable, the cached dataset serves as a fallback, ensuring the application remains functional even during third-party outages. The cache is populated on first request and refreshed periodically.
 
-## Caching
+If the backend has no cached dataset or if all flags from the cached dataset have been called the application automatically saves the streak for the next game and notify the user that the service is currently unavailable.
 
 ## Dependency Inversion
+
+To decouple the system from external dependencies, the backend abstracts all calls to the public API behind an interface. Business logic depends on this abstraction rather than on the concrete HTTP client, making the integration point replaceable and independently testable.
