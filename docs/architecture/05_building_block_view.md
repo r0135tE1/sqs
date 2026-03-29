@@ -4,36 +4,15 @@
 
 ![White Box Overall System](images/building_block_view/whiteboxoverallsystem.drawio.svg)
 
-**Motivation**
+### Motivation
 
 *The application is divided into a frontend, showing the flag game to the user, and a backend which handles calls from the frontend securely and requests and receives flag data from the external CountriesAPI*
 
-**Contained Building Blocks**
+### Fun With Flags Web-App 
+Implements the flag guessing game for the user and makes calls to the countries API*
 
-* *Fun With Flags Web-App*: implements the flag guessing game for the user and makes calls to the countries API*
-* *Countries API*: external service responding to calls, providing data about countries (i.e. names, flag pngs)*
-
-**Important Interfaces**
-
-*\<Description of important interfaces\>*
-
-### \<Name black box 1\>
-
-*\<Purpose/Responsibility\>*
-
-*\<Interface(s)\>*
-
-*\<(Optional) Quality/Performance Characteristics\>*
-
-*\<(Optional) Directory/File Location\>*
-
-*\<(Optional) Fulfilled Requirements\>*
-
-*\<(optional) Open Issues/Problems/Risks\>*
-
-### \<Name black box 2\>
-
-*\<black box template\>*
+### RESTCountries API
+External service responding to calls, providing data about countries (i.e. names, flag pngs)*
 
 ---
 
@@ -54,12 +33,3 @@ External service responding to backend calls, providing data about countries (i.
 
 ---
 
-## Level 3
-
-### White Box \<building block x.1\>
-
-*\<white box template\>*
-
-### White Box \<building block x.2\>
-
-*\<white box template\>*
