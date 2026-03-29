@@ -2,7 +2,7 @@
 
 ## Business Context
 
-The "Spaß mit Flaggen" system interacts with two types of human users and one external IT system. The core function involves presenting flag data to users, letting them test their geographical knowledge and save their highscores.
+The "Fun with Flags" system interacts with two types of human users and one external IT system. The core function involves presenting flag data to users, letting them test their geographical knowledge and save their highscores.
 The system relies on an external service to fetch information about countries and their flags. The human users interact with the system via a web browser to play the game and view their scores.
 
 ![Diagramm](chapter1-4Pics/business.png)
