@@ -2,7 +2,7 @@
 
 ## Level 1: Whitebox Overall System
 
-![White Box Overall System](images/building_block_view/whiteboxoverallsystem.drawio.svg)
+![White Box Overall System](chapter5-7Pics/building_block_view/whiteboxoverallsystem.drawio.svg)
 
 ### Motivation
 
@@ -17,7 +17,7 @@ External service responding to calls, providing data about countries (i.e. names
 ---
 
 ## Level 2
-![Level 2](images/building_block_view/buildingblock_level1.svg)
+![Level 2](chapter5-7Pics/building_block_view/buildingblock_level1.svg)
 
 ### Fun With Flags Frontend
 Web View facing the user. Shows a random country's flag and asks the user to guess the country's name. Guessing correctly will increase a user's score. Requests and receives data from the Fun with Flags Backend REST API.
