@@ -2,16 +2,15 @@
 
 ## Quality Requirements Overview
 
-The most important quality goals are defined in [Section 1 – Introduction and Goals](01_introduction_and_goals.md). This section adds concrete scenarios to make them measurable.
+The most important quality goals are defined in [Section 1 – Introduction and Goals](01_introduction_and_goals.md).
 
-## Quality Scenarios
+### Nice-to-Have
 
 | Quality Goal | Scenario | Priority |
 |-------------|----------|----------|
-| **Security** | An unauthenticated user calls `GET /api/highscore` → backend returns 401, no data is leaked | High |
-| **Security** | A user submits a manipulated JWT → backend rejects the request with 401 | High |
+| **Maintainability** | A developer adds a new endpoint → existing tests still pass, new endpoint follows existing API conventions | Medium |
+| **Maintainability** | The external API is replaced by a different provider → only the concrete HTTP client implementation needs to change, business logic is unaffected | Medium |
 | **Performance** | User requests a new quiz question → response arrives within 500ms under normal load | Medium |
-| **Performance** | restcountries.com is temporarily slow → cached country data is served without delay | Medium |
-| **Availability** | Backend process crashes and is restarted → application recovers without data loss | Medium |
-| **Availability** | Public API is down -> application can provde cached calls from the API as questions | Medium |
-| **Maintainability** | A developer adds a new endpoint → existing tests remain green, new endpoint follows existing API conventions | Low |
+| **Performance** | API is temporarily slow → cached country data is served without added latency | Medium |
+| **Configurability** | A developer changes DB credentials or the JWT secret → no code change is required, only the `environment` file needs to be updated | Low |
+| **Usability** | The external API is unavailable during a session → the user receives a clear in-app message instead of a silent failure or error screen | Low |
