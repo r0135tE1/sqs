@@ -1,59 +1,35 @@
 # Building Block View
 
-## Whitebox Overall System
+## Level 1: Whitebox Overall System
 
-***\<Overview Diagram\>***
+![White Box Overall System](chapter5-7Pics/building_block_view/whiteboxoverallsystem.drawio.svg)
 
-**Motivation**
+### Motivation
 
-*\<text explanation\>*
+*The application is divided into a frontend, showing the flag game to the user, and a backend which handles calls from the frontend securely and requests and receives flag data from the external CountriesAPI*
 
-**Contained Building Blocks**
+### Fun With Flags Web-App 
+Implements the flag guessing game for the user and makes calls to the countries API*
 
-*\<Description of contained building block (black boxes)\>*
-
-**Important Interfaces**
-
-*\<Description of important interfaces\>*
-
-### \<Name black box 1\>
-
-*\<Purpose/Responsibility\>*
-
-*\<Interface(s)\>*
-
-*\<(Optional) Quality/Performance Characteristics\>*
-
-*\<(Optional) Directory/File Location\>*
-
-*\<(Optional) Fulfilled Requirements\>*
-
-*\<(optional) Open Issues/Problems/Risks\>*
-
-### \<Name black box 2\>
-
-*\<black box template\>*
+### RESTCountries API
+External service responding to calls, providing data about countries (i.e. names, flag pngs)*
 
 ---
 
 ## Level 2
+![Level 2](chapter5-7Pics/building_block_view/buildingblock_level1.svg)
 
-### White Box *\<building block 1\>*
+### Fun With Flags Frontend
+Web View facing the user. Shows a random country's flag and asks the user to guess the country's name. Guessing correctly will increase a user's score. Requests and receives data from the Fun with Flags Backend REST API.
 
-*\<white box template\>*
+### Fun With Flags Backend
+Responds to API calls from the Frontend. Reads/Writes data to the Fun With Flags Database. Requests and receives data from the Countries API.
 
-### White Box *\<building block 2\>*
+### Fun With Flags DB
+Relational Database storing user information i.e. name, login data and game scores.
 
-*\<white box template\>*
+### RESTCountries API
+External service responding to backend calls, providing data about countries (i.e. names, flag pngs)
 
 ---
 
-## Level 3
-
-### White Box \<building block x.1\>
-
-*\<white box template\>*
-
-### White Box \<building block x.2\>
-
-*\<white box template\>*
