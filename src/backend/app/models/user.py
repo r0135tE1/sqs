@@ -8,6 +8,7 @@ class RegisterRequest(BaseModel):
     @field_validator("password")
     @classmethod
     def password_not_blank(cls, v: str) -> str:
+        # Check if the password is not blank / is containing space 8 times
         if not v.strip():
             raise ValueError("Password must not be blank.")
         return v
