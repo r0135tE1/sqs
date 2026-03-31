@@ -1,5 +1,5 @@
 # Context and Scope
-
+<!--neu malen-->
 ## Business Context
 
 The "Fun with Flags" system interacts with two types of human users and one external IT system. The core function involves presenting flag data to users, letting them test their geographical knowledge and save their highscores.
