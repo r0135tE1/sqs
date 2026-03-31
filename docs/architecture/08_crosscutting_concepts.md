@@ -1,15 +1,33 @@
 # Cross-cutting Concepts
 
-*\<This section describes overall, principal regulations and solution ideas that are relevant in multiple parts (= cross-cutting) of your system. Such concepts are often related to multiple building blocks. They can include many different topics, such as: domain models, architecture patterns, rules for using specific technology, principal, often technical decisions of an overarching (= cross-cutting) nature, implementation rules.\>*
+## Authentication & Authorization
 
-## *\<Concept 1\>*
+JWT (JSON Web Tokens) are used for stateless authentication. The backend issues a JWT upon successful login. The frontend stores the token and sends it as a Bearer token in the `Authorization` header for protected endpoints.
 
-*\<explanation\>*
+## Error Handling
 
-## *\<Concept 2\>*
+The backend returns standardized HTTP status codes and JSON error responses:
 
-*\<explanation\>*
+| Scenario | HTTP Status |
+|----------|-------------|
+| Unauthenticated access to protected endpoint | 401 Unauthorized |
+| Resource not found | 404 Not Found |
+| API unreachable | 502 Bad Gateway |
 
-## *\<Concept n\>*
+## External API Integration
 
-*\<explanation\>*
+The backend is the sole point of communication with restcountries.com. The frontend never calls the external API directly. This keeps the external dependency encapsulated and allows for caching or fallback strategies in one place.
+
+## Configuration Management
+
+All sensitive configuration (DB credentials, JWT secret, API URLs) is stored in environment variables, never hardcoded into the project files.
+
+## Prefetch & Caching
+
+The backend caches responses from restcountries.com to improve resilience. If the external API is unreachable, the cached dataset serves as a fallback, ensuring the application remains functional even during third-party outages. The cache is populated on first request and refreshed periodically.
+
+If the backend has no cached dataset or if all flags from the cached dataset have been called the application automatically saves the streak for the next game and notify the user that the service is currently unavailable.
+
+## Dependency Inversion
+
+To decouple the system from external dependencies, the backend abstracts all calls to the public API behind an interface. Business logic depends on this abstraction rather than on the concrete HTTP client, making the integration point replaceable and independently testable.
