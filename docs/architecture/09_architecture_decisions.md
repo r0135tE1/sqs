@@ -1,25 +1,63 @@
 # Architecture Decisions
 
-*\<Important, expensive, large scale or risky architecture decisions including rationales. With "decisions" we mean selecting one alternative based on given criteria. Please use your judgement to decide whether an architectural decision should be documented here in this central section or whether you better document it locally (e.g. within the white box template of one building block). Avoid redundancy. Refer to section 4, where you already captured the most important decisions of your architecture.\>*
+## ADR-001 Python Backend
 
-## ADR-001 \<Title\>
+**Status:** Accepted
 
-**Status:** \<Proposed / Accepted / Deprecated / Superseded\>
+**Context:** The course requires a backend service. Language choice was partly prescribed.
 
-**Context:** *\<Description of the problem and context\>*
+**Decision:** Use Python with FastAPI as the backend framework.
 
-**Decision:** *\<The decision that was made\>*
+**Consequences:** FastAPI provides automatic OpenAPI documentation, async support, and built-in request validation via Pydantic — reducing boilerplate and making the API self-documenting.
 
-**Consequences:** *\<The consequences of the decision\>*
+## ADR-002 Vue 3 + TypeScript Frontend
 
----
+**Status:** Accepted
 
-## ADR-002 \<Title\>
+**Context:** Frontend must be headless (data-driven only) and TypeScript was suggested.
 
-**Status:** \<Proposed / Accepted / Deprecated / Superseded\>
+**Decision:** Use Vue 3 with TypeScript as the frontend framework.
 
-**Context:** *\<Description of the problem and context\>*
+**Consequences:** Type safety reduces runtime errors. Vue 3's Composition API is well-suited for reactive quiz state management.
 
-**Decision:** *\<The decision that was made\>*
+## ADR-003 JWT for Authentication
 
-**Consequences:** *\<The consequences of the decision\>*
+**Status:** Accepted
+
+**Context:** The highscore endpoint must be secured. Session-based auth would require server-side session storage.
+
+**Decision:** Use stateless JWT authentication. Public endpoints (e.g. question delivery, guess submission) require no authentication.
+
+**Consequences:** No server-side session state needed. JWTs can be validated without a DB lookup. Downside: tokens cannot be invalidated before expiry without a blocklist.
+
+
+## ADR-004 Backend as Sole Consumer of API
+
+**Status:** Accepted
+
+**Context:** The external API could be called directly from the frontend, but this would expose the external dependency to the client and prevent caching or fallback handling.
+
+**Decision:** Only the backend calls the public API. The frontend only communicates with the backend. All external API access is encapsulated behind a backend interface following the dependency inversion principle.
+
+**Consequences:** External API changes only affect the backend. Enables response caching to reduce external calls and improve resilience. If the external API becomes unavailable, fallback and degradation logic is handled in one place.
+
+
+## ADR-005 PostgreSQL for Persistence
+
+**Status:** Accepted
+
+**Context:** User data and highscores are structured and relational by nature.
+
+**Decision:** Use PostgreSQL as the persistence layer.
+
+**Consequences:** Reliable ACID-compliant storage. Well-supported by Python ORMs (e.g. SQLAlchemy). Slight operational overhead compared to SQLite, but necessary for production-readiness.
+
+## ADR-006 Prefetch and Cache of Country Dataset
+
+**Status:** Accepted
+
+**Context:** The application depends on restcountries.com for country and flag data. Repeated live requests increase latency and create a single point of failure. The dataset is largely static and suitable for caching.
+
+**Decision:** The backend prefetches and caches the full country dataset from restcountries.com. The cache serves as a fallback if the external API is unreachable.
+
+**Consequences:** Improved resilience and response times during gameplay. If the cache is empty or exhausted and the external API is unavailable, the backend automatically saves the current streak and notifies the user that the service is temporarily unavailable.
