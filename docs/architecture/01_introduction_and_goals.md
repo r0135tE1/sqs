@@ -2,8 +2,7 @@
 
 ## Requirements Overview
 
-The project "Fun with Flags" is a web-based application where users can test their knowledge of national flags. The system presents a random flag, and the user must guess the corresponding country.
-<!--store highscore-->
+The project "Fun with Flags" is a web-based application where users can test their knowledge of national flags and save their highscores. The system presents a random flag, and the user must guess the corresponding country.
 
 ## Quality Goals
 
