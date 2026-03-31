@@ -1,16 +1,20 @@
 # Solution Strategy
 
-The core strategy for "Fun with Flags" is to build a robust, easily deployable web application that strictly adheres to the set software quality standards. Automation for testing, code analysis, and deployment is used to achieve the quality goals.
+- easily deployabel (containirization)
+  - container with application vs API
+- resilient against external API downtime
+- test coverage for quality (test pyramid)
 
 ## Technology Decisions
 
 * **Frontend:** TypeScript (Vue3) to provide a reactive single-page application.
 * **Backend:** Python to serve the REST API and orchestrate data flow.
-* **Persistence:** A relational database (PostgreSQL) serves as the persistence layer.
+* **Persistence:** A relational database serves as the persistence layer.
 * **External API:** `restcountries.com` is used as the external service the backend must speak to.
 * **Infrastructure & CI/CD:** A runnable GitHub pipeline is used for continuous integration. The local deployment relies on Docker Compose to ensure the system starts with a maximum of 2 commands.
 * **Documentation & Modeling:** Documentation using the arc42 standard on readthedocs and a C4-model.
-* **Analysis:** Sonarcube to analyse test coverage.
+* **Analysis:** Sonarcube to analyse test coverage. Test coverage
+* **Testing:** Testing according to test pyramid
 
 ## Top-level Decomposition
 
@@ -23,11 +27,11 @@ The system is decomposed into 3 distinct layers:
 
 | Quality Goal | Approach |
 |-------------|----------|
-| **Testability & Verifiability** | Documented test concept covering the entire test pyramid: Unit, Integration, e2e, Penetration (testing the secured endpoints), and Load tests. Static code analysis tool to guarantee 0 open issues and at least 80% test coverage in Sonarcube. |
+| **Testability & Verifiability** | Documented test concept covering the entire test pyramid: Unit, Integration, e2e, Penetration (testing the secured endpoints), and Load tests. Static code analysis tool to guarantee 0 open issues and at least 80% test coverage in Sonarcube. A static code analysis tool must verify that there are no open issues and that test coverage is at least 80%. |
 | **Resilience** | To prevent the backend from crashing when the external `restcountries.com` API fails, a fail-safe mechanism needs to be implemented.|
 | **Deployability** | The source code is hosted in a public GitHub repository. By utilizing a runnable GitHub pipeline and containerization (Docker Compose), the checked-out code is fully runnable without further intervention using a maximum of 2 commands with a Docker compose. |
 | **Security** | The endpoint for requesting the highscores is secured in the backend and can only be successfully accessed by logged-in users |
 
 ## Organizational Decisions
 
-* **Tooling:**  AI assistants like ChatGPT and Copilot are permitted tools, but it is ensured that the generated code and documentation is fully understood.
+AI assistants like ChatGPT and Copilot are permitted tools, but it is ensured that the generated code and documentation is fully understood.
