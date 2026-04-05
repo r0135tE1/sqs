@@ -15,10 +15,15 @@ The user guesses a country by typing text. The guess is evaluated in memory in t
 The user guesses a country by typing text. The guess is evaluated in memory in the FWF frontend.
 The incorrect guess is identified, the guessing game is ended and the user's score is shown on screen. 
 ## Sign Up
-![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtimeviewsignup.drawio.svg)
 
-The user requests sign up by entering corresponding data. The frontend forwards the data to the FWF backend, writing the user's data to the FWF database. The backend returns success/failure messages to the frontend which displays the result to the user.
+![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
+
+The user requests sign up by entering corresponding data. The Frontend forwards the data to the Backend, writing the user's data to the Persistence component. The backend checks if the user already exists. If no user exists, a new user will be created and the Player will be notified.
+
+If the user already exists, the Player will be notified respectively and no new user will be registered.
+
 ## Login
-![Runtime View Login](chapter5-7Pics/runtime_view/runtimeviewlogin.drawio.svg)
 
-The user enters login data. The FWF frontend forwards the data to the FWF backend. The database is queried, checking if the user's login data is valid. A success failure message is sent by the backend; the user sees the result displayed by the frontend.
+![Runtime View Login](chapter5-7Pics/runtime_view/runtime-login.svg)
+
+The user enters login data. The Frontend forwards the data to the Backend. The Backend queries the Persistence Component for the credentials. The backend validates the data provided by the Player and the data in the Persistence component. If the data matches, a token is returned which authenticates the Player.
