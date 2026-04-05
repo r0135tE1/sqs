@@ -2,11 +2,14 @@
 
 ## Level 1: Whitebox Overall System
 
-![White Box Overall System](chapter5-7Pics/building_block_view/whiteboxoverallsystem.drawio.svg)
+![White Box Overall System](chapter5-7Pics/building_block_view/chap-5-level-1.svg)
 
-### Motivation
+| Building Block | Description |
+|----------|-------------|
+| **Player** | Signs up/Login into application. Plays the game. Accesses public endpoints provided by **Fun With Flags** |
+| **Fun With Flags** | Includes the game, highscores and public endpoints |
+| **Pulbic API** | Provides a public endpoint the application can access |
 
-*The application is divided into a frontend, showing the flag game to the user, and a backend which handles calls from the frontend securely and requests and receives flag data from the external CountriesAPI*
 
 ### Fun With Flags Web-App 
 Implements the flag guessing game for the user and makes calls to the countries API*
