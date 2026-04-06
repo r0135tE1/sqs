@@ -1,17 +1,14 @@
 # Context and Scope
-<!--neu malen-->
-## Business Context
 
-The "Fun with Flags" system interacts with two types of human users and one external IT system. The core function involves presenting flag data to users, letting them test their geographical knowledge and save their highscores.
-The system relies on an external service to fetch information about countries and their flags. The human users interact with the system via a web browser to play the game and view their scores.
+## Business Context
 
 ![Diagramm](chapter1-4Pics/business.svg)
 
-| Element | Describtion |
-|----------------------|---------------|
-| **User** | Guesses for countries based on displayed flags. Receives random flags and immediate feedback (correct/incorrect) for the current session. |
-| **Logged-In User** | Login credentials, country guesses, requests for high scores. Receives flags, feedback, and persistent personal high score data. |
-| **restcountries** | Request for random country/flag data from backend. JSON response containing country names and flag URLs. |
+| Element | Description |
+| ---------------------- | --------------- |
+| **Player** | Can sign up/login into the application. Can check the the top 10 highscores of all players.  Plays the game |
+| **Fun With Flags** | Handles game logic. Requests country information from public API |
+| **Public API** | Provides flag names and images |
 
 ## Technical Context
 
