@@ -16,18 +16,10 @@ The application follows a standard web-based 3-tier architecture. The frontend i
 
 ![Diagramm](chapter1-4Pics/technical.svg)
 
-| Element | Describtion |
-|----------------------|---------------|
-| **User / Logged-In User** | Plays the game in his browser based on displayed flags in the frontend. Logs in and saves highscores by using the frontend mask. | 
-| **Frontend** | Webapplication that allows User-Interaction and visualizes the app | 
-| **Backend** | Server that fetches data from the external service and sends the results to the frontend. Handles and calculates results of user inputs into the frontend. Saves and requests data from the persistence|
-| **Persistence** | Saves user information and highscores|
-| **Restcountries** | External services that provides country data, including pictures of the flags|
-
-**Mapping Input/Output to Channels:**
-
-| Channel | Input/Output | Protocol |
-|---------|-------------|----------|
-| **User Browser <-> Frontend+Backend** | Frontend delivery, API calls for gameplay (public endpoint) and user authentication/high scores (secured endpoint). | HTTP / HTTPS |
-| **Backend <-> Persistence Layer** | SQL queries to read and write user data, login credentials, and highscores. | TCP/IP |
-| **Backend <-> restcountries.com API** | Fetching external country data. This connection needs to use fail-safes to handle potential downtimes of the external service | HTTPS / REST |
+| Element | Description |
+| ---------------------- | --------------- |
+| **Player** | Accesses the application via internet |
+| **Frontend** | Provides a user interface for the Player. makes internal API calls to fetch or save data |
+| **Backend** | Uses REST calls to fetch data from the Public API. Queries the Persistence Component for stored data |
+| **Persistence** | provides player information, highscores and flag information |
+| **Public API** | public interface to provide flag information |
