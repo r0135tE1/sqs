@@ -5,7 +5,7 @@
 The "Fun with Flags" system interacts with two types of human users and one external IT system. The core function involves presenting flag data to users, letting them test their geographical knowledge and save their highscores.
 The system relies on an external service to fetch information about countries and their flags. The human users interact with the system via a web browser to play the game and view their scores.
 
-![Diagramm](chapter1-4Pics/business.png)
+![Diagramm](chapter1-4Pics/business.svg)
 
 | Element | Describtion |
 |----------------------|---------------|
@@ -17,7 +17,7 @@ The system relies on an external service to fetch information about countries an
 
 The application follows a standard web-based 3-tier architecture. The frontend is delivered to the user's browser, communicating with the backend via REST API calls. The backend acts as the central orchestrator, communicating with both the persistence layer (database) and the external API.
 
-![Diagramm](chapter1-4Pics/technical.png)
+![Diagramm](chapter1-4Pics/technical.svg)
 
 | Element | Describtion |
 |----------------------|---------------|
