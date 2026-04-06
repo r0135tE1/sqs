@@ -6,7 +6,7 @@
 
 | Element | Description |
 | ---------------------- | --------------- |
-| **Player** | Can sign up/login into the application. Can check the the top 10 highscores of all players.  Plays the game |
+| **Player** | Can sign up/login into the application. Can check the highscores of all players.  Plays the game |
 | **Fun With Flags** | Handles game logic. Requests country information from public API |
 | **Public API** | Provides flag names and images |
 
