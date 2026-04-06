@@ -1,19 +1,27 @@
 # Runtime View
 
-## Fetch Flag 
-![Runtime View Start](chapter5-7Pics/runtime_view/runtimeviewstart.drawio.svg)
+## Fetch Flag
 
-The user starts the game or the user has just guessed a country correctly. The frontend 
-requests a new flag image from the FWF backend, which delegates the request to the external RESTCountries API. The flag image as well as the corresponding country's name is returned to the backend which forwards it to the frontend. The new random flag is displayed to the user.
-## Guess Country - Correct Guess 
-![Runtime View Guess - Correct](chapter5-7Pics/runtime_view/runtimeviewguesscorrect.drawio.svg)
+![Runtime View Start](chapter5-7Pics/runtime_view/runtime-fetch-flag.svg)
 
-The user guesses a country by typing text. The guess is evaluated in memory in the FWF frontend. The correct guess is validated, the user's score incremented and a success notification is sent to the user.
-## Guess Country - Incorrect Guess 
-![Runtime View Guess - Incorrect](chapter5-7Pics/runtime_view/runtimeviewguessincorrect.drawio.svg)
+The player starts the game or has guessed a country correctly by its flag. The Frontend
+requests a new flag image from the Backend. All flags are queried from the Persistence component and are cached in the Backend. The Backend forwards flag name and image to the Frontend which displays the image to the user.
 
-The user guesses a country by typing text. The guess is evaluated in memory in the FWF frontend.
-The incorrect guess is identified, the guessing game is ended and the user's score is shown on screen. 
+Once The application starts, it requests all flags from the pulic API and stores them in the Persistence componentent. This is done every hour to ensure that the information is still up to date.
+
+## Guess Country - Correct Guess
+
+![Runtime View Guess - Correct](chapter5-7Pics/runtime_view/runtime-correct-guess.svg)
+
+The Player guesses a country. The Frontend validates the guess and adjusts the highscore. Afterwards the Frontend requests a new flag from the Backend (We assume that the countries and flags are already cached in the backend) to start a new round.
+
+## Guess Country - Incorrect Guess
+
+![Runtime View Guess - Incorrect](chapter5-7Pics/runtime_view/runtime-incorrect-guess.svg)
+
+The Player guesses a country. The Frontend evaluates that the guess is incorrect. The current highscore is forwarded to the Backend to be persisted.
+The current highscore is then shown to the Player.
+
 ## Sign Up
 
 ![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
