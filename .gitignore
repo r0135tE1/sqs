@@ -1,4 +1,4 @@
 *.Identifier
 # macOS
 .DS_Store
-*.excalidraw
+*excalidraw
