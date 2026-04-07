@@ -1,0 +1,313 @@
+
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+}
+.app-shell {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #111827;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 0.5rem;
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  background: white; 
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.game-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+}
+
+.flag-preview {
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.flag-canvas {
+  width: min(100%, 360px);
+  height: 220px;
+  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.flag-canvas img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #475569;
+  text-align: center;
+}
+
+.spinner {
+  width: 38px;
+  height: 38px;
+  border: 4px solid rgba(37, 99, 235, 0.2);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.guess-form {
+  display: grid;
+  gap: 16px;
+}
+
+label {
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  outline: none;
+}
+
+input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(56, 130, 255, 0.12);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.16s ease, background-color 0.16s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button[type="submit"] {
+  background: #2563eb;
+  color: white;
+}
+
+button[type="button"] {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.status-message,
+.feedback {
+  margin-top: 20px;
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.status-message {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.status-message.error,
+.feedback.incorrect {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.feedback.correct {
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+  color: #065f46;
+}
+
+.auth-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.auth-subtitle {
+  margin: 0.25rem 0 0;
+  color: #475569;
+}
+
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-user {
+  font-weight: 600;
+  color: #111827;
+}
+
+.auth-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.auth-toggle button {
+  flex: 1;
+  border-radius: 999px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  background: #f8fafc;
+  color: #111827;
+}
+
+.auth-toggle button.active {
+  background: #2563eb;
+  color: white;
+  border-color: transparent;
+}
+
+.auth-form {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-error,
+.auth-message {
+  margin-top: 14px;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.auth-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.auth-message {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #bbf7d0;
+}
+
+button.ghost {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.animation-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animation-overlay.success {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+}
+
+.animation-overlay.failure {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+}
+
+.check-icon,
+.x-icon {
+  width: 64px;
+  height: 64px;
+  animation: bounceIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
