@@ -141,28 +141,89 @@ Token lifetime is controlled by `JWT_EXPIRE_MINUTES` (default: 60 minutes), per 
 
 ## Local Setup
 
+### 1. Install and start PostgreSQL
+
+PostgreSQL must be running locally before you start the server.
+
+**macOS (Homebrew):**
+```bash
+brew install postgresql@16
+brew services start postgresql@16   # registers PostgreSQL as a background service
+createuser -s postgres              # Homebrew does not create a "postgres" role by default
+createdb funwithflags
+```
+
+PostgreSQL is registered as a **launchd service** and starts automatically every time you log in — you don't need to start it manually again. To stop it permanently:
+```bash
+brew services stop postgresql@16
+```
+
+> **Troubleshooting:** If you get `role "postgres" does not exist` when running `alembic upgrade head`, the `postgres` superuser role is missing. Fix it with:
+> ```bash
+> createuser -s postgres
+> ```
+
+**Linux (apt):**
+```bash
+sudo apt update && sudo apt install postgresql postgresql-contrib
+sudo systemctl enable --now postgresql
+sudo -u postgres createdb funwithflags
+# If the default user differs from your system user, also run:
+# sudo -u postgres psql -c "CREATE USER youruser WITH SUPERUSER PASSWORD 'postgres';"
+```
+
+`systemctl enable` registers PostgreSQL as a **systemd service** that starts automatically on boot. To stop it:
+```bash
+sudo systemctl stop postgresql
+```
+
+**Windows:**
+Download and run the installer from [postgresql.org/download/windows](https://www.postgresql.org/download/windows/).
+During installation set the password to `postgres` (or update `.env` accordingly).
+After installation, open **pgAdmin** or the **SQL Shell (psql)** and run:
+```sql
+CREATE DATABASE funwithflags;
+```
+PostgreSQL is registered as a **Windows service** and starts automatically on boot. To stop it, open the Services app (`services.msc`), find `postgresql-x64-16` and click Stop.
+
+---
+
+### 2. Set up the Python environment
+
 ```bash
 cd src/backend
 
-# 1. Create and activate a virtual environment
+# Create and activate a virtual environment
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
-# 2. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 3. Configure environment variables
+# Configure environment variables
 cp .env.example .env
 # Edit .env — at minimum set JWT_SECRET to a random string
+```
 
-# 4. Start the server
+### 3. Apply database migrations
+
+```bash
+alembic upgrade head
+```
+
+This creates all required tables (`users`, `highscores`) in your local database. Alembic is a migration tool — it tracks which changes to the database schema have already been applied and runs only the ones that are missing. `upgrade head` means: apply all migrations up to the latest version. You only need to run this once after the initial setup, and again whenever a teammate adds a new migration (e.g. after a `git pull`).
+
+### 4. Start the server
+
+```bash
 uvicorn main:app --reload
 ```
 
 The server starts at `http://localhost:8000`.
+The interactive API docs (Swagger UI) are available at `http://localhost:8000/docs`.
 
 > **Note:** The `GET /flags/random` endpoint works immediately (no database needed).
-> Auth and highscore endpoints return `501 Not Implemented` until the database is connected.
+> Auth and highscore endpoints require a running PostgreSQL with applied migrations.
 
 ---
 
