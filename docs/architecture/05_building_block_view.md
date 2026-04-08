@@ -18,4 +18,4 @@
 | ---------- | ------------- |
 | **Frontend** | Provides user interface. Handles game logic. Requests and receives data from the Backend API |
 | **Backend** | Responds to API calls from the Frontend. Reads/Writes data to the Persistence Component. Requests data from the Public API |
-| **Persistence** | Stores user information, high scores and flag information |
+| **Persistence** | Stores player information, high scores and flag information |

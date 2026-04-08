@@ -28,7 +28,7 @@ The highscore is then shown to the Player.
 
 ![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
 
-The user requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The backend checks if the user already exists. If no user exists, a new one will be created (Persistence) and the Player will be notified.
+The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The backend checks if the user already exists. If no user exists, a new one will be created (Persistence) and the Player will be notified.
 
 If the user already exists, the Player will be notified respectively and no new user will stored in the Persistence component.
 
@@ -36,4 +36,4 @@ If the user already exists, the Player will be notified respectively and no new 
 
 ![Runtime View Login](chapter5-7Pics/runtime_view/runtime-login.svg)
 
-The user enters login data. The Frontend forwards the data to the Backend. The Backend queries the Persistence Component for the credentials. The backend validates the data provided by the Player and the data in the Persistence component. If the data matches, a token is returned which authenticates the Player.
+The Player enters login data. The Frontend forwards the data to the Backend. The Backend queries the Persistence Component for the credentials. The backend validates the data provided by the Player and the data in the Persistence component. If the data matches, a token is returned which authenticates the Player.

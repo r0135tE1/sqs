@@ -18,5 +18,5 @@ Items are prioritized by their potential impact on system stability and security
 | Priority | Technical Debt | Description | Mitigation |
 | ---------- | --------------- | ------------- |------------ |
 | 1 | **Highscore stored in memory only** | The active highscore is not persisted mid-session. A backend restart loses the current highscore. | Acceptable for MVP; consider session persistence or periodic DB writes if user experience requires it |
-| 2 | **Single deployment environment** | The MVP runs on a single server with no redundancy or horizontal scaling. | Acceptable for MVP scope; Docker Compose setup makes it straightforward to extend toward a multi-instance deployment later. |
-| 3 | **No structured logging** | The backend has no centralized logging or observability tooling. Debugging in production relies on container stdout. | Introduce structured logging and consider a log aggregation solution post-MVP. |
+| 2 | **Single deployment environment** | The MVP runs on a single server with no redundancy or horizontal scaling | Acceptable for MVP scope; Docker Compose setup makes it straightforward to extend toward a multi-instance deployment later |
+| 3 | **No structured logging** | The backend has no centralized logging or observability tooling. Debugging in production relies on container stdout. | Introduce structured logging and consider a log aggregation solution post-MVP |
