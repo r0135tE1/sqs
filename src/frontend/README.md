@@ -1,42 +1,65 @@
-# frontend
+# Fun with Flags — Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue 3 + TypeScript frontend for the Fun with Flags country guessing game.
 
-## Recommended IDE Setup
+## Requirements
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Node.js `^20.19.0` or `>=22.12.0`
+- npm
 
-## Recommended Browser Setup
+## Dependencies
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+### Runtime
 
-## Type Support for `.vue` Imports in TS
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `vue` | ^3.5 | UI framework |
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+### Dev / Build
 
-## Customize configuration
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `vite` | ^8.0 | Build tool and dev server |
+| `typescript` | ~6.0 | Type checking |
+| `vue-tsc` | ^3.2 | TypeScript compiler for Vue SFCs |
+| `@vitejs/plugin-vue` | ^6.0 | Vite plugin for `.vue` files |
+| `@vitejs/plugin-vue-jsx` | ^5.1 | JSX support for Vue |
+| `tailwindcss` | ^4.2 | Utility-first CSS framework |
+| `@tailwindcss/vite` | ^4.2 | Tailwind Vite integration |
+| `vite-plugin-vue-devtools` | ^8.1 | Vue DevTools integration |
+| `npm-run-all2` | ^8.0 | Run multiple npm scripts in parallel |
+| `@vue/tsconfig` | ^0.9 | Shared TypeScript config for Vue |
+| `@tsconfig/node24` | ^24.0 | TypeScript config for Node 24 |
+| `@types/node` | ^24.12 | Node.js type definitions |
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Setup
 
-## Project Setup
+Install dependencies:
 
-```sh
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Running the Dev Server
 
-```sh
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+Vite starts a local dev server with hot module replacement (HMR). The terminal output will show the URL, typically `http://localhost:5173`.
 
-```sh
+> The frontend expects the backend API to be running at `http://localhost:8000`. Start the backend before using the app.
+
+## Building for Production
+
+```bash
 npm run build
+```
+
+This runs a type check and then compiles the app into the `dist/` directory.
+
+To preview the production build locally:
+
+```bash
+npm run preview
 ```
