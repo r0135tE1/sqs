@@ -52,10 +52,18 @@ class FlagCache:
             return None
 
         entry = random.choice(candidates)
+
+        wrong_pool = [c for c in self._countries if c["code"] != entry["code"]]
+        wrong_choices = random.sample(wrong_pool, min(3, len(wrong_pool)))
+
+        options = [entry["name"]] + [c["name"] for c in wrong_choices]
+        random.shuffle(options)
+
         return {
             "country_code": entry["code"],
             "country_name": entry["name"],
             "flag_url": entry["flag_url"],
+            "options": options,
         }
 
     def count(self) -> int:
