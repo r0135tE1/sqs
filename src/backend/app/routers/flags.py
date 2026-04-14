@@ -8,7 +8,6 @@ router = APIRouter(prefix="/flags", tags=["flags"])
 #Receive Random Flag
 @router.get(
     "/random",
-    response_model=FlagResponse,
     summary="Get a random flag (public)",
     description=(
         "Returns a random country flag that has not been seen in the current session. "
@@ -16,9 +15,7 @@ router = APIRouter(prefix="/flags", tags=["flags"])
         "No authentication required."
     ),
 )
-async def get_random_flag(
-    exclude: list[str] = Query(default=[], description="Country codes to exclude (already seen this session)"),
-) -> FlagResponse:
+async def get_random_flag(exclude: list[str] = Query(default=[], description="Country codes to exclude (already seen this session)"),) -> FlagResponse:
     flag = flag_cache.random_flag(exclude=set(exclude))
     if flag is None:
         raise HTTPException(

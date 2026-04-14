@@ -17,7 +17,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
     summary="Register a new user",
     description="Creates a new user account. Username must be unique.",
 )
-async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)) -> dict:
+async def register( body: RegisterRequest, db: Annotated[AsyncSession, Depends(get_db)] ) -> dict:
     existing = await db.scalar(select(User).where(User.username == body.username))
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken.")
@@ -34,14 +34,13 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)) ->
 #User Login with JSON Web Token generation
 @router.post(
     "/login",
-    response_model=TokenResponse,
     summary="Login and receive a JWT",
     description=(
         "Authenticates a user and returns a signed JWT. "
         "Include the token as `Authorization: Bearer <token>` on protected endpoints."
     ),
 )
-async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)) -> TokenResponse:
+async def login(body: LoginRequest, db: Annotated[AsyncSession, Depends(get_db)] ) -> TokenResponse:
     user = await db.scalar(select(User).where(User.username == body.username))
     if not user or not verify_password(body.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials.")

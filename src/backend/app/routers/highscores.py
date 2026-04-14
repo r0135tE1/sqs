@@ -12,17 +12,13 @@ router = APIRouter(prefix="/highscores", tags=["highscores"])
 #Get Highscore (only logged in Users)
 @router.get(
     "/",
-    response_model=list[HighscoreEntry],
     summary="Get top highscores (protected)",
     description=(
         "Returns the top 10 highscores across all users, sorted by score descending. "
         "Requires a valid JWT in the `Authorization: Bearer <token>` header."
     ),
 )
-async def get_highscores(
-    current_user: str = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-) -> list[HighscoreEntry]:
+async def get_highscores( current_user: str = Depends(get_current_user), db: Annotated[AsyncSession, Depends(get_db)]) -> list[HighscoreEntry]:
     rows = await db.execute(
         select(User.username, Highscore.score)
         .join(User, Highscore.user_id == User.id)
@@ -41,11 +37,7 @@ async def get_highscores(
         "Called at the end of a game session when the player is logged in."
     ),
 )
-async def save_score(
-    body: SaveScoreRequest,
-    current_user: str = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-) -> dict:
+async def save_score(body: SaveScoreRequest, current_user: str = Depends(get_current_user),db: Annotated[AsyncSession, Depends(get_db)] ) -> dict:
     user = await db.scalar(select(User).where(User.username == current_user))
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
