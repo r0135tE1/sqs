@@ -50,14 +50,14 @@
 
 **Decision:** Use PostgreSQL as the persistence layer.
 
-**Consequences:** Reliable ACID-compliant storage. Well-supported by Python ORMs (e.g. SQLAlchemy). Slight operational overhead compared to SQLite, but necessary for production-readiness.
+**Consequences:** Reliable ACID-compliant storage. Well-supported by Python ORMs (e.g. SQLAlchemy).
 
 ## ADR-006 Prefetch and Cache of Country Dataset
 
 **Status:** Accepted
 
-**Context:** The application depends on restcountries.com for country and flag data. Repeated live requests increase latency and create a single point of failure. The dataset is largely static and suitable for caching.
+**Context:** The application depends on `restcountries.com` for country and flag data. Repeated live requests increase latency and create a single point of failure. The dataset is largely static and suitable for caching.
 
 **Decision:** The backend prefetches and caches the full country dataset from restcountries.com. The cache serves as a fallback if the external API is unreachable.
 
-**Consequences:** Improved resilience and response times during gameplay. If the cache is empty or exhausted and the external API is unavailable, the backend automatically saves the current streak and notifies the user that the service is temporarily unavailable.
+**Consequences:** Improved resilience and response times during gameplay.

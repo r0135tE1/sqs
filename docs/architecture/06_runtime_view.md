@@ -1,24 +1,39 @@
 # Runtime View
 
-## Fetch Flag 
-![Runtime View Start](chapter5-7Pics/runtime_view/runtimeviewstart.drawio.svg)
+## Fetch Flag
 
-The user starts the game or the user has just guessed a country correctly. The frontend 
-requests a new flag image from the FWF backend, which delegates the request to the external RESTCountries API. The flag image as well as the corresponding country's name is returned to the backend which forwards it to the frontend. The new random flag is displayed to the user.
-## Guess Country - Correct Guess 
-![Runtime View Guess - Correct](chapter5-7Pics/runtime_view/runtimeviewguesscorrect.drawio.svg)
+![Runtime View Start](chapter5-7Pics/runtime_view/runtime-fetch-flag.svg)
 
-The user guesses a country by typing text. The guess is evaluated in memory in the FWF frontend. The correct guess is validated, the user's score incremented and a success notification is sent to the user.
-## Guess Country - Incorrect Guess 
-![Runtime View Guess - Incorrect](chapter5-7Pics/runtime_view/runtimeviewguessincorrect.drawio.svg)
+The player starts the game or has guessed a country correctly by its flag. The Frontend
+requests a new flag image from the Backend. All flags are queried from the Persistence component and are cached in the Backend. The Backend forwards flag name and image to the Frontend displaying the flag to the Player.
 
-The user guesses a country by typing text. The guess is evaluated in memory in the FWF frontend.
-The incorrect guess is identified, the guessing game is ended and the user's score is shown on screen. 
+Once The application starts, it requests all flags from the pulic API and stores them in the Persistence component. This is done every hour to ensure that the information is up to date.
+
+## Guess Country - Correct Guess
+
+We assume that the flags are already cached in the backend.
+
+![Runtime View Guess - Correct](chapter5-7Pics/runtime_view/runtime-correct-guess.svg)
+
+The Player guesses a country. The Frontend validates the guess and adjusts the highscore. Afterwards a new flag is requested to start a new round.
+
+## Guess Country - Incorrect Guess
+
+![Runtime View Guess - Incorrect](chapter5-7Pics/runtime_view/runtime-incorrect-guess.svg)
+
+The Player guesses a country. The Frontend evaluates the guess to be incorrect. The current highscore is forwarded to the Backend to be persisted.
+The highscore is then shown to the Player.
+
 ## Sign Up
-![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtimeviewsignup.drawio.svg)
 
-The user requests sign up by entering corresponding data. The frontend forwards the data to the FWF backend, writing the user's data to the FWF database. The backend returns success/failure messages to the frontend which displays the result to the user.
+![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
+
+The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The backend checks if the user already exists. If no user exists, a new one will be created (Persistence) and the Player will be notified.
+
+If the user already exists, the Player will be notified respectively and no new user will stored in the Persistence component.
+
 ## Login
-![Runtime View Login](chapter5-7Pics/runtime_view/runtimeviewlogin.drawio.svg)
 
-The user enters login data. The FWF frontend forwards the data to the FWF backend. The database is queried, checking if the user's login data is valid. A success failure message is sent by the backend; the user sees the result displayed by the frontend.
+![Runtime View Login](chapter5-7Pics/runtime_view/runtime-login.svg)
+
+The Player enters login data. The Frontend forwards the data to the Backend. The Backend queries the Persistence Component for the credentials. The backend validates the data provided by the Player and the data in the Persistence component. If the data matches, a token is returned which authenticates the Player.

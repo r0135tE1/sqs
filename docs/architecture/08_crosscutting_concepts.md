@@ -16,17 +16,19 @@ The backend returns standardized HTTP status codes and JSON error responses:
 
 ## External API Integration
 
-The backend is the sole point of communication with restcountries.com. The frontend never calls the external API directly. This keeps the external dependency encapsulated and allows for caching or fallback strategies in one place.
+The backend is the sole point of communication with the public API. This keeps the external dependency encapsulated and allows for caching or fallback strategies in one place.
 
 ## Configuration Management
 
-All sensitive configuration (DB credentials, JWT secret, API URLs) is stored in environment variables, never hardcoded into the project files.
+All sensitive configuration (DB credentials, JWT secret, API URLs) is stored in environment variables.
 
 ## Prefetch & Caching
 
-The backend caches responses from restcountries.com to improve resilience. If the external API is unreachable, the cached dataset serves as a fallback, ensuring the application remains functional even during third-party outages. The cache is populated on first request and refreshed periodically.
+On application startup the Backend fetches all flags from the public API and stores them inside the Persistence component. Additionally the Backend caches the fetched flags. The cache is refreshed periodically.
 
-If the backend has no cached dataset or if all flags from the cached dataset have been called the application automatically saves the streak for the next game and notify the user that the service is currently unavailable.
+ If the external API is unreachable, the cached dataset serves as a fallback, ensuring the application remains functional even during third-party outages.
+
+If the backend has no cached dataset and the external API is unreachable at the same time the Player is notified that the service is currently unavailable.
 
 ## Dependency Inversion
 
