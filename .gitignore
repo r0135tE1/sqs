@@ -1,4 +1,13 @@
 *.Identifier
+.idea
 # macOS
 .DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Env files
+.env
 *excalidraw
