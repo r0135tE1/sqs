@@ -2,7 +2,7 @@
 
 ## Business Context
 
-![Diagramm](chapter1-4Pics/business.svg)
+![Diagramm](img/SystemContext.svg)
 
 | Element | Description |
 | ---------------------- | --------------- |
@@ -14,7 +14,7 @@
 
 The application follows a standard web-based 3-tier architecture. The frontend is delivered to the Player's browser, communicating with the backend via REST API calls. The backend acts as the central orchestrator, communicating with both the persistence layer (database) and the external API.
 
-![Diagramm](chapter1-4Pics/technical.svg)
+![Diagramm](img/SystemContext-Technical.svg)
 
 | Element | Description |
 | ---------------------- | --------------- |
