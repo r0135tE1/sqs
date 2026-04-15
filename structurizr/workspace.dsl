@@ -44,21 +44,19 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         deploymentEnvironment "Production" {
             deploymentNode "Container" {
-                deploymentNode "Frontend Host" {
-                    containerInstance frontend
-                }
-                deploymentNode "Backend Host" {
-                    containerInstance backend
-                }
-                deploymentNode "Database Host" {
-                    containerInstance persistence
-                }
+                frontendInstance = containerInstance frontend
+            
+                backendInstance = containerInstance backend
+            
+                persistenceInstance = containerInstance persistence
+            
             }
             deploymentNode "External" {
-                infrastructureNode "Public API" {
+                publicApiNode = infrastructureNode "Public API" {
                     tags "External"
                 }
             }
+            backendInstance -> publicApiNode "requests flag data" "REST / HTTP"
         }
     }
 
