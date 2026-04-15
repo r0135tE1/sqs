@@ -4,20 +4,19 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         # Personen / Akteure
         # ──────────────────────────────────────────
-        player        = person "Player"        "Nutzer der Applikation – spielt das Flaggen-Quiz"
-        administrator = person "Administrator" "Verwaltet die Applikation"
+        player        = person "Player"        "plays the game"
 
         # ──────────────────────────────────────────
         # Externe Systeme
         # ──────────────────────────────────────────
-        publicApi = softwareSystem "Public API" "Externe REST Countries API – liefert Flaggendaten" {
+        publicApi = softwareSystem "Public API" "External Public API – provides flag data" {
             tags "External"
         }
 
         # ──────────────────────────────────────────
         # Software System
         # ──────────────────────────────────────────
-        funWithFlags = softwareSystem "Fun With Flags" "Flaggen-Quiz Webanwendung" {
+        funWithFlags = softwareSystem "Fun With Flags" "web application for a flag quiz game" {
 
             frontend    = container "Frontend"    "Stellt die Benutzeroberfläche bereit" "Web / HTTP"
             backend     = container "Backend"     "Verarbeitet Geschäftslogik und API-Anfragen" "REST API"
@@ -29,15 +28,13 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         # Beziehungen – System Context (business.svg)
         # ──────────────────────────────────────────
-        player        -> funWithFlags "sign up, login, play, highscores"
-        administrator -> funWithFlags "manages"
-        funWithFlags  -> publicApi    "Fetch flags"
+        player        -> funWithFlags "sign up & login, play the game, view highscores"
+        funWithFlags  -> publicApi    "fetch flags"
 
         # ──────────────────────────────────────────
         # Beziehungen – Container (technical.svg / buildingblock_level1.svg)
         # ──────────────────────────────────────────
         player        -> frontend    "interacts with" "Internet / HTTP"
-        administrator -> backend     "manages"
         frontend      -> backend     "API calls" "REST / HTTP"
         backend       -> persistence "reads from / writes to" "SQL"
         backend       -> publicApi   "requests flag data" "REST / HTTP"
