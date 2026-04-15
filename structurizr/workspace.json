@@ -1,0 +1,748 @@
+{
+  "configuration" : { },
+  "description" : "C4-Modell der Fun With Flags Architektur",
+  "documentation" : { },
+  "id" : 1,
+  "lastModifiedDate" : "2026-04-15T12:30:38Z",
+  "model" : {
+    "deploymentNodes" : [ {
+      "children" : [ {
+        "containerInstances" : [ {
+          "containerId" : "5",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "18",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "de59b4ef-1a13-4b67-850a-639ba0f81451"
+          },
+          "relationships" : [ {
+            "description" : "API calls",
+            "destinationId" : "20",
+            "id" : "21",
+            "linkedRelationshipId" : "13",
+            "sourceId" : "18",
+            "technology" : "REST / HTTP"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "17",
+        "instances" : "1",
+        "name" : "Frontend Host",
+        "properties" : {
+          "structurizr.dsl.identifier" : "c4064fe4-ac14-4b29-b633-442e3ff43742"
+        },
+        "tags" : "Element,Deployment Node"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "6",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "20",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "fcfb1f21-758c-45ee-94f2-bfbfce301053"
+          },
+          "relationships" : [ {
+            "description" : "reads from / writes to",
+            "destinationId" : "23",
+            "id" : "24",
+            "linkedRelationshipId" : "14",
+            "sourceId" : "20",
+            "technology" : "SQL"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "19",
+        "instances" : "1",
+        "name" : "Backend Host",
+        "properties" : {
+          "structurizr.dsl.identifier" : "86e574f9-700d-453d-a17b-d7c44e360236"
+        },
+        "tags" : "Element,Deployment Node"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "7",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "23",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "5395bb64-f5ab-40b9-97a6-371d84df22fe"
+          },
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "22",
+        "instances" : "1",
+        "name" : "Database Host",
+        "properties" : {
+          "structurizr.dsl.identifier" : "932c39da-071c-4257-bb0d-dee15e66d2d3"
+        },
+        "tags" : "Element,Deployment Node"
+      } ],
+      "environment" : "Production",
+      "id" : "16",
+      "instances" : "1",
+      "name" : "Container",
+      "properties" : {
+        "structurizr.dsl.identifier" : "c4c47b5d-55f8-4f10-aad9-ee1d45b8a5c5"
+      },
+      "tags" : "Element,Deployment Node"
+    }, {
+      "environment" : "Production",
+      "id" : "25",
+      "infrastructureNodes" : [ {
+        "environment" : "Production",
+        "id" : "26",
+        "name" : "Public API",
+        "properties" : {
+          "structurizr.dsl.identifier" : "71a0abb2-543e-4bbe-944e-3aa3ad8b8e85"
+        },
+        "tags" : "Element,Infrastructure Node,External"
+      } ],
+      "instances" : "1",
+      "name" : "External",
+      "properties" : {
+        "structurizr.dsl.identifier" : "3491ef9d-69ca-4652-9455-d474a609acec"
+      },
+      "tags" : "Element,Deployment Node"
+    } ],
+    "people" : [ {
+      "description" : "Nutzer der Applikation – spielt das Flaggen-Quiz",
+      "id" : "1",
+      "name" : "Player",
+      "properties" : {
+        "structurizr.dsl.identifier" : "player"
+      },
+      "relationships" : [ {
+        "description" : "sign up, login, play, highscores",
+        "destinationId" : "4",
+        "id" : "8",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "interacts with",
+        "destinationId" : "5",
+        "id" : "11",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "Internet / HTTP"
+      } ],
+      "tags" : "Element,Person"
+    }, {
+      "description" : "Verwaltet die Applikation",
+      "id" : "2",
+      "name" : "Administrator",
+      "properties" : {
+        "structurizr.dsl.identifier" : "administrator"
+      },
+      "relationships" : [ {
+        "description" : "manages",
+        "destinationId" : "4",
+        "id" : "9",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      }, {
+        "description" : "manages",
+        "destinationId" : "6",
+        "id" : "12",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "description" : "Externe REST Countries API – liefert Flaggendaten",
+      "documentation" : { },
+      "id" : "3",
+      "name" : "Public API",
+      "properties" : {
+        "structurizr.dsl.identifier" : "publicApi"
+      },
+      "tags" : "Element,Software System,External"
+    }, {
+      "containers" : [ {
+        "description" : "Stellt die Benutzeroberfläche bereit",
+        "documentation" : { },
+        "id" : "5",
+        "name" : "Frontend",
+        "properties" : {
+          "structurizr.dsl.identifier" : "frontend"
+        },
+        "relationships" : [ {
+          "description" : "API calls",
+          "destinationId" : "6",
+          "id" : "13",
+          "sourceId" : "5",
+          "tags" : "Relationship",
+          "technology" : "REST / HTTP"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Web / HTTP"
+      }, {
+        "description" : "Verarbeitet Geschäftslogik und API-Anfragen",
+        "documentation" : { },
+        "id" : "6",
+        "name" : "Backend",
+        "properties" : {
+          "structurizr.dsl.identifier" : "backend"
+        },
+        "relationships" : [ {
+          "description" : "reads from / writes to",
+          "destinationId" : "7",
+          "id" : "14",
+          "sourceId" : "6",
+          "tags" : "Relationship",
+          "technology" : "SQL"
+        }, {
+          "description" : "requests flag data",
+          "destinationId" : "3",
+          "id" : "15",
+          "sourceId" : "6",
+          "tags" : "Relationship",
+          "technology" : "REST / HTTP"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "REST API"
+      }, {
+        "description" : "Speichert Nutzer, Scores und Spieldaten",
+        "documentation" : { },
+        "id" : "7",
+        "name" : "Persistence",
+        "properties" : {
+          "structurizr.dsl.identifier" : "persistence"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "Database"
+      } ],
+      "description" : "Flaggen-Quiz Webanwendung",
+      "documentation" : { },
+      "id" : "4",
+      "name" : "Fun With Flags",
+      "properties" : {
+        "structurizr.dsl.identifier" : "funWithFlags"
+      },
+      "relationships" : [ {
+        "description" : "Fetch flags",
+        "destinationId" : "3",
+        "id" : "10",
+        "sourceId" : "4",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Fun With Flags",
+  "properties" : {
+    "structurizr.inspection.error" : "20",
+    "structurizr.dsl" : "d29ya3NwYWNlICJGdW4gV2l0aCBGbGFncyIgIkM0LU1vZGVsbCBkZXIgRnVuIFdpdGggRmxhZ3MgQXJjaGl0ZWt0dXIiIHsKCiAgICBtb2RlbCB7CiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIFBlcnNvbmVuIC8gQWt0ZXVyZQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyICAgICAgICA9IHBlcnNvbiAiUGxheWVyIiAgICAgICAgIk51dHplciBkZXIgQXBwbGlrYXRpb24g4oCTIHNwaWVsdCBkYXMgRmxhZ2dlbi1RdWl6IgogICAgICAgIGFkbWluaXN0cmF0b3IgPSBwZXJzb24gIkFkbWluaXN0cmF0b3IiICJWZXJ3YWx0ZXQgZGllIEFwcGxpa2F0aW9uIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgRXh0ZXJuZSBTeXN0ZW1lCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBwdWJsaWNBcGkgPSBzb2Z0d2FyZVN5c3RlbSAiUHVibGljIEFQSSIgIkV4dGVybmUgUkVTVCBDb3VudHJpZXMgQVBJIOKAkyBsaWVmZXJ0IEZsYWdnZW5kYXRlbiIgewogICAgICAgICAgICB0YWdzICJFeHRlcm5hbCIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBTb2Z0d2FyZSBTeXN0ZW0KICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGZ1bldpdGhGbGFncyA9IHNvZnR3YXJlU3lzdGVtICJGdW4gV2l0aCBGbGFncyIgIkZsYWdnZW4tUXVpeiBXZWJhbndlbmR1bmciIHsKCiAgICAgICAgICAgIGZyb250ZW5kICAgID0gY29udGFpbmVyICJGcm9udGVuZCIgICAgIlN0ZWxsdCBkaWUgQmVudXR6ZXJvYmVyZmzDpGNoZSBiZXJlaXQiICJXZWIgLyBIVFRQIgogICAgICAgICAgICBiYWNrZW5kICAgICA9IGNvbnRhaW5lciAiQmFja2VuZCIgICAgICJWZXJhcmJlaXRldCBHZXNjaMOkZnRzbG9naWsgdW5kIEFQSS1BbmZyYWdlbiIgIlJFU1QgQVBJIgogICAgICAgICAgICBwZXJzaXN0ZW5jZSA9IGNvbnRhaW5lciAiUGVyc2lzdGVuY2UiICJTcGVpY2hlcnQgTnV0emVyLCBTY29yZXMgdW5kIFNwaWVsZGF0ZW4iICJEYXRhYmFzZSIgewogICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBCZXppZWh1bmdlbiDigJMgU3lzdGVtIENvbnRleHQgKGJ1c2luZXNzLnN2ZykKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHBsYXllciAgICAgICAgLT4gZnVuV2l0aEZsYWdzICJzaWduIHVwLCBsb2dpbiwgcGxheSwgaGlnaHNjb3JlcyIKICAgICAgICBhZG1pbmlzdHJhdG9yIC0+IGZ1bldpdGhGbGFncyAibWFuYWdlcyIKICAgICAgICBmdW5XaXRoRmxhZ3MgIC0+IHB1YmxpY0FwaSAgICAiRmV0Y2ggZmxhZ3MiCgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBCZXppZWh1bmdlbiDigJMgQ29udGFpbmVyICh0ZWNobmljYWwuc3ZnIC8gYnVpbGRpbmdibG9ja19sZXZlbDEuc3ZnKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyICAgICAgICAtPiBmcm9udGVuZCAgICAiaW50ZXJhY3RzIHdpdGgiICJJbnRlcm5ldCAvIEhUVFAiCiAgICAgICAgYWRtaW5pc3RyYXRvciAtPiBiYWNrZW5kICAgICAibWFuYWdlcyIKICAgICAgICBmcm9udGVuZCAgICAgIC0+IGJhY2tlbmQgICAgICJBUEkgY2FsbHMiICJSRVNUIC8gSFRUUCIKICAgICAgICBiYWNrZW5kICAgICAgIC0+IHBlcnNpc3RlbmNlICJyZWFkcyBmcm9tIC8gd3JpdGVzIHRvIiAiU1FMIgogICAgICAgIGJhY2tlbmQgICAgICAgLT4gcHVibGljQXBpICAgInJlcXVlc3RzIGZsYWcgZGF0YSIgIlJFU1QgLyBIVFRQIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgRGVwbG95bWVudCAoZGVwbG95bWVudC5zdmcpCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBkZXBsb3ltZW50RW52aXJvbm1lbnQgIlByb2R1Y3Rpb24iIHsKICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkNvbnRhaW5lciIgewogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkZyb250ZW5kIEhvc3QiIHsKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBmcm9udGVuZAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkJhY2tlbmQgSG9zdCIgewogICAgICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIGJhY2tlbmQKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJEYXRhYmFzZSBIb3N0IiB7CiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgcGVyc2lzdGVuY2UKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSAiRXh0ZXJuYWwiIHsKICAgICAgICAgICAgICAgIGluZnJhc3RydWN0dXJlTm9kZSAiUHVibGljIEFQSSIgewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkV4dGVybmFsIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMS4gU3lzdGVtIENvbnRleHQgKEthcGl0ZWwgMyBhcmM0MikKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHN5c3RlbUNvbnRleHQgZnVuV2l0aEZsYWdzICJTeXN0ZW1Db250ZXh0IiB7CiAgICAgICAgICAgIHRpdGxlICJTeXN0ZW0gQ29udGV4dCDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMi4gQ29udGFpbmVyIChLYXBpdGVsIDUgTGV2ZWwgMSBhcmM0MikKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGNvbnRhaW5lciBmdW5XaXRoRmxhZ3MgIkNvbnRhaW5lcnMiIHsKICAgICAgICAgICAgdGl0bGUgIkNvbnRhaW5lciDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMy4gRGVwbG95bWVudCAoS2FwaXRlbCA3IGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZGVwbG95bWVudCBmdW5XaXRoRmxhZ3MgIlByb2R1Y3Rpb24iICJEZXBsb3ltZW50VmlldyIgewogICAgICAgICAgICB0aXRsZSAiRGVwbG95bWVudCDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgNC4gRHluYW1pYyBWaWV3cyAvIExhdWZ6ZWl0c2ljaHRlbiAoS2FwaXRlbCA2IGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZHluYW1pYyBmdW5XaXRoRmxhZ3MgIlJ1bnRpbWVfU2lnblVwIiAiTGF1ZnplaXRzaWNodDogU2lnbiBVcCIgewogICAgICAgICAgICB0aXRsZSAiUnVudGltZSDigJMgU2lnbiBVcCIKICAgICAgICAgICAgcGxheWVyIC0+IGZyb250ZW5kICAgICJGaWxscyBzaWduIHVwIGZvcm0iCiAgICAgICAgICAgIGZyb250ZW5kIC0+IGJhY2tlbmQgICAiUmVxdWVzdCBzaWduIHVwIgogICAgICAgICAgICBiYWNrZW5kIC0+IHBlcnNpc3RlbmNlICJDaGVjayBmb3IgZXhpc3RpbmcgdXNlciIKICAgICAgICAgICAgcGVyc2lzdGVuY2UgLT4gYmFja2VuZCAiVXNlciBkb2VzIG5vdCBleGlzdCIKICAgICAgICAgICAgYmFja2VuZCAtPiBwZXJzaXN0ZW5jZSAiQ3JlYXRlIHVzZXIiCiAgICAgICAgICAgIGJhY2tlbmQgLT4gZnJvbnRlbmQgICAiU3VjY2Vzc2Z1bCB1c2VyIGNyZWF0aW9uIgogICAgICAgICAgICBmcm9udGVuZCAtPiBwbGF5ZXIgICAgIkRpc3BsYXkgc3VjY2Vzc2Z1bCBzaWduIHVwIgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGZ1bldpdGhGbGFncyAiUnVudGltZV9Mb2dpbiIgIkxhdWZ6ZWl0c2ljaHQ6IExvZ2luIiB7CiAgICAgICAgICAgIHRpdGxlICJSdW50aW1lIOKAkyBMb2dpbiIKICAgICAgICAgICAgcGxheWVyIC0+IGZyb250ZW5kICAgICJGaWxscyBpbiBsb2dpbiBkYXRhIgogICAgICAgICAgICBmcm9udGVuZCAtPiBiYWNrZW5kICAgIlJlcXVlc3Qgc2lnbiBpbiIKICAgICAgICAgICAgYmFja2VuZCAtPiBwZXJzaXN0ZW5jZSAiQ2hlY2sgY3JlZGVudGlhbHMiCiAgICAgICAgICAgIHBlcnNpc3RlbmNlIC0+IGJhY2tlbmQgInJldHVybiB0b2tlbiIKICAgICAgICAgICAgYmFja2VuZCAtPiBmcm9udGVuZCAgICJTdWNjZXNzZnVsIGF1dGhlbnRpY2F0aW9uIgogICAgICAgICAgICBmcm9udGVuZCAtPiBwbGF5ZXIgICAgIkRpc3BsYXkgc3VjY2Vzc2Z1bCBsb2dpbiIKICAgICAgICAgICAgYXV0b2xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBmdW5XaXRoRmxhZ3MgIlJ1bnRpbWVfRmV0Y2hGbGFnIiAiTGF1ZnplaXRzaWNodDogRmV0Y2ggRmxhZyIgewogICAgICAgICAgICB0aXRsZSAiUnVudGltZSDigJMgRmV0Y2ggRmxhZyIKICAgICAgICAgICAgcGxheWVyIC0+IGZyb250ZW5kICAgICJTdGFydCBnYW1lIgogICAgICAgICAgICBmcm9udGVuZCAtPiBiYWNrZW5kICAgIkdldCBmbGFnIgogICAgICAgICAgICBiYWNrZW5kIC0+IHB1YmxpY0FwaSAgIlF1ZXJ5IGZsYWdzIgogICAgICAgICAgICBwdWJsaWNBcGkgLT4gYmFja2VuZCAgIlJldHVybiBmbGFncyIKICAgICAgICAgICAgYmFja2VuZCAtPiBmcm9udGVuZCAgICJSZXR1cm4gcmFuZG9tIGZsYWciCiAgICAgICAgICAgIGZyb250ZW5kIC0+IHBsYXllciAgICAiRGlzcGxheSBmbGFnIgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGZ1bldpdGhGbGFncyAiUnVudGltZV9Db3JyZWN0R3Vlc3MiICJMYXVmemVpdHNpY2h0OiBDb3JyZWN0IEd1ZXNzIiB7CiAgICAgICAgICAgIHRpdGxlICJSdW50aW1lIOKAkyBDb3JyZWN0IEd1ZXNzIgogICAgICAgICAgICBwbGF5ZXIgLT4gZnJvbnRlbmQgICAgIkd1ZXNzIGNvdW50cnkiCiAgICAgICAgICAgIGZyb250ZW5kIC0+IGJhY2tlbmQgICAiVmFsaWRhdGUgZ3Vlc3MiCiAgICAgICAgICAgIGJhY2tlbmQgLT4gcGVyc2lzdGVuY2UgIkFkanVzdCBoaWdoc2NvcmUiCiAgICAgICAgICAgIGJhY2tlbmQgLT4gcHVibGljQXBpICAiR2V0IG5ldyBmbGFnIgogICAgICAgICAgICBwdWJsaWNBcGkgLT4gYmFja2VuZCAgIlJldHVybiBmbGFnIgogICAgICAgICAgICBiYWNrZW5kIC0+IGZyb250ZW5kICAgIkRpc3BsYXkgZmxhZyIKICAgICAgICAgICAgYXV0b2xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBmdW5XaXRoRmxhZ3MgIlJ1bnRpbWVfSW5jb3JyZWN0R3Vlc3MiICJMYXVmemVpdHNpY2h0OiBJbmNvcnJlY3QgR3Vlc3MiIHsKICAgICAgICAgICAgdGl0bGUgIlJ1bnRpbWUg4oCTIEluY29ycmVjdCBHdWVzcyIKICAgICAgICAgICAgcGxheWVyIC0+IGZyb250ZW5kICAgICJHdWVzcyBjb3VudHJ5IgogICAgICAgICAgICBmcm9udGVuZCAtPiBiYWNrZW5kICAgIlZhbGlkYXRlIGd1ZXNzIgogICAgICAgICAgICBiYWNrZW5kIC0+IHBlcnNpc3RlbmNlICJTYXZlIGhpZ2hzY29yZSIKICAgICAgICAgICAgYmFja2VuZCAtPiBmcm9udGVuZCAgICJSZXR1cm4gaGlnaHNjb3JlIgogICAgICAgICAgICBmcm9udGVuZCAtPiBwbGF5ZXIgICAgIlNob3cgaGlnaHNjb3JlIgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgU3R5bGVzCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBzdHlsZXMgewogICAgICAgICAgICBlbGVtZW50ICJQZXJzb24iIHsKICAgICAgICAgICAgICAgIHNoYXBlIFBlcnNvbgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjMDg0MjdiCiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiU29mdHdhcmUgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICMxMTY4YmQKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzQzOGRkNQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkRhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBDeWxpbmRlcgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjNDM4ZGQ1CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRXh0ZXJuYWwiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IyZjJiYgogICAgICAgICAgICAgICAgY29sb3IgIzFlMWUxZQogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkluZnJhc3RydWN0dXJlIE5vZGUiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IyZjJiYgogICAgICAgICAgICAgICAgY29sb3IgIzFlMWUxZQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQp9",
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.warning" : "0"
+  },
+  "views" : {
+    "configuration" : {
+      "lastSavedView" : "Diagram1",
+      "styles" : {
+        "elements" : [ {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#b2f2bb",
+          "color" : "#1e1e1e",
+          "tag" : "External"
+        }, {
+          "background" : "#b2f2bb",
+          "color" : "#1e1e1e",
+          "tag" : "Infrastructure Node"
+        }, {
+          "background" : "#08427b",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "Containers",
+      "name" : "Container View: Fun With Flags",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "11"
+      }, {
+        "id" : "12"
+      }, {
+        "id" : "13"
+      }, {
+        "id" : "14"
+      }, {
+        "id" : "15"
+      } ],
+      "softwareSystemId" : "4",
+      "title" : "Container – Fun With Flags"
+    } ],
+    "deploymentViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "elements" : [ {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "18",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "19",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "20",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "22",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "23",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "25",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "26",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "environment" : "Production",
+      "key" : "DeploymentView",
+      "name" : "Deployment View: Fun With Flags - Production",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "21"
+      }, {
+        "id" : "24"
+      } ],
+      "softwareSystemId" : "4",
+      "title" : "Deployment – Fun With Flags"
+    } ],
+    "dynamicViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Laufzeitsicht: Sign Up",
+      "elementId" : "4",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "Runtime_SignUp",
+      "name" : "Dynamic View: Fun With Flags",
+      "order" : 4,
+      "relationships" : [ {
+        "description" : "Fills sign up form",
+        "id" : "11",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Request sign up",
+        "id" : "13",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Check for existing user",
+        "id" : "14",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "User does not exist",
+        "id" : "14",
+        "order" : "4",
+        "response" : true
+      }, {
+        "description" : "Create user",
+        "id" : "14",
+        "order" : "5",
+        "response" : false
+      }, {
+        "description" : "Successful user creation",
+        "id" : "13",
+        "order" : "6",
+        "response" : true
+      }, {
+        "description" : "Display successful sign up",
+        "id" : "11",
+        "order" : "7",
+        "response" : true
+      } ],
+      "title" : "Runtime – Sign Up"
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Laufzeitsicht: Login",
+      "elementId" : "4",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "Runtime_Login",
+      "name" : "Dynamic View: Fun With Flags",
+      "order" : 5,
+      "relationships" : [ {
+        "description" : "Fills in login data",
+        "id" : "11",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Request sign in",
+        "id" : "13",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Check credentials",
+        "id" : "14",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "return token",
+        "id" : "14",
+        "order" : "4",
+        "response" : true
+      }, {
+        "description" : "Successful authentication",
+        "id" : "13",
+        "order" : "5",
+        "response" : true
+      }, {
+        "description" : "Display successful login",
+        "id" : "11",
+        "order" : "6",
+        "response" : true
+      } ],
+      "title" : "Runtime – Login"
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Laufzeitsicht: Fetch Flag",
+      "elementId" : "4",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "Runtime_FetchFlag",
+      "name" : "Dynamic View: Fun With Flags",
+      "order" : 6,
+      "relationships" : [ {
+        "description" : "Start game",
+        "id" : "11",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Get flag",
+        "id" : "13",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Query flags",
+        "id" : "15",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "Return flags",
+        "id" : "15",
+        "order" : "4",
+        "response" : true
+      }, {
+        "description" : "Return random flag",
+        "id" : "13",
+        "order" : "5",
+        "response" : true
+      }, {
+        "description" : "Display flag",
+        "id" : "11",
+        "order" : "6",
+        "response" : true
+      } ],
+      "title" : "Runtime – Fetch Flag"
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Laufzeitsicht: Correct Guess",
+      "elementId" : "4",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "Runtime_CorrectGuess",
+      "name" : "Dynamic View: Fun With Flags",
+      "order" : 7,
+      "relationships" : [ {
+        "description" : "Guess country",
+        "id" : "11",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Validate guess",
+        "id" : "13",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Adjust highscore",
+        "id" : "14",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "Get new flag",
+        "id" : "15",
+        "order" : "4",
+        "response" : false
+      }, {
+        "description" : "Return flag",
+        "id" : "15",
+        "order" : "5",
+        "response" : true
+      }, {
+        "description" : "Display flag",
+        "id" : "13",
+        "order" : "6",
+        "response" : true
+      } ],
+      "title" : "Runtime – Correct Guess"
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "description" : "Laufzeitsicht: Incorrect Guess",
+      "elementId" : "4",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "Runtime_IncorrectGuess",
+      "name" : "Dynamic View: Fun With Flags",
+      "order" : 8,
+      "relationships" : [ {
+        "description" : "Guess country",
+        "id" : "11",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Validate guess",
+        "id" : "13",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Save highscore",
+        "id" : "14",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "Return highscore",
+        "id" : "13",
+        "order" : "4",
+        "response" : true
+      }, {
+        "description" : "Show highscore",
+        "id" : "11",
+        "order" : "5",
+        "response" : true
+      } ],
+      "title" : "Runtime – Incorrect Guess"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemContext",
+      "name" : "System Context View: Fun With Flags",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "10"
+      }, {
+        "id" : "8"
+      }, {
+        "id" : "9"
+      } ],
+      "softwareSystemId" : "4",
+      "title" : "System Context – Fun With Flags"
+    } ]
+  }
+}
