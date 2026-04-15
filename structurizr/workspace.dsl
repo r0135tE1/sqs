@@ -9,7 +9,7 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         # Externe Systeme
         # ──────────────────────────────────────────
-        publicApi = softwareSystem "Public API" "External Public API – provides flag data" {
+        publicApi = softwareSystem "Public API" "external Public API – provides flag data" {
             tags "External"
         }
 
@@ -75,8 +75,8 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         # 2. Container (Kapitel 5 Level 1 arc42)
         # ──────────────────────────────────────────
-        container funWithFlags "Containers" {
-            title "Container – Fun With Flags"
+        container funWithFlags "SystemContext-Technical" {
+            title "Technical Context – Fun With Flags"
             include *
             autolayout lr
         }
