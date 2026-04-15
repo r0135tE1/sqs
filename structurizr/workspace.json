@@ -3,7 +3,7 @@
   "description" : "C4-Modell der Fun With Flags Architektur",
   "documentation" : { },
   "id" : 1,
-  "lastModifiedDate" : "2026-04-15T12:49:24Z",
+  "lastModifiedDate" : "2026-04-15T14:14:33Z",
   "model" : {
     "deploymentNodes" : [ {
       "children" : [ {
@@ -14,7 +14,7 @@
           "id" : "15",
           "instanceId" : 1,
           "properties" : {
-            "structurizr.dsl.identifier" : "3dea00a2-6a90-4a1c-b4de-0f17137285fc"
+            "structurizr.dsl.identifier" : "ad74ee19-7ac4-4bc1-9bd3-cea1ae35b748"
           },
           "relationships" : [ {
             "description" : "API calls",
@@ -31,7 +31,7 @@
         "instances" : "1",
         "name" : "Frontend Host",
         "properties" : {
-          "structurizr.dsl.identifier" : "f8311d3a-3450-4b03-94d0-b769378fe1d0"
+          "structurizr.dsl.identifier" : "2fc3ada2-8ccb-4a72-b6ee-97c3c46e507c"
         },
         "tags" : "Element,Deployment Node"
       }, {
@@ -42,7 +42,7 @@
           "id" : "17",
           "instanceId" : 1,
           "properties" : {
-            "structurizr.dsl.identifier" : "dfeae413-ec37-432d-9b81-1d3e3150f702"
+            "structurizr.dsl.identifier" : "c96c1358-9623-4bc9-9f59-086880ebe6b6"
           },
           "relationships" : [ {
             "description" : "reads from / writes to",
@@ -59,7 +59,7 @@
         "instances" : "1",
         "name" : "Backend Host",
         "properties" : {
-          "structurizr.dsl.identifier" : "1776353a-1050-44f9-9ad7-0287e524ab6c"
+          "structurizr.dsl.identifier" : "46c00ec9-cfe8-43f9-8da7-113d0feb3af1"
         },
         "tags" : "Element,Deployment Node"
       }, {
@@ -70,7 +70,7 @@
           "id" : "20",
           "instanceId" : 1,
           "properties" : {
-            "structurizr.dsl.identifier" : "aeddf28e-e0c0-417f-b285-5cf12780f78d"
+            "structurizr.dsl.identifier" : "f9363d93-c6e0-456d-ab91-0abcf53602c9"
           },
           "tags" : "Container Instance"
         } ],
@@ -79,7 +79,7 @@
         "instances" : "1",
         "name" : "Database Host",
         "properties" : {
-          "structurizr.dsl.identifier" : "63793bda-3cba-43ab-b372-c49f2f01db94"
+          "structurizr.dsl.identifier" : "27f4e498-da2b-4abb-9615-cbf79831e2bb"
         },
         "tags" : "Element,Deployment Node"
       } ],
@@ -88,7 +88,7 @@
       "instances" : "1",
       "name" : "Container",
       "properties" : {
-        "structurizr.dsl.identifier" : "38ea6531-af9e-46bd-a21a-0ed48babec91"
+        "structurizr.dsl.identifier" : "53587981-8189-4185-83e1-e05936a8a4a6"
       },
       "tags" : "Element,Deployment Node"
     }, {
@@ -99,14 +99,14 @@
         "id" : "23",
         "name" : "Public API",
         "properties" : {
-          "structurizr.dsl.identifier" : "dc675a2f-fb01-41b6-9048-0364f57b0f38"
+          "structurizr.dsl.identifier" : "e8cfacc4-0fe9-4323-b00b-4caaca400eab"
         },
         "tags" : "Element,Infrastructure Node,External"
       } ],
       "instances" : "1",
       "name" : "External",
       "properties" : {
-        "structurizr.dsl.identifier" : "fc82a6b5-eb3f-441b-80c4-d44c68b9608e"
+        "structurizr.dsl.identifier" : "b4260f82-7ba4-4544-9f32-5f3a226a2f4c"
       },
       "tags" : "Element,Deployment Node"
     } ],
@@ -144,7 +144,7 @@
       "tags" : "Element,Software System,External"
     }, {
       "containers" : [ {
-        "description" : "Stellt die Benutzeroberfläche bereit",
+        "description" : "provides UI for player - requests flags from backend - forwards player and game data",
         "documentation" : { },
         "id" : "4",
         "name" : "Frontend",
@@ -159,10 +159,9 @@
           "tags" : "Relationship",
           "technology" : "REST / HTTP"
         } ],
-        "tags" : "Element,Container",
-        "technology" : "Web / HTTP"
+        "tags" : "Element,Container"
       }, {
-        "description" : "Verarbeitet Geschäftslogik und API-Anfragen",
+        "description" : "handles API requests - handles game logic - manages persistence",
         "documentation" : { },
         "id" : "5",
         "name" : "Backend",
@@ -184,18 +183,16 @@
           "tags" : "Relationship",
           "technology" : "REST / HTTP"
         } ],
-        "tags" : "Element,Container",
-        "technology" : "REST API"
+        "tags" : "Element,Container"
       }, {
-        "description" : "Speichert Nutzer, Scores und Spieldaten",
+        "description" : "Saves player and game data - saves flag data",
         "documentation" : { },
         "id" : "6",
         "name" : "Persistence",
         "properties" : {
           "structurizr.dsl.identifier" : "persistence"
         },
-        "tags" : "Element,Container,Database",
-        "technology" : "Database"
+        "tags" : "Element,Container,Database"
       } ],
       "description" : "web application for a flag quiz game",
       "documentation" : { },
@@ -216,8 +213,8 @@
   },
   "name" : "Fun With Flags",
   "properties" : {
-    "structurizr.inspection.error" : "18",
-    "structurizr.dsl" : "d29ya3NwYWNlICJGdW4gV2l0aCBGbGFncyIgIkM0LU1vZGVsbCBkZXIgRnVuIFdpdGggRmxhZ3MgQXJjaGl0ZWt0dXIiIHsKCiAgICBtb2RlbCB7CiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIFBlcnNvbmVuIC8gQWt0ZXVyZQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyICAgICAgICA9IHBlcnNvbiAiUGxheWVyIiAgICAgICAgInBsYXlzIHRoZSBnYW1lIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgRXh0ZXJuZSBTeXN0ZW1lCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBwdWJsaWNBcGkgPSBzb2Z0d2FyZVN5c3RlbSAiUHVibGljIEFQSSIgImV4dGVybmFsIFB1YmxpYyBBUEkg4oCTIHByb3ZpZGVzIGZsYWcgZGF0YSIgewogICAgICAgICAgICB0YWdzICJFeHRlcm5hbCIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBTb2Z0d2FyZSBTeXN0ZW0KICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGZ1bldpdGhGbGFncyA9IHNvZnR3YXJlU3lzdGVtICJGdW4gV2l0aCBGbGFncyIgIndlYiBhcHBsaWNhdGlvbiBmb3IgYSBmbGFnIHF1aXogZ2FtZSIgewoKICAgICAgICAgICAgZnJvbnRlbmQgICAgPSBjb250YWluZXIgIkZyb250ZW5kIiAgICAiU3RlbGx0IGRpZSBCZW51dHplcm9iZXJmbMOkY2hlIGJlcmVpdCIgIldlYiAvIEhUVFAiCiAgICAgICAgICAgIGJhY2tlbmQgICAgID0gY29udGFpbmVyICJCYWNrZW5kIiAgICAgIlZlcmFyYmVpdGV0IEdlc2Now6RmdHNsb2dpayB1bmQgQVBJLUFuZnJhZ2VuIiAiUkVTVCBBUEkiCiAgICAgICAgICAgIHBlcnNpc3RlbmNlID0gY29udGFpbmVyICJQZXJzaXN0ZW5jZSIgIlNwZWljaGVydCBOdXR6ZXIsIFNjb3JlcyB1bmQgU3BpZWxkYXRlbiIgIkRhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIEJlemllaHVuZ2VuIOKAkyBTeXN0ZW0gQ29udGV4dCAoYnVzaW5lc3Muc3ZnKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyICAgICAgICAtPiBmdW5XaXRoRmxhZ3MgInNpZ24gdXAgJiBsb2dpbiwgcGxheSB0aGUgZ2FtZSwgdmlldyBoaWdoc2NvcmVzIgogICAgICAgIGZ1bldpdGhGbGFncyAgLT4gcHVibGljQXBpICAgICJmZXRjaCBmbGFncyIKCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIEJlemllaHVuZ2VuIOKAkyBDb250YWluZXIgKHRlY2huaWNhbC5zdmcgLyBidWlsZGluZ2Jsb2NrX2xldmVsMS5zdmcpCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBwbGF5ZXIgICAgICAgIC0+IGZyb250ZW5kICAgICJpbnRlcmFjdHMgd2l0aCIgIkludGVybmV0IC8gSFRUUCIKICAgICAgICBmcm9udGVuZCAgICAgIC0+IGJhY2tlbmQgICAgICJBUEkgY2FsbHMiICJSRVNUIC8gSFRUUCIKICAgICAgICBiYWNrZW5kICAgICAgIC0+IHBlcnNpc3RlbmNlICJyZWFkcyBmcm9tIC8gd3JpdGVzIHRvIiAiU1FMIgogICAgICAgIGJhY2tlbmQgICAgICAgLT4gcHVibGljQXBpICAgInJlcXVlc3RzIGZsYWcgZGF0YSIgIlJFU1QgLyBIVFRQIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgRGVwbG95bWVudCAoZGVwbG95bWVudC5zdmcpCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBkZXBsb3ltZW50RW52aXJvbm1lbnQgIlByb2R1Y3Rpb24iIHsKICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkNvbnRhaW5lciIgewogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkZyb250ZW5kIEhvc3QiIHsKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBmcm9udGVuZAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkJhY2tlbmQgSG9zdCIgewogICAgICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIGJhY2tlbmQKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJEYXRhYmFzZSBIb3N0IiB7CiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgcGVyc2lzdGVuY2UKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSAiRXh0ZXJuYWwiIHsKICAgICAgICAgICAgICAgIGluZnJhc3RydWN0dXJlTm9kZSAiUHVibGljIEFQSSIgewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkV4dGVybmFsIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMS4gU3lzdGVtIENvbnRleHQgKEthcGl0ZWwgMyBhcmM0MikKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHN5c3RlbUNvbnRleHQgZnVuV2l0aEZsYWdzICJTeXN0ZW1Db250ZXh0IiB7CiAgICAgICAgICAgIHRpdGxlICJTeXN0ZW0gQ29udGV4dCDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMi4gQ29udGFpbmVyIChLYXBpdGVsIDUgTGV2ZWwgMSBhcmM0MikKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGNvbnRhaW5lciBmdW5XaXRoRmxhZ3MgIlN5c3RlbUNvbnRleHQtVGVjaG5pY2FsIiB7CiAgICAgICAgICAgIHRpdGxlICJUZWNobmljYWwgQ29udGV4dCDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMy4gRGVwbG95bWVudCAoS2FwaXRlbCA3IGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZGVwbG95bWVudCBmdW5XaXRoRmxhZ3MgIlByb2R1Y3Rpb24iICJEZXBsb3ltZW50VmlldyIgewogICAgICAgICAgICB0aXRsZSAiRGVwbG95bWVudCDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgNC4gRHluYW1pYyBWaWV3cyAvIExhdWZ6ZWl0c2ljaHRlbiAoS2FwaXRlbCA2IGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZHluYW1pYyBmdW5XaXRoRmxhZ3MgIlJ1bnRpbWVfU2lnblVwIiAiTGF1ZnplaXRzaWNodDogU2lnbiBVcCIgewogICAgICAgICAgICB0aXRsZSAiUnVudGltZSDigJMgU2lnbiBVcCIKICAgICAgICAgICAgcGxheWVyIC0+IGZyb250ZW5kICAgICJGaWxscyBzaWduIHVwIGZvcm0iCiAgICAgICAgICAgIGZyb250ZW5kIC0+IGJhY2tlbmQgICAiUmVxdWVzdCBzaWduIHVwIgogICAgICAgICAgICBiYWNrZW5kIC0+IHBlcnNpc3RlbmNlICJDaGVjayBmb3IgZXhpc3RpbmcgdXNlciIKICAgICAgICAgICAgcGVyc2lzdGVuY2UgLT4gYmFja2VuZCAiVXNlciBkb2VzIG5vdCBleGlzdCIKICAgICAgICAgICAgYmFja2VuZCAtPiBwZXJzaXN0ZW5jZSAiQ3JlYXRlIHVzZXIiCiAgICAgICAgICAgIGJhY2tlbmQgLT4gZnJvbnRlbmQgICAiU3VjY2Vzc2Z1bCB1c2VyIGNyZWF0aW9uIgogICAgICAgICAgICBmcm9udGVuZCAtPiBwbGF5ZXIgICAgIkRpc3BsYXkgc3VjY2Vzc2Z1bCBzaWduIHVwIgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGZ1bldpdGhGbGFncyAiUnVudGltZV9Mb2dpbiIgIkxhdWZ6ZWl0c2ljaHQ6IExvZ2luIiB7CiAgICAgICAgICAgIHRpdGxlICJSdW50aW1lIOKAkyBMb2dpbiIKICAgICAgICAgICAgcGxheWVyIC0+IGZyb250ZW5kICAgICJGaWxscyBpbiBsb2dpbiBkYXRhIgogICAgICAgICAgICBmcm9udGVuZCAtPiBiYWNrZW5kICAgIlJlcXVlc3Qgc2lnbiBpbiIKICAgICAgICAgICAgYmFja2VuZCAtPiBwZXJzaXN0ZW5jZSAiQ2hlY2sgY3JlZGVudGlhbHMiCiAgICAgICAgICAgIHBlcnNpc3RlbmNlIC0+IGJhY2tlbmQgInJldHVybiB0b2tlbiIKICAgICAgICAgICAgYmFja2VuZCAtPiBmcm9udGVuZCAgICJTdWNjZXNzZnVsIGF1dGhlbnRpY2F0aW9uIgogICAgICAgICAgICBmcm9udGVuZCAtPiBwbGF5ZXIgICAgIkRpc3BsYXkgc3VjY2Vzc2Z1bCBsb2dpbiIKICAgICAgICAgICAgYXV0b2xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBmdW5XaXRoRmxhZ3MgIlJ1bnRpbWVfRmV0Y2hGbGFnIiAiTGF1ZnplaXRzaWNodDogRmV0Y2ggRmxhZyIgewogICAgICAgICAgICB0aXRsZSAiUnVudGltZSDigJMgRmV0Y2ggRmxhZyIKICAgICAgICAgICAgcGxheWVyIC0+IGZyb250ZW5kICAgICJTdGFydCBnYW1lIgogICAgICAgICAgICBmcm9udGVuZCAtPiBiYWNrZW5kICAgIkdldCBmbGFnIgogICAgICAgICAgICBiYWNrZW5kIC0+IHB1YmxpY0FwaSAgIlF1ZXJ5IGZsYWdzIgogICAgICAgICAgICBwdWJsaWNBcGkgLT4gYmFja2VuZCAgIlJldHVybiBmbGFncyIKICAgICAgICAgICAgYmFja2VuZCAtPiBmcm9udGVuZCAgICJSZXR1cm4gcmFuZG9tIGZsYWciCiAgICAgICAgICAgIGZyb250ZW5kIC0+IHBsYXllciAgICAiRGlzcGxheSBmbGFnIgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGZ1bldpdGhGbGFncyAiUnVudGltZV9Db3JyZWN0R3Vlc3MiICJMYXVmemVpdHNpY2h0OiBDb3JyZWN0IEd1ZXNzIiB7CiAgICAgICAgICAgIHRpdGxlICJSdW50aW1lIOKAkyBDb3JyZWN0IEd1ZXNzIgogICAgICAgICAgICBwbGF5ZXIgLT4gZnJvbnRlbmQgICAgIkd1ZXNzIGNvdW50cnkiCiAgICAgICAgICAgIGZyb250ZW5kIC0+IGJhY2tlbmQgICAiVmFsaWRhdGUgZ3Vlc3MiCiAgICAgICAgICAgIGJhY2tlbmQgLT4gcGVyc2lzdGVuY2UgIkFkanVzdCBoaWdoc2NvcmUiCiAgICAgICAgICAgIGJhY2tlbmQgLT4gcHVibGljQXBpICAiR2V0IG5ldyBmbGFnIgogICAgICAgICAgICBwdWJsaWNBcGkgLT4gYmFja2VuZCAgIlJldHVybiBmbGFnIgogICAgICAgICAgICBiYWNrZW5kIC0+IGZyb250ZW5kICAgIkRpc3BsYXkgZmxhZyIKICAgICAgICAgICAgYXV0b2xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBmdW5XaXRoRmxhZ3MgIlJ1bnRpbWVfSW5jb3JyZWN0R3Vlc3MiICJMYXVmemVpdHNpY2h0OiBJbmNvcnJlY3QgR3Vlc3MiIHsKICAgICAgICAgICAgdGl0bGUgIlJ1bnRpbWUg4oCTIEluY29ycmVjdCBHdWVzcyIKICAgICAgICAgICAgcGxheWVyIC0+IGZyb250ZW5kICAgICJHdWVzcyBjb3VudHJ5IgogICAgICAgICAgICBmcm9udGVuZCAtPiBiYWNrZW5kICAgIlZhbGlkYXRlIGd1ZXNzIgogICAgICAgICAgICBiYWNrZW5kIC0+IHBlcnNpc3RlbmNlICJTYXZlIGhpZ2hzY29yZSIKICAgICAgICAgICAgYmFja2VuZCAtPiBmcm9udGVuZCAgICJSZXR1cm4gaGlnaHNjb3JlIgogICAgICAgICAgICBmcm9udGVuZCAtPiBwbGF5ZXIgICAgIlNob3cgaGlnaHNjb3JlIgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgU3R5bGVzCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBzdHlsZXMgewogICAgICAgICAgICBlbGVtZW50ICJQZXJzb24iIHsKICAgICAgICAgICAgICAgIHNoYXBlIFBlcnNvbgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjMDg0MjdiCiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiU29mdHdhcmUgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICMxMTY4YmQKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzQzOGRkNQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkRhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBDeWxpbmRlcgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjNDM4ZGQ1CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRXh0ZXJuYWwiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IyZjJiYgogICAgICAgICAgICAgICAgY29sb3IgIzFlMWUxZQogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkluZnJhc3RydWN0dXJlIE5vZGUiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IyZjJiYgogICAgICAgICAgICAgICAgY29sb3IgIzFlMWUxZQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQp9",
+    "structurizr.inspection.error" : "21",
+    "structurizr.dsl" : "d29ya3NwYWNlICJGdW4gV2l0aCBGbGFncyIgIkM0LU1vZGVsbCBkZXIgRnVuIFdpdGggRmxhZ3MgQXJjaGl0ZWt0dXIiIHsKCiAgICBtb2RlbCB7CiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIFBlcnNvbmVuIC8gQWt0ZXVyZQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyICAgICAgICA9IHBlcnNvbiAiUGxheWVyIiAgICAgICAgInBsYXlzIHRoZSBnYW1lIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgRXh0ZXJuZSBTeXN0ZW1lCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBwdWJsaWNBcGkgPSBzb2Z0d2FyZVN5c3RlbSAiUHVibGljIEFQSSIgImV4dGVybmFsIFB1YmxpYyBBUEkg4oCTIHByb3ZpZGVzIGZsYWcgZGF0YSIgewogICAgICAgICAgICB0YWdzICJFeHRlcm5hbCIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBTb2Z0d2FyZSBTeXN0ZW0KICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGZ1bldpdGhGbGFncyA9IHNvZnR3YXJlU3lzdGVtICJGdW4gV2l0aCBGbGFncyIgIndlYiBhcHBsaWNhdGlvbiBmb3IgYSBmbGFnIHF1aXogZ2FtZSIgewoKICAgICAgICAgICAgZnJvbnRlbmQgICAgPSBjb250YWluZXIgIkZyb250ZW5kIiAgICAicHJvdmlkZXMgVUkgZm9yIHBsYXllciAtIHJlcXVlc3RzIGZsYWdzIGZyb20gYmFja2VuZCAtIGZvcndhcmRzIHBsYXllciBhbmQgZ2FtZSBkYXRhIgogICAgICAgICAgICBiYWNrZW5kICAgICA9IGNvbnRhaW5lciAiQmFja2VuZCIgICAgICJoYW5kbGVzIEFQSSByZXF1ZXN0cyAtIGhhbmRsZXMgZ2FtZSBsb2dpYyAtIG1hbmFnZXMgcGVyc2lzdGVuY2UiCiAgICAgICAgICAgIHBlcnNpc3RlbmNlID0gY29udGFpbmVyICJQZXJzaXN0ZW5jZSIgIlNhdmVzIHBsYXllciBhbmQgZ2FtZSBkYXRhIC0gc2F2ZXMgZmxhZyBkYXRhIiB7CiAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIEJlemllaHVuZ2VuIOKAkyBTeXN0ZW0gQ29udGV4dCAoYnVzaW5lc3Muc3ZnKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyICAgICAgICAtPiBmdW5XaXRoRmxhZ3MgInNpZ24gdXAgJiBsb2dpbiwgcGxheSB0aGUgZ2FtZSwgdmlldyBoaWdoc2NvcmVzIgogICAgICAgIGZ1bldpdGhGbGFncyAgLT4gcHVibGljQXBpICAgICJmZXRjaCBmbGFncyIKCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIEJlemllaHVuZ2VuIOKAkyBDb250YWluZXIgKHRlY2huaWNhbC5zdmcgLyBidWlsZGluZ2Jsb2NrX2xldmVsMS5zdmcpCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBwbGF5ZXIgICAgICAgIC0+IGZyb250ZW5kICAgICJpbnRlcmFjdHMgd2l0aCIgIkludGVybmV0IC8gSFRUUCIKICAgICAgICBmcm9udGVuZCAgICAgIC0+IGJhY2tlbmQgICAgICJBUEkgY2FsbHMiICJSRVNUIC8gSFRUUCIKICAgICAgICBiYWNrZW5kICAgICAgIC0+IHBlcnNpc3RlbmNlICJyZWFkcyBmcm9tIC8gd3JpdGVzIHRvIiAiU1FMIgogICAgICAgIGJhY2tlbmQgICAgICAgLT4gcHVibGljQXBpICAgInJlcXVlc3RzIGZsYWcgZGF0YSIgIlJFU1QgLyBIVFRQIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgRGVwbG95bWVudCAoZGVwbG95bWVudC5zdmcpCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBkZXBsb3ltZW50RW52aXJvbm1lbnQgIlByb2R1Y3Rpb24iIHsKICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkNvbnRhaW5lciIgewogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkZyb250ZW5kIEhvc3QiIHsKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBmcm9udGVuZAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkJhY2tlbmQgSG9zdCIgewogICAgICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIGJhY2tlbmQKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJEYXRhYmFzZSBIb3N0IiB7CiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgcGVyc2lzdGVuY2UKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSAiRXh0ZXJuYWwiIHsKICAgICAgICAgICAgICAgIGluZnJhc3RydWN0dXJlTm9kZSAiUHVibGljIEFQSSIgewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkV4dGVybmFsIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMS4gU3lzdGVtIENvbnRleHQgKEthcGl0ZWwgMyBhcmM0MikKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHN5c3RlbUNvbnRleHQgZnVuV2l0aEZsYWdzICJTeXN0ZW1Db250ZXh0IiB7CiAgICAgICAgICAgIHRpdGxlICJTeXN0ZW0gQ29udGV4dCDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMi4gVGVjaG5pY2FsIENvbnRleHQgKEthcGl0ZWwgMyBhcmM0MikKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGNvbnRhaW5lciBmdW5XaXRoRmxhZ3MgIlN5c3RlbUNvbnRleHQtVGVjaG5pY2FsIiB7CiAgICAgICAgICAgIHRpdGxlICJUZWNobmljYWwgQ29udGV4dCDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgMy4gRGVwbG95bWVudCAoS2FwaXRlbCA3IGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZGVwbG95bWVudCBmdW5XaXRoRmxhZ3MgIlByb2R1Y3Rpb24iICJEZXBsb3ltZW50VmlldyIgewogICAgICAgICAgICB0aXRsZSAiRGVwbG95bWVudCDigJMgRnVuIFdpdGggRmxhZ3MiCiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgfQoKCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIFN0eWxlcwogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgZWxlbWVudCAiUGVyc29uIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBQZXJzb24KICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzA4NDI3YgogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIlNvZnR3YXJlIFN5c3RlbSIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjMTE2OGJkCiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29udGFpbmVyIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM0MzhkZDUKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJEYXRhYmFzZSIgewogICAgICAgICAgICAgICAgc2hhcGUgQ3lsaW5kZXIKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzQzOGRkNQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkV4dGVybmFsIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICNiMmYyYmIKICAgICAgICAgICAgICAgIGNvbG9yICMxZTFlMWUKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJJbmZyYXN0cnVjdHVyZSBOb2RlIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICNiMmYyYmIKICAgICAgICAgICAgICAgIGNvbG9yICMxZTFlMWUKICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KfQ==",
     "structurizr.inspection.info" : "0",
     "structurizr.inspection.ignore" : "0",
     "structurizr.inspection.warning" : "0"
@@ -357,326 +354,6 @@
       } ],
       "softwareSystemId" : "3",
       "title" : "Deployment – Fun With Flags"
-    } ],
-    "dynamicViews" : [ {
-      "automaticLayout" : {
-        "edgeSeparation" : 50,
-        "nodeSeparation" : 50,
-        "rankDirection" : "LeftRight",
-        "rankSeparation" : 100,
-        "vertices" : true
-      },
-      "description" : "Laufzeitsicht: Sign Up",
-      "elementId" : "3",
-      "elements" : [ {
-        "id" : "1",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "4",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "5",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "6",
-        "x" : 0,
-        "y" : 0
-      } ],
-      "externalBoundariesVisible" : false,
-      "key" : "Runtime_SignUp",
-      "name" : "Dynamic View: Fun With Flags",
-      "order" : 4,
-      "relationships" : [ {
-        "description" : "Fills sign up form",
-        "id" : "9",
-        "order" : "1",
-        "response" : false
-      }, {
-        "description" : "Request sign up",
-        "id" : "10",
-        "order" : "2",
-        "response" : false
-      }, {
-        "description" : "Check for existing user",
-        "id" : "11",
-        "order" : "3",
-        "response" : false
-      }, {
-        "description" : "User does not exist",
-        "id" : "11",
-        "order" : "4",
-        "response" : true
-      }, {
-        "description" : "Create user",
-        "id" : "11",
-        "order" : "5",
-        "response" : false
-      }, {
-        "description" : "Successful user creation",
-        "id" : "10",
-        "order" : "6",
-        "response" : true
-      }, {
-        "description" : "Display successful sign up",
-        "id" : "9",
-        "order" : "7",
-        "response" : true
-      } ],
-      "title" : "Runtime – Sign Up"
-    }, {
-      "automaticLayout" : {
-        "edgeSeparation" : 50,
-        "nodeSeparation" : 50,
-        "rankDirection" : "LeftRight",
-        "rankSeparation" : 100,
-        "vertices" : true
-      },
-      "description" : "Laufzeitsicht: Login",
-      "elementId" : "3",
-      "elements" : [ {
-        "id" : "1",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "4",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "5",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "6",
-        "x" : 0,
-        "y" : 0
-      } ],
-      "externalBoundariesVisible" : false,
-      "key" : "Runtime_Login",
-      "name" : "Dynamic View: Fun With Flags",
-      "order" : 5,
-      "relationships" : [ {
-        "description" : "Fills in login data",
-        "id" : "9",
-        "order" : "1",
-        "response" : false
-      }, {
-        "description" : "Request sign in",
-        "id" : "10",
-        "order" : "2",
-        "response" : false
-      }, {
-        "description" : "Check credentials",
-        "id" : "11",
-        "order" : "3",
-        "response" : false
-      }, {
-        "description" : "return token",
-        "id" : "11",
-        "order" : "4",
-        "response" : true
-      }, {
-        "description" : "Successful authentication",
-        "id" : "10",
-        "order" : "5",
-        "response" : true
-      }, {
-        "description" : "Display successful login",
-        "id" : "9",
-        "order" : "6",
-        "response" : true
-      } ],
-      "title" : "Runtime – Login"
-    }, {
-      "automaticLayout" : {
-        "edgeSeparation" : 50,
-        "nodeSeparation" : 50,
-        "rankDirection" : "LeftRight",
-        "rankSeparation" : 100,
-        "vertices" : true
-      },
-      "description" : "Laufzeitsicht: Fetch Flag",
-      "elementId" : "3",
-      "elements" : [ {
-        "id" : "1",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "2",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "4",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "5",
-        "x" : 0,
-        "y" : 0
-      } ],
-      "externalBoundariesVisible" : false,
-      "key" : "Runtime_FetchFlag",
-      "name" : "Dynamic View: Fun With Flags",
-      "order" : 6,
-      "relationships" : [ {
-        "description" : "Start game",
-        "id" : "9",
-        "order" : "1",
-        "response" : false
-      }, {
-        "description" : "Get flag",
-        "id" : "10",
-        "order" : "2",
-        "response" : false
-      }, {
-        "description" : "Query flags",
-        "id" : "12",
-        "order" : "3",
-        "response" : false
-      }, {
-        "description" : "Return flags",
-        "id" : "12",
-        "order" : "4",
-        "response" : true
-      }, {
-        "description" : "Return random flag",
-        "id" : "10",
-        "order" : "5",
-        "response" : true
-      }, {
-        "description" : "Display flag",
-        "id" : "9",
-        "order" : "6",
-        "response" : true
-      } ],
-      "title" : "Runtime – Fetch Flag"
-    }, {
-      "automaticLayout" : {
-        "edgeSeparation" : 50,
-        "nodeSeparation" : 50,
-        "rankDirection" : "LeftRight",
-        "rankSeparation" : 100,
-        "vertices" : true
-      },
-      "description" : "Laufzeitsicht: Correct Guess",
-      "elementId" : "3",
-      "elements" : [ {
-        "id" : "1",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "2",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "4",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "5",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "6",
-        "x" : 0,
-        "y" : 0
-      } ],
-      "externalBoundariesVisible" : false,
-      "key" : "Runtime_CorrectGuess",
-      "name" : "Dynamic View: Fun With Flags",
-      "order" : 7,
-      "relationships" : [ {
-        "description" : "Guess country",
-        "id" : "9",
-        "order" : "1",
-        "response" : false
-      }, {
-        "description" : "Validate guess",
-        "id" : "10",
-        "order" : "2",
-        "response" : false
-      }, {
-        "description" : "Adjust highscore",
-        "id" : "11",
-        "order" : "3",
-        "response" : false
-      }, {
-        "description" : "Get new flag",
-        "id" : "12",
-        "order" : "4",
-        "response" : false
-      }, {
-        "description" : "Return flag",
-        "id" : "12",
-        "order" : "5",
-        "response" : true
-      }, {
-        "description" : "Display flag",
-        "id" : "10",
-        "order" : "6",
-        "response" : true
-      } ],
-      "title" : "Runtime – Correct Guess"
-    }, {
-      "automaticLayout" : {
-        "edgeSeparation" : 50,
-        "nodeSeparation" : 50,
-        "rankDirection" : "LeftRight",
-        "rankSeparation" : 100,
-        "vertices" : true
-      },
-      "description" : "Laufzeitsicht: Incorrect Guess",
-      "elementId" : "3",
-      "elements" : [ {
-        "id" : "1",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "4",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "5",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "6",
-        "x" : 0,
-        "y" : 0
-      } ],
-      "externalBoundariesVisible" : false,
-      "key" : "Runtime_IncorrectGuess",
-      "name" : "Dynamic View: Fun With Flags",
-      "order" : 8,
-      "relationships" : [ {
-        "description" : "Guess country",
-        "id" : "9",
-        "order" : "1",
-        "response" : false
-      }, {
-        "description" : "Validate guess",
-        "id" : "10",
-        "order" : "2",
-        "response" : false
-      }, {
-        "description" : "Save highscore",
-        "id" : "11",
-        "order" : "3",
-        "response" : false
-      }, {
-        "description" : "Return highscore",
-        "id" : "10",
-        "order" : "4",
-        "response" : true
-      }, {
-        "description" : "Show highscore",
-        "id" : "9",
-        "order" : "5",
-        "response" : true
-      } ],
-      "title" : "Runtime – Incorrect Guess"
     } ],
     "systemContextViews" : [ {
       "automaticLayout" : {
