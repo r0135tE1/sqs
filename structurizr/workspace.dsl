@@ -20,15 +20,15 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
             frontend = container "Frontend" "provides UI for player - requests flags from backend - forwards player and game data" {
 
-                appShell = component "App" "Application shell. Manages global authentication state, persists the JWT token in localStorage, and orchestrates modal visibility." "App.vue"
+                appShell = component "App" "Application shell. Manages global authentication state, persists the JWT token in localStorage, and orchestrates modal visibility."
 
-                gameBoard = component "GameBoard" "Core game component. Fetches random flags, validates guesses, tracks score and round progress, and persists scores to the backend on wrong answers or manual save." "GameBoard.vue"
+                gameBoard = component "GameBoard" "Core game component. Fetches random flags, validates guesses, tracks score and round progress, and persists scores to the backend."
 
-                loginModal = component "LoginModal" "Presentational modal with a username/password form. Emits submitted credentials to App for processing." "LoginModal.vue"
+                loginModal = component "LoginModal" "Presentational modal with a username/password form." 
 
-                signUpModal = component "SignUpModal" "Presentational modal with a registration form. Applies client-side validation (username format, password length/complexity) before emitting credentials to App." "SignUpModal.vue"
+                signUpModal = component "SignUpModal" "Presentational modal with a registration form. Applies client-side validation (username format, password length/complexity) before emitting credentials"
 
-                highscoresModal = component "HighscoresModal" "Fetches and displays the top-10 leaderboard from the backend when opened. Requires a valid JWT token." "HighscoresModal.vue"
+                highscoresModal = component "HighscoresModal" "Fetches and displays the top-10 leaderboard from the backend when opened. Requires a valid JWT token."
             }
 
             backend = container "Backend" "handles API requests - handles game logic - manages persistence" "Python / FastAPI" "API" {
@@ -50,7 +50,7 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
                 databaseLayer = component "Database Layer" "Async SQLAlchemy engine, session factory, get_db() dependency, and ORM models."
             }
 
-            persistence = container "Persistence" "Saves player and game data - saves flag data" "PostgreSQL" {
+            persistence = container "Persistence" "Saves player and game data - saves flag data" {
                 tags "Database"
             }
         }
@@ -72,10 +72,10 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         # Beziehungen – Komponenten Frontend
         # ──────────────────────────────────────────
-        appShell -> gameBoard        "Renders and passes JWT token as prop" "Vue prop"
-        appShell -> loginModal       "Renders; receives submit event with credentials" "Vue prop/emit"
-        appShell -> signUpModal      "Renders; receives submit event with credentials" "Vue prop/emit"
-        appShell -> highscoresModal  "Renders; passes JWT token as prop" "Vue prop"
+        appShell -> gameBoard        "Renders and passes JWT token as prop"
+        appShell -> loginModal       "Renders; receives submit event with credentials"
+        appShell -> signUpModal      "Renders; receives submit event with credentials"
+        appShell -> highscoresModal  "Renders; passes JWT token as prop"
 
         appShell       -> backend "POST /auth/register – register new user" "JSON / REST"
         appShell       -> backend "POST /auth/login – obtain JWT token" "JSON / REST"
