@@ -18,7 +18,7 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         funWithFlags = softwareSystem "Fun With Flags" "web application for a flag quiz game" {
 
-            frontend = container "Frontend" "provides UI for player - requests flags from backend - forwards player and game data" "Vue 3 / TypeScript / Vite" "Browser" {
+            frontend = container "Frontend" "provides UI for player - requests flags from backend - forwards player and game data" {
 
                 appShell = component "App" "Application shell. Manages global authentication state, persists the JWT token in localStorage, and orchestrates modal visibility." "App.vue"
 
@@ -33,21 +33,21 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
             backend = container "Backend" "handles API requests - handles game logic - manages persistence" "Python / FastAPI" "API" {
 
-                appBootstrap = component "Application Bootstrap" "Initialises the FastAPI app, registers routers, configures CORS middleware, triggers FlagCache preload at startup, and exposes the /health endpoint." "main.py"
+                appBootstrap = component "Application Bootstrap" "Initialises the FastAPI app, registers routers, configures CORS middleware, triggers FlagCache preload at startup, and exposes the /health endpoint."
 
-                authRouter = component "Auth Router" "Handles user registration (POST /auth/register) and login (POST /auth/login). Delegates password hashing and token creation to the Auth Service." "app/routers/auth.py"
+                authRouter = component "Auth Router" "Handles user registration and login. Delegates password hashing and token creation to the Auth Service."
 
-                flagsRouter = component "Flags Router" "Serves GET /flags/random. Returns a random unseen flag from the in-memory cache, excluding country codes supplied by the client." "app/routers/flags.py"
+                flagsRouter = component "Flags Router" "Returns a random unseen flag from the in-memory cache, excluding country codes supplied by the client."
 
-                highscoresRouter = component "Highscores Router" "Protected endpoints: GET /highscores/ returns the top-10 leaderboard; POST /highscores/ persists a player's score. Both require a valid JWT." "app/routers/highscores.py"
+                highscoresRouter = component "Highscores Router" "Protected endpoints. Returns the top-10 leaderboard, persists a player's score. Both require a valid JWT." 
 
-                authService = component "Auth Service" "Stateless utilities for bcrypt password hashing/verification (Passlib) and HS256 JWT creation/decoding (python-jose)." "app/services/auth.py"
+                authService = component "Auth Service" "Stateless utilities for bcrypt password hashing/verification and HS256 JWT creation/decoding."
 
-                flagCache = component "Flag Cache" "Fetches all country data from the Public API once at startup via httpx and stores it in memory. Exposes random_flag(exclude) for O(1) flag retrieval without hitting the external API on every request." "app/services/flag_cache.py"
+                flagCache = component "Flag Cache" "Fetches all country data from the Public API once at startup and stores it in memory. Returns a random unseen flag from the in-memory cache, excluding country codes supplied by the client." 
 
-                authDependency = component "Auth Dependency" "FastAPI dependency (get_current_user). Extracts the Bearer token from the Authorization header, decodes it via Auth Service, and returns the username or raises HTTP 401." "app/dependencies.py"
+                authDependency = component "Auth Dependency" "FastAPI dependency. Extracts the Bearer token from the Authorization header, decodes it via Auth Service, and returns the username or raises HTTP 401." 
 
-                databaseLayer = component "Database Layer" "Async SQLAlchemy engine (asyncpg driver), session factory, get_db() dependency, and ORM models: User (id, username, hashed_password) and Highscore (id, user_id FK, score)." "app/database/"
+                databaseLayer = component "Database Layer" "Async SQLAlchemy engine, session factory, get_db() dependency, and ORM models."
             }
 
             persistence = container "Persistence" "Saves player and game data - saves flag data" "PostgreSQL" {
