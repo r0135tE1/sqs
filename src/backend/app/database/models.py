@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 #Base class
@@ -24,6 +24,7 @@ class User(Base):
 #DB Table for Highscores
 class Highscore(Base):
     __tablename__ = "highscores"
+    __table_args__ = (UniqueConstraint("user_id", name="uq_highscores_user_id"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
