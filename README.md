@@ -1,17 +1,56 @@
-# SQS
-- Spaß mit Flaggen
-  - Flaggen werden angezeigt und man muss das entsprechende Land erraten
-  - Bei korrektem Erraten bekommt man punkte für seine Streak
-  - Falsche antwort setzt die streak zurück
-  - speichern der streak für einen nutzer in der Datenbank
-  - Einsehen der Streak eines Nutzers
+# Fun With Flags
 
-# MVP Voraussetzungen
-- mindestens ein öffentlich erreichbarer Endpunkt: https: //restcountries.com/
-- mindestens ein abgesicherter Endpunkt (Login-Kontext etc.): Endpunkt für Highscore einsicht, geht nur für eingeloggte User, die ihn gespeichert haben.
-- mindestens 3 Schichten:
-- Frontend: Headless, nimmt nur Daten entgegen. Typescript, evtl Vue3
-- Backend: Stellt API bereit, um restcountries API anzusprechen und Frontend Daten zu liefern. Python
-- Persistenzschicht (bspw. Datenbank): evtl PostGres, speichert userdaten und highscores
-- Das Backend muss außerdem mit mindestens einem externen Service
-sprechen (bspw. Google-APIs etc.).
+A flag-guessing game where players are shown a country flag and must pick the correct country from four options. Correct answers extend your streak; a wrong answer resets it. Logged-in players can save their highscore and view the global leaderboard.
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Vue 3 + TypeScript + Tailwind CSS, served by nginx |
+| Backend | Python 3.12 + FastAPI |
+| Database | PostgreSQL 16 |
+| External API | [restcountries.com](https://restcountries.com) |
+
+## Running with Docker
+
+> **Requirements:** Docker Desktop
+
+```bash
+# 1. Copy the example env file and set a JWT secret
+cp src/backend/.env.example src/backend/.env
+# Edit src/backend/.env and set JWT_SECRET to a random string
+
+# 2. Build and start all containers
+docker compose up --build
+```
+
+Open **http://localhost** in your browser.
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost |
+| Backend API | http://localhost:8000 |
+| API Docs (Swagger) | http://localhost:8000/docs |
+
+```bash
+# Stop containers
+docker compose down
+
+# Stop and wipe the database
+docker compose down -v
+```
+
+## Running Locally (without Docker)
+
+See [src/backend/README.md](src/backend/README.md) and [src/frontend/README.md](src/frontend/README.md) for local setup instructions.
+
+## Project Structure
+
+```
+.
+├── docker-compose.yml
+├── src/
+│   ├── backend/        # FastAPI app
+│   └── frontend/       # Vue 3 app
+└── docs/               # Architecture documentation
+```
