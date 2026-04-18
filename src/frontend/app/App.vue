@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
+import { API_URL } from "./config";
 import SignUpModal from "./components/SignUpModal.vue";
 import LoginModal from "./components/LoginModal.vue";
 import HighscoresModal from "./components/HighscoresModal.vue";
@@ -71,7 +72,7 @@ async function handleSignUp(formData: { username: string; password: string }) {
   signUpMessage.value = "";
   signUpSuccessMessage.value = "";
   try {
-    const response = await fetch("http://localhost:8000/auth/register", {
+    const response = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: { "accept": "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -95,7 +96,7 @@ async function handleLogin(formData: { username: string; password: string }) {
   loginMessage.value = "";
   loginSuccessMessage.value = "";
   try {
-    const response = await fetch("http://localhost:8000/auth/login", {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "accept": "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(formData),

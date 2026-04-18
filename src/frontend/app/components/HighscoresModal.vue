@@ -48,6 +48,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
+import { API_URL } from "../config";
 
 interface HighscoreEntry { username: string; score: number; }
 
@@ -90,7 +91,7 @@ async function loadHighscores() {
   loading.value = true;
   error.value = "";
   try {
-    const response = await fetch("http://localhost:8000/highscores/", {
+    const response = await fetch(`${API_URL}/highscores/`, {
       headers: { Authorization: `Bearer ${props.token}` },
     });
     if (response.ok) { highscores.value = await response.json(); }

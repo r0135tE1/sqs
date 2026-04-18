@@ -5,7 +5,7 @@
 
       <div class="flex justify-between items-center mb-6">
         <div :class="['text-2xl font-bold', t.textPrimary]">Create Account</div>
-        <button @click="$emit('close')" :class="['text-2xl leading-none transition-colors cursor-pointer', t.closeBtn]">×</button>
+        <button @click="$emit('close')" :class="['text-2xl leading-none transition-colors', t.closeBtn]">×</button>
       </div>
 
       <div v-if="message || localError" :class="['mb-5 p-3 rounded-lg text-sm border', t.errorBox]">

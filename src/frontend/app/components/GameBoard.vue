@@ -25,7 +25,7 @@
       <!-- Flag -->
       <div class="relative">
         <div v-if="flag" :class="['border w-80 h-48 overflow-hidden transition-opacity duration-300', t.flagBorder, flagVisible ? 'opacity-100' : 'opacity-0']">
-          <img :src="flag.flag_url" alt="Flag" class="w-full h-full object-cover" @load="flagVisible = true" />
+          <img :src="flag.flag_url" :alt="`Flag of ${flag.country_name}`" class="w-full h-full object-cover" @load="flagVisible = true" />
         </div>
         <div v-else-if="gameOver" :class="['flex border rounded-lg w-80 h-48 items-center justify-center', t.gameOverBox]">
           <div class="text-center">
@@ -85,6 +85,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed, watch } from "vue";
+import { API_URL } from "../config";
 
 type Flag = {
   country_code: string;
@@ -155,7 +156,7 @@ function handleKeyDown(event: KeyboardEvent) {
 async function loadFlag() {
   flagVisible.value = false;
   const params = [...seen].map(code => `exclude=${code}`).join("&");
-  const response = await fetch(`http://localhost:8000/flags/random?${params}`, { cache: "no-store" });
+  const response = await fetch(`${API_URL}/flags/random?${params}`, { cache: "no-store" });
 
   if (response.status === 404) { gameOver.value = true; flagVisible.value = true; return; }
   if (!response.ok) { console.error("Failed to load flag:", response.statusText); flagVisible.value = true; return; }
@@ -183,14 +184,14 @@ function checkInput(option: string) {
 async function fetchPersonalBest() {
   if (!props.token || !props.username) return;
   try {
-    const res = await fetch("http://localhost:8000/highscores/", {
+    const res = await fetch(`${API_URL}/highscores/`, {
       headers: { Authorization: `Bearer ${props.token}` },
     });
     if (!res.ok) return;
     const list: { username: string; score: number }[] = await res.json();
     const entry = list.find(e => e.username === props.username);
     if (entry) personalBest.value = entry.score;
-  } catch { /* silent */ }
+  } catch (err) { console.warn("Failed to fetch personal best:", err); }
 }
 
 function nextFlag() { showOverlay.value = false; loadFlag(); }
@@ -206,7 +207,7 @@ function resetGame() {
 async function saveScoreToBackend(scoreToSave: number) {
   if (!props.token) return;
   try {
-    await fetch("http://localhost:8000/highscores/", {
+    await fetch(`${API_URL}/highscores/`, {
       method: "POST",
       headers: { "accept": "application/json", "Content-Type": "application/json", "Authorization": `Bearer ${props.token}` },
       body: JSON.stringify({ score: scoreToSave }),
@@ -218,7 +219,7 @@ async function saveScoreToBackend(scoreToSave: number) {
 async function saveScore() {
   if (!props.token) return;
   try {
-    const response = await fetch("http://localhost:8000/highscores/", {
+    const response = await fetch(`${API_URL}/highscores/`, {
       method: "POST",
       headers: { "accept": "application/json", "Content-Type": "application/json", "Authorization": `Bearer ${props.token}` },
       body: JSON.stringify({ score: score.value }),
