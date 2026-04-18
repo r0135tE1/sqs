@@ -5,7 +5,7 @@
 
       <div class="flex justify-between items-center mb-6">
         <div :class="['text-2xl font-bold', t.textPrimary]">Create Account</div>
-        <button @click="$emit('close')" :class="['text-2xl leading-none transition-colors', t.closeBtn]">×</button>
+        <button @click="$emit('close')" :class="['text-2xl leading-none transition-colors cursor-pointer', t.closeBtn]">×</button>
       </div>
 
       <div v-if="message || localError" :class="['mb-5 p-3 rounded-lg text-sm border', t.errorBox]">
@@ -14,14 +14,14 @@
 
       <form @submit.prevent="submit" class="flex flex-col gap-4">
         <div>
-          <label :class="['block text-sm font-medium mb-1.5', t.label]">Username</label>
-          <input v-model="form.username" type="text" placeholder="Choose a username"
+          <label for="signup-username" :class="['block text-sm font-medium mb-1.5', t.label]">Username</label>
+          <input id="signup-username" v-model="form.username" type="text" placeholder="Choose a username" autocomplete="username"
                  :class="['w-full rounded-lg px-4 py-3 text-sm border outline-none transition-colors focus:ring-2 focus:ring-sky-500 focus:border-transparent', t.input]"
                  required />
         </div>
         <div>
-          <label :class="['block text-sm font-medium mb-1.5', t.label]">Password</label>
-          <input v-model="form.password" type="password" placeholder="Create a password"
+          <label for="signup-password" :class="['block text-sm font-medium mb-1.5', t.label]">Password</label>
+          <input id="signup-password" v-model="form.password" type="password" placeholder="Create a password" autocomplete="new-password"
                  :class="['w-full rounded-lg px-4 py-3 text-sm border outline-none transition-colors focus:ring-2 focus:ring-sky-500 focus:border-transparent', t.input]"
                  required />
         </div>
@@ -33,10 +33,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from "vue"
 
-const props = defineProps(["isOpen", "message", "isDark"])
+const props = defineProps<{ isOpen: boolean; message?: string; isDark?: boolean }>()
 const emit = defineEmits(["close", "submit"])
 
 const t = computed(() => props.isDark ? {

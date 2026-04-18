@@ -15,13 +15,13 @@
       <form @submit.prevent="submit" class="flex flex-col gap-4">
         <div>
           <label for="login-username" :class="['block text-sm font-medium mb-1.5', t.label]">Username</label>
-          <input id="login-username" v-model="form.username" type="text" placeholder="Enter your username"
+          <input id="login-username" v-model="form.username" type="text" placeholder="Enter your username" autocomplete="username"
                  :class="['w-full rounded-lg px-4 py-3 text-sm border outline-none transition-colors focus:ring-2 focus:ring-sky-500 focus:border-transparent', t.input]"
                  required />
         </div>
         <div>
           <label for="login-password" :class="['block text-sm font-medium mb-1.5', t.label]">Password</label>
-          <input id="login-password" v-model="form.password" type="password" placeholder="Enter your password"
+          <input id="login-password" v-model="form.password" type="password" placeholder="Enter your password" autocomplete="current-password"
                  :class="['w-full rounded-lg px-4 py-3 text-sm border outline-none transition-colors focus:ring-2 focus:ring-sky-500 focus:border-transparent', t.input]"
                  required />
         </div>
