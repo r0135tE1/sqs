@@ -8,6 +8,7 @@
 .idea
 .vscode/
 .claude/
+.sonarlint/
 
 # Python
 __pycache__/
