@@ -6,9 +6,8 @@
 
 # Editor
 .idea
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
+.vscode/
+.claude/
 
 # Python
 __pycache__/
