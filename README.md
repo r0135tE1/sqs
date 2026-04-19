@@ -16,9 +16,8 @@ A flag-guessing game where players are shown a country flag and must pick the co
 > **Requirements:** Docker Desktop
 
 ```bash
-# 1. Copy the example env file and set a JWT secret
-cp .env.example .env
-# Edit .env and set JWT_SECRET to a random string
+# 1. Generate the .env file with a random JWT secret
+./setup.sh
 
 # 2. Build and start all containers
 docker compose up --build
