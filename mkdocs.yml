@@ -6,6 +6,7 @@ nav:
   - Home: index.md
   - Install: install.md
   - Usage: usage.md
+  - Test concept: test-concept.md
   - Architecture:
       - Introduction and Goals: architecture/01_introduction_and_goals.md
       - Architecture Constraints: architecture/02_architecture_constraints.md

@@ -18,6 +18,8 @@ venv/
 
 # Env files
 .env
+*excalidraw
+.structurizr
 
 # SonarQube
 .scannerwork/
