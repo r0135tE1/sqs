@@ -2,53 +2,73 @@
 
 Vue 3 + TypeScript frontend for the Fun with Flags country guessing game.
 
-## Requirements
+---
 
-- Node.js `^20.19.0` or `>=22.12.0`
-- npm
+## Tech Stack
 
-## Dependencies
+| Technology | Purpose |
+|---|---|
+| Vue 3 | UI framework |
+| TypeScript | Type safety |
+| Tailwind CSS v4 | Styling |
+| Vite | Build tool and dev server |
 
-### Runtime
+---
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `vue` | ^3.5 | UI framework |
+## Project Structure
 
-### Dev / Build
+```
+src/frontend/
+├── index.html
+├── vite.config.ts
+├── tsconfig.app.json
+├── nginx.conf              # nginx config used in the Docker image
+├── Dockerfile
+└── app/
+    ├── main.ts
+    ├── config.ts           # API_URL constant (reads VITE_API_URL env var)
+    ├── App.vue             # Root component: auth, theme, navbar
+    └── components/
+        ├── GameBoard.vue       # Flag display, answer buttons, score tracking
+        ├── LoginModal.vue      # Login form
+        ├── SignUpModal.vue     # Registration form
+        └── HighscoresModal.vue # Global leaderboard
+```
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `vite` | ^8.0 | Build tool and dev server |
-| `typescript` | ~6.0 | Type checking |
-| `vue-tsc` | ^3.2 | TypeScript compiler for Vue SFCs |
-| `@vitejs/plugin-vue` | ^6.0 | Vite plugin for `.vue` files |
-| `@vitejs/plugin-vue-jsx` | ^5.1 | JSX support for Vue |
-| `tailwindcss` | ^4.2 | Utility-first CSS framework |
-| `@tailwindcss/vite` | ^4.2 | Tailwind Vite integration |
-| `vite-plugin-vue-devtools` | ^8.1 | Vue DevTools integration |
-| `npm-run-all2` | ^8.0 | Run multiple npm scripts in parallel |
-| `@vue/tsconfig` | ^0.9 | Shared TypeScript config for Vue |
-| `@tsconfig/node24` | ^24.0 | TypeScript config for Node 24 |
-| `@types/node` | ^24.12 | Node.js type definitions |
+---
 
-## Setup
+## Environment Variables
 
-Install dependencies:
+| Variable | Default | Description |
+|---|---|---|
+| `VITE_API_URL` | `http://localhost:8000` | Backend API base URL |
+
+Set in a `.env.local` file for local development, or passed as a build arg in Docker.
+
+---
+
+## Local Setup
 
 ```bash
+cd src/frontend
 npm install
 ```
 
-## Running the Dev Server
+Copy the backend URL if it differs from the default:
+```bash
+echo "VITE_API_URL=http://localhost:8000" > .env.local
+```
 
+Start the dev server:
 ```bash
 npm run dev
 ```
 
-Vite starts a local dev server with hot module replacement (HMR). The terminal output will show the URL, typically `http://localhost:5173`.
+Vite starts at `http://localhost:5173` with hot module replacement.
 
-> The frontend expects the backend API to be running at `http://localhost:8000`. Start the backend before using the app.
+> The backend must be running at `VITE_API_URL` before the app is usable.
+
+---
 
 ## Building for Production
 
@@ -56,10 +76,23 @@ Vite starts a local dev server with hot module replacement (HMR). The terminal o
 npm run build
 ```
 
-This runs a type check and then compiles the app into the `dist/` directory.
+Runs a type check then compiles the app into `dist/`.
 
 To preview the production build locally:
-
 ```bash
 npm run preview
+```
+
+---
+
+## Docker
+
+The frontend is built and served via nginx in Docker. See the root [docker-compose.yml](../../docker-compose.yml) to run the full stack.
+
+The `VITE_API_URL` build argument controls which backend the built app points to:
+```yaml
+build:
+  context: ./src/frontend
+  args:
+    VITE_API_URL: http://localhost:8000
 ```

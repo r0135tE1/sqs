@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -42,6 +44,13 @@ async def save_score(body: SaveScoreRequest, current_user: Annotated[str, Depend
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
 
-    db.add(Highscore(user_id=user.id, score=body.score))
+    existing = await db.scalar(select(Highscore).where(Highscore.user_id == user.id))
+    if existing is None:
+        db.add(Highscore(user_id=user.id, score=body.score))
+    elif body.score > existing.score:
+        existing.score = body.score
+    else:
+        return {"message": "Score not a new personal best."}
+
     await db.commit()
     return {"message": "Score saved."}
