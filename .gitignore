@@ -1,13 +1,28 @@
-*.Identifier
-.idea
+# Windows WSL
+*:Zone.Identifier
+
 # macOS
 .DS_Store
+
+# Editor
+.idea
+.vscode/
+.claude/
+.sonarlint/
+
 # Python
 __pycache__/
 *.py[cod]
 .venv/
+venv/
 
 # Env files
 .env
 *excalidraw
 .structurizr
+
+# SonarQube
+.scannerwork/
+
+# Excalidraw
+*.excalidraw
