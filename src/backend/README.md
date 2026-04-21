@@ -204,6 +204,60 @@ Server runs at `http://localhost:8000`.
 
 ---
 
+
+## Backend Testing
+
+### Prerequisites
+
+Install dev dependencies (requires an active Python virtualenv):
+
+```bash
+cd src/backend
+pip install -r requirements.txt -r dev-requirements.txt
+```
+
+> Integration tests spin up a real PostgreSQL container automatically via **testcontainers** — Docker must be running.
+
+### Running Tests
+
+```bash
+cd src/backend
+
+# All tests (unit + integration) with coverage report
+pytest --cov=app --cov-report=term-missing
+
+# Unit tests only — no Docker required
+pytest tests/unit/
+
+# Integration tests only — Docker must be running
+pytest tests/integration/
+
+# Enforce 80% coverage threshold (same check as CI)
+pytest --cov=app --cov-report=xml --cov-fail-under=80
+```
+
+### Test Structure
+
+```
+src/backend/tests/
+├── conftest.py                      # Shared fixtures (seeded_flag_cache)
+├── unit/
+│   ├── test_auth_service.py         # hash_password, verify_password, create/decode token
+│   ├── test_flag_cache.py           # FlagCache in-memory logic
+│   └── test_dependencies.py        # get_current_user FastAPI dependency
+└── integration/
+    ├── conftest.py                  # PostgreSQL container + async HTTP client fixtures
+    ├── test_health.py
+    ├── test_auth.py                 # register / login flows
+    ├── test_flags.py                # GET /flags/random
+    ├── test_highscores.py           # protected highscore endpoints
+    └── test_flag_cache_load.py      # Resilience: HTTP errors from restcountries.com
+```
+
+Coverage is collected over the `app/` package. The XML report (`coverage.xml`) is forwarded to SonarQube in CI.
+
+---
+
 ## Migrations (Alembic)
 
 ```bash
