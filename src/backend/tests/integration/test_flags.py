@@ -5,7 +5,13 @@ async def test_random_flag_ok(async_client):
     response = await async_client.get("/flags/random")
     assert response.status_code == 200
     body = response.json()
-    assert {"country_code", "country_name", "flag_url", "options"} == set(body.keys())
+    assert {"country_code", "flag_url", "options"} == set(body.keys())
+
+
+async def test_random_flag_no_correct_answer(async_client):
+    """The correct answer must not be included in the HTTP response."""
+    response = await async_client.get("/flags/random")
+    assert "country_name" not in response.json()
 
 
 async def test_random_flag_options_count(async_client):

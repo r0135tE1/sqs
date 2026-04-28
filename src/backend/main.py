@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, flags, highscores
+from app.routers import auth, flags, game, highscores
 from app.services.flag_cache import flag_cache
 
 logger = logging.getLogger(__name__)
@@ -35,6 +35,7 @@ app.add_middleware(
 
 app.include_router(flags.router)
 app.include_router(auth.router)
+app.include_router(game.router)
 app.include_router(highscores.router)
 
 # Endpoint for Monitoring

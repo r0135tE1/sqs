@@ -24,4 +24,8 @@ async def get_random_flag(exclude: Annotated[list[str], Query(description="Count
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No unseen flags left. All countries have been shown this session.",
         )
-    return FlagResponse(**flag)
+    return FlagResponse(
+        country_code=flag["country_code"],
+        flag_url=flag["flag_url"],
+        options=flag["options"],
+    )

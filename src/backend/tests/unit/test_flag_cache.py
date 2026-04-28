@@ -22,6 +22,7 @@ def test_random_flag_returns_correct_shape():
 
 
 def test_options_contain_correct_answer():
+    """country_name is the correct answer kept internally — it must appear in options."""
     cache = FlagCache()
     cache._countries = _make_countries(5)
     result = cache.random_flag()

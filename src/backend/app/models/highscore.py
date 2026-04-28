@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class HighscoreEntry(BaseModel):
@@ -6,5 +6,5 @@ class HighscoreEntry(BaseModel):
     score: int
 
 
-class SaveScoreRequest(BaseModel):
-    score: int = Field(ge=0)
+class SaveSessionRequest(BaseModel):
+    session_id: str
