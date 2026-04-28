@@ -9,6 +9,10 @@ def _store_with_session():
     return store, session.session_id
 
 
+def _q(store, sid, code, name):
+    return store.store_question(sid, code, name)
+
+
 def test_create_session_returns_unique_ids():
     store = GameSessionStore()
     s1 = store.create_session()
@@ -36,10 +40,6 @@ def test_get_session_unknown_returns_none():
     assert store.get_session("nonexistent") is None
 
 
-def _q(store, sid, code, name, url=None):
-    return store.store_question(sid, code, name, url or f"https://cdn/{code}.svg")
-
-
 def test_store_question_adds_country_to_seen():
     store, sid = _store_with_session()
     _q(store, sid, "DE", "Germany")
@@ -51,27 +51,6 @@ def test_store_question_returns_unique_ids():
     qid1 = _q(store, sid, "DE", "Germany")
     qid2 = _q(store, sid, "FR", "France")
     assert qid1 != qid2
-
-
-def test_store_question_records_image_url():
-    store, sid = _store_with_session()
-    qid = store.store_question(sid, "DE", "Germany", "https://cdn/de.svg")
-    assert store.get_image_url(qid) == "https://cdn/de.svg"
-
-
-def test_image_url_survives_answer_submission():
-    store, sid = _store_with_session()
-    qid = store.store_question(sid, "DE", "Germany", "https://cdn/de.svg")
-    store.validate_answer(qid, "Germany")
-    assert store.get_image_url(qid) == "https://cdn/de.svg"
-
-
-def test_image_url_cleaned_up_on_next_question():
-    store, sid = _store_with_session()
-    qid1 = store.store_question(sid, "DE", "Germany", "https://cdn/de.svg")
-    store.validate_answer(qid1, "Germany")
-    _q(store, sid, "FR", "France")
-    assert store.get_image_url(qid1) is None
 
 
 def test_validate_correct_answer_increments_score():
@@ -145,8 +124,3 @@ def test_get_best_score_reflects_current_score_when_no_reset():
         qid = _q(store, sid, code, name)
         store.validate_answer(qid, name)
     assert store.get_best_score(sid) == 2
-
-
-def test_get_image_url_unknown_returns_none():
-    store = GameSessionStore()
-    assert store.get_image_url("nonexistent") is None

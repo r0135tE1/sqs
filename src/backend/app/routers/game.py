@@ -1,6 +1,6 @@
-import httpx
+import base64
+
 from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import Response
 
 from app.models.game import AnswerRequest, AnswerResponse, FlagQuestion, SessionResponse
 from app.services.flag_cache import flag_cache
@@ -24,10 +24,8 @@ async def create_session() -> SessionResponse:
     "/flag",
     summary="Get the next flag for a session (public)",
     description=(
-        "Returns a flag with four answer options. "
+        "Returns a flag with four answer options and the flag image as a Base64 data URL. "
         "The correct answer is stored server-side and never sent to the client. "
-        "The flag image is served via the /game/image/{question_id} proxy so the "
-        "country code is never exposed in a URL. "
         "Requires a valid session_id obtained from POST /game/session."
     ),
 )
@@ -46,48 +44,25 @@ async def get_flag(session_id: str) -> FlagQuestion:
             detail="No unseen flags left. All countries have been shown this session.",
         )
 
+    svg = flag_cache.get_svg(flag["country_code"])
+    if svg is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Flag image not available.",
+        )
+
     question_id = game_session_store.store_question(
         session_id=session_id,
         country_code=flag["country_code"],
         correct_answer=flag["country_name"],
-        flag_url=flag["flag_url"],
     )
+
+    flag_data_url = f"data:image/svg+xml;base64,{base64.b64encode(svg).decode()}"
 
     return FlagQuestion(
         question_id=question_id,
-        flag_url=f"/game/image/{question_id}",
+        flag_url=flag_data_url,
         options=flag["options"],
-    )
-
-
-@router.get(
-    "/image/{question_id}",
-    summary="Proxy flag image (public)",
-    description=(
-        "Fetches the flag image from the CDN and streams it back without revealing "
-        "the real URL or country code to the client."
-    ),
-)
-async def get_flag_image(question_id: str) -> Response:
-    real_url = game_session_store.get_image_url(question_id)
-    if real_url is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Image not found.",
-        )
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        try:
-            upstream = await client.get(real_url)
-            upstream.raise_for_status()
-        except httpx.HTTPError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail=f"Could not fetch flag image: {exc}",
-            )
-
-    return Response(
-        content=upstream.content,
-        media_type=upstream.headers.get("content-type", "image/svg+xml"),
     )
 
 
@@ -109,7 +84,7 @@ async def submit_answer(body: AnswerRequest) -> AnswerResponse:
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid session_id or question_id.",
+            detail="Invalid question_id.",
         )
 
     return AnswerResponse(correct=correct, score=score, correct_answer=correct_answer)

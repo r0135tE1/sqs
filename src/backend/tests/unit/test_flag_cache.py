@@ -69,3 +69,14 @@ def test_count_reflects_loaded_data():
 def test_count_empty():
     cache = FlagCache()
     assert cache.count() == 0
+
+
+def test_get_svg_returns_cached_bytes():
+    cache = FlagCache()
+    cache._svgs = {"DE": b"<svg>de</svg>"}
+    assert cache.get_svg("DE") == b"<svg>de</svg>"
+
+
+def test_get_svg_unknown_returns_none():
+    cache = FlagCache()
+    assert cache.get_svg("XX") is None
