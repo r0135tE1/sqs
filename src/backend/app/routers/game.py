@@ -1,5 +1,3 @@
-import base64
-
 from fastapi import APIRouter, HTTPException, status
 
 from app.models.game import AnswerRequest, AnswerResponse, FlagQuestion, SessionResponse
@@ -57,11 +55,9 @@ async def get_flag(session_id: str) -> FlagQuestion:
         correct_answer=flag["country_name"],
     )
 
-    flag_data_url = f"data:image/svg+xml;base64,{base64.b64encode(svg).decode()}"
-
     return FlagQuestion(
         question_id=question_id,
-        flag_url=flag_data_url,
+        flag_svg=svg.decode(),
         options=flag["options"],
     )
 

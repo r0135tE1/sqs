@@ -7,7 +7,7 @@ class SessionResponse(BaseModel):
 
 class FlagQuestion(BaseModel):
     question_id: str
-    flag_url: str
+    flag_svg: str
     options: list[str]
 
 

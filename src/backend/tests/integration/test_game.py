@@ -29,7 +29,7 @@ async def test_create_session_returns_session_id(async_client):
 async def test_get_flag_returns_correct_fields(async_client):
     sid = await _create_session(async_client)
     flag = await _get_flag(async_client, sid)
-    assert set(flag.keys()) == {"question_id", "flag_url", "options"}
+    assert set(flag.keys()) == {"question_id", "flag_svg", "options"}
 
 
 async def test_get_flag_no_correct_answer_in_response(async_client):
@@ -39,21 +39,12 @@ async def test_get_flag_no_correct_answer_in_response(async_client):
     assert "country_name" not in flag
 
 
-async def test_get_flag_url_is_data_url(async_client):
-    """flag_url must be an inline data URL — no CDN URL ever reaches the client."""
+async def test_get_flag_svg_is_valid(async_client):
+    """flag_svg must contain SVG markup — no CDN URL ever reaches the client."""
     sid = await _create_session(async_client)
     flag = await _get_flag(async_client, sid)
-    assert flag["flag_url"].startswith("data:image/svg+xml;base64,")
-    assert "flagcdn" not in flag["flag_url"]
-
-
-async def test_get_flag_data_url_is_valid_svg(async_client):
-    import base64
-    sid = await _create_session(async_client)
-    flag = await _get_flag(async_client, sid)
-    b64 = flag["flag_url"].removeprefix("data:image/svg+xml;base64,")
-    svg = base64.b64decode(b64)
-    assert b"<svg" in svg
+    assert "<svg" in flag["flag_svg"]
+    assert "flagcdn" not in flag["flag_svg"]
 
 
 async def test_get_flag_has_four_options(async_client):
@@ -134,12 +125,12 @@ async def test_score_resets_on_wrong_answer(async_client):
 
 async def test_seen_flags_not_repeated(async_client):
     sid = await _create_session(async_client)
-    seen_data_urls = set()
+    seen_svgs = set()
     for _ in range(5):
         flag = await _get_flag(async_client, sid)
-        url = flag["flag_url"]
-        assert url not in seen_data_urls, "Same flag shown twice"
-        seen_data_urls.add(url)
+        svg = flag["flag_svg"]
+        assert svg not in seen_svgs, "Same flag shown twice"
+        seen_svgs.add(svg)
         qid = flag["question_id"]
         correct = game_session_store._questions[qid].correct_answer
         await _answer(async_client, qid, correct)
