@@ -10,3 +10,4 @@ asyncpg>=0.29.0
 python-multipart>=0.0.9
 alembic>=1.13.0
 pytestarch>=2.0.0
+pytest>=9.0.3
