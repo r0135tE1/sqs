@@ -108,7 +108,7 @@ def test_validate_answer_removes_question():
 
 
 def test_validate_answer_invalid_question_id_raises():
-    store, sid = _store_with_session()
+    store, _ = _store_with_session()
     with pytest.raises(ValueError):
         store.validate_answer("nonexistent-question", "Germany")
 
