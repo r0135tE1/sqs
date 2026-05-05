@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import random
 
@@ -7,16 +8,17 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+_SVG_CONCURRENCY = 20
+
 
 class FlagCache:
-    """Prefetches the full country dataset from restcountries.com on startup.
-
-    Serves random flags from the in-memory cache so the app stays functional
-    even if the external API is temporarily unavailable (ADR-006).
+    """Prefetches the full country dataset and all flag images from restcountries.com
+    on startup so the app stays functional even if external APIs become unavailable.
     """
 
     def __init__(self) -> None:
         self._countries: list[dict] = []
+        self._svgs: dict[str, bytes] = {}
 
     async def load(self) -> None:
         try:
@@ -40,8 +42,43 @@ class FlagCache:
             logger.info("Flag cache loaded: %d countries", len(self._countries))
         except httpx.HTTPError as exc:
             logger.warning("Could not reach restcountries.com: %s", exc)
+            return
         except (KeyError, ValueError) as exc:
             logger.warning("Unexpected response format from restcountries.com: %s", exc)
+            return
+
+        await self._load_svgs()
+        # Only keep countries whose SVG was successfully cached.
+        self._countries = [c for c in self._countries if c["code"] in self._svgs]
+        logger.info("Countries with cached SVG: %d", len(self._countries))
+
+    async def _load_svgs(self) -> None:
+        # max 20 flags loaded at one time
+        semaphore = asyncio.Semaphore(_SVG_CONCURRENCY)
+
+        async def fetch_one(client: httpx.AsyncClient, code: str, url: str) -> tuple[str, bytes] | None:
+            if not url:
+                return None
+            async with semaphore:
+                try:
+                    resp = await client.get(url)
+                    resp.raise_for_status()
+                    return code, resp.content
+                except httpx.HTTPError as exc:
+                    logger.warning("Could not fetch SVG for %s: %s", code, exc)
+                    return None
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            # wait for all SVG fetches to finish
+            results = await asyncio.gather(
+                *(fetch_one(client, c["code"], c["flag_url"]) for c in self._countries)
+            )
+
+        self._svgs = dict(filter(None, results))
+        logger.info("SVG cache loaded: %d images", len(self._svgs))
+
+    def get_svg(self, country_code: str) -> bytes | None:
+        return self._svgs.get(country_code)
 
     def random_flag(self, exclude: set[str] | None = None) -> dict | None:
         if not self._countries:
@@ -62,7 +99,6 @@ class FlagCache:
         return {
             "country_code": entry["code"],
             "country_name": entry["name"],
-            "flag_url": entry["flag_url"],
             "options": options,
         }
 
