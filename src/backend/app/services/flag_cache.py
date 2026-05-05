@@ -74,7 +74,7 @@ class FlagCache:
                 *(fetch_one(client, c["code"], c["flag_url"]) for c in self._countries)
             )
 
-        self._svgs = {code: data for code, data in (r for r in results if r is not None)}
+        self._svgs = dict(filter(None, results))
         logger.info("SVG cache loaded: %d images", len(self._svgs))
 
     def get_svg(self, country_code: str) -> bytes | None:
