@@ -18,7 +18,7 @@ def test_random_flag_returns_correct_shape():
     cache._countries = _make_countries(5)
     result = cache.random_flag()
     assert result is not None
-    assert {"country_code", "country_name", "flag_url", "options"} == set(result.keys())
+    assert {"country_code", "country_name", "options"} == set(result.keys())
 
 
 def test_options_contain_correct_answer():

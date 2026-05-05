@@ -83,6 +83,42 @@ async def test_arbitrary_score_rejected(async_client):
     assert response.status_code == 422
 
 
+async def test_save_score_updates_when_new_personal_best(async_client):
+    token = await _register_and_login(async_client, "updater")
+    session_id = await _session_with_score(async_client, 2)
+    await async_client.post(
+        "/highscores/",
+        json={"session_id": session_id},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    session_id2 = await _session_with_score(async_client, 5)
+    response = await async_client.post(
+        "/highscores/",
+        json={"session_id": session_id2},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["message"] == "Score saved."
+
+
+async def test_save_score_not_new_personal_best(async_client):
+    token = await _register_and_login(async_client, "no_pb")
+    session_id = await _session_with_score(async_client, 5)
+    await async_client.post(
+        "/highscores/",
+        json={"session_id": session_id},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    session_id2 = await _session_with_score(async_client, 2)
+    response = await async_client.post(
+        "/highscores/",
+        json={"session_id": session_id2},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["message"] == "Score not a new personal best."
+
+
 async def test_highscores_ordered_by_score_desc(async_client):
     for username, score in [("leader_high", 5), ("leader_low", 2)]:
         token = await _register_and_login(async_client, username)
