@@ -99,7 +99,6 @@ class FlagCache:
         return {
             "country_code": entry["code"],
             "country_name": entry["name"],
-            "flag_url": entry["flag_url"],
             "options": options,
         }
 
