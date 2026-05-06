@@ -172,7 +172,22 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown);
 });
 
-watch(() => props.token, (val) => { if (val) fetchPersonalBest(); else personalBest.value = null; });
+watch(() => props.token, async (val, oldVal) => {
+  if (val) {
+    fetchPersonalBest();
+    if (!oldVal) {
+      score.value = 0;
+      showOverlay.value = false;
+      gameOver.value = false;
+      flag.value = null;
+      hasShownLoginPrompt.value = false;
+      await createSession();
+      loadFlag();
+    }
+  } else {
+    personalBest.value = null;
+  }
+});
 
 function handleKeyDown(event: KeyboardEvent) {
   if (showOverlay.value && event.key === 'Enter') nextFlag();
