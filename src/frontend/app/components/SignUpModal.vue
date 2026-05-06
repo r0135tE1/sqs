@@ -45,13 +45,16 @@ const t = useModalTheme(toRef(props, "isDark"))
 const form = ref({ username: "", password: "" })
 const localError = ref("")
 
-watch(() => props.isOpen, (v) => { if (v) localError.value = "" })
+watch(() => props.isOpen, (v) => {
+  localError.value = ""
+  if (!v) form.value = { username: "", password: "" }
+})
 
 function validateForm() {
   localError.value = ""
   if (form.value.username.length < 3) { localError.value = "Username must be at least 3 characters long."; return false }
   if (!/^\w+$/.test(form.value.username)) { localError.value = "Username can only contain letters, numbers, and underscores."; return false }
-  if (form.value.password.length < 6) { localError.value = "Password must be at least 6 characters long."; return false }
+  if (form.value.password.length < 8) { localError.value = "Password must be at least 8 characters long."; return false }
   if (!/\d/.test(form.value.password)) { localError.value = "Password must contain at least one number."; return false }
   return true
 }

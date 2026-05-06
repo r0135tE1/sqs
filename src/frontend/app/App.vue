@@ -78,14 +78,14 @@ async function handleSignUp(formData: { username: string; password: string }) {
       body: JSON.stringify(formData),
     });
     if (response.ok) {
-      signUpSuccessMessage.value = "Sign up successful! You can now log in.";
       showSignUp.value = false;
-      setTimeout(() => { signUpSuccessMessage.value = ""; }, 2000);
+      await handleLogin(formData);
     } else {
       const error = await response.json();
+      const detail = typeof error.detail === "string" ? error.detail : null;
       signUpMessage.value = response.status === 409
         ? "Username already taken. Please choose a different username."
-        : error.detail || "Sign up failed. Please try again.";
+        : detail ?? "Sign up failed. Please try again.";
     }
   } catch {
     signUpMessage.value = "Network error. Please check your connection and try again.";
@@ -167,12 +167,12 @@ async function handleLogin(formData: { username: string; password: string }) {
       <button @click="signUpSuccessMessage = ''; loginSuccessMessage = ''" class="opacity-70 hover:opacity-100 transition-opacity">×</button>
     </div>
 
-    <SignUpModal    :isOpen="showSignUp"    :message="signUpMessage"  :isDark="isDark" @close="closeSignUp"    @submit="handleSignUp" />
+    <SignUpModal    :isOpen="showSignUp"    :message="signUpMessage" :isDark="isDark" @close="closeSignUp"    @submit="handleSignUp" />
     <LoginModal     :isOpen="showLogin"     :message="loginMessage"   :isDark="isDark" @close="closeLogin"     @submit="handleLogin" />
     <HighscoresModal :isOpen="showHighscores" :token="token"          :isDark="isDark" @close="closeHighscores" />
 
     <div class="container mx-auto px-4 py-8">
-      <GameBoard :token="token" :username="username" :isDark="isDark" />
+      <GameBoard :token="token" :username="username" :isDark="isDark" @open-signup="openSignUp" />
     </div>
   </div>
 </template>
