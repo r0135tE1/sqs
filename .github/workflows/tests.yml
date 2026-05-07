@@ -1,0 +1,82 @@
+name: Tests
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  backend-unit:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r dev-requirements.txt
+      - name: Run unit tests
+        run: pytest tests/unit --cov=app --cov-report=xml -v
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-coverage
+          path: src/backend/coverage.xml
+
+  backend-integration:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r dev-requirements.txt
+      - name: Run integration tests
+        run: pytest tests/integration --cov=app --cov-report=xml -v
+
+ # backend-architecture:
+ #   name: Backend Architecture Tests
+ #   runs-on: ubuntu-latest
+ #   defaults:
+ #     run:
+ #       working-directory: src/backend
+ #   steps:
+ #     - uses: actions/checkout@v4
+ #     - uses: actions/setup-python@v5
+ #       with:
+ #         python-version: "3.12"
+ #         cache: pip
+ #     - name: Install dependencies
+ #       run: pip install -r requirements.txt -r dev-requirements.txt
+ #     - name: Run architecture tests
+ #       run: pytest app/tests -v
+
+  frontend-typecheck:
+    name: Frontend Type Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npm run type-check
