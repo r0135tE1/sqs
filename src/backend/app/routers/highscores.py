@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.engine import get_db
+from app.db_session import get_db
 from app.dependencies import get_current_user
 from app.models.highscore import HighscoreEntry, SaveSessionRequest
 from app.services import highscore as highscore_service

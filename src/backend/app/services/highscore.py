@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.models import Highscore, User
+from app.db_models import Highscore, User
 from app.models.highscore import HighscoreEntry
 
 

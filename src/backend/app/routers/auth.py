@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.engine import get_db
+from app.db_session import get_db
 from app.models.user import LoginRequest, RegisterRequest, TokenResponse
 from app.services.auth import create_token
 from app.services import user as user_service
