@@ -17,9 +17,9 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer)
     return username
 
 
-async def get_user_repo(db: AsyncSession = Depends(get_db)) -> UserRepository:
+def get_user_repo(db: AsyncSession = Depends(get_db)) -> UserRepository:
     return UserRepository(db)
 
 
-async def get_highscore_repo(db: AsyncSession = Depends(get_db)) -> HighscoreRepository:
+def get_highscore_repo(db: AsyncSession = Depends(get_db)) -> HighscoreRepository:
     return HighscoreRepository(db)
