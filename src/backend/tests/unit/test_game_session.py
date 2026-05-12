@@ -124,3 +124,22 @@ def test_get_best_score_reflects_current_score_when_no_reset():
         qid = _q(store, sid, code, name)
         store.validate_answer(qid, name)
     assert store.get_best_score(sid) == 2
+
+
+def test_delete_session_removes_session():
+    store, sid = _store_with_session()
+    store.delete_session(sid)
+    assert store.get_session(sid) is None
+    assert store.get_best_score(sid) is None
+
+
+def test_delete_session_removes_orphaned_questions():
+    store, sid = _store_with_session()
+    qid = _q(store, sid, "DE", "Germany")
+    store.delete_session(sid)
+    assert qid not in store._questions
+
+
+def test_delete_session_unknown_id_does_not_raise():
+    store = GameSessionStore()
+    store.delete_session("nonexistent")

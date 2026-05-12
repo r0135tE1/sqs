@@ -20,13 +20,13 @@ class HighscoreRepository:
     async def get_by_user_id(self, user_id: int) -> Highscore | None:
         return await self.db.scalar(select(Highscore).where(Highscore.user_id == user_id))
 
-    async def upsert(self, user_id: int, score: int) -> dict:
+    async def upsert(self, user_id: int, score: int) -> bool:
         existing = await self.get_by_user_id(user_id)
         if existing is None:
             self.db.add(Highscore(user_id=user_id, score=score))
         elif score > existing.score:
             existing.score = score
         else:
-            return {"message": "Score not a new personal best."}
+            return False
         await self.db.commit()
-        return {"message": "Score saved."}
+        return True

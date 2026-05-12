@@ -46,4 +46,6 @@ async def save_score(
     score = game_session_store.get_best_score(body.session_id)
     if score is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
-    return await highscore_service.save_score(user_repo, hs_repo, current_user, score)
+    result = await highscore_service.save_score(user_repo, hs_repo, current_user, score)
+    game_session_store.delete_session(body.session_id)
+    return result

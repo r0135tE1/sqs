@@ -99,6 +99,7 @@ class FlagCache:
         return {
             "country_code": entry["code"],
             "country_name": entry["name"],
+            "flag_svg": self._svgs[entry["code"]],
             "options": options,
         }
 

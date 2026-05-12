@@ -42,13 +42,6 @@ async def get_flag(session_id: str) -> FlagQuestion:
             detail="No unseen flags left. All countries have been shown this session.",
         )
 
-    svg = flag_cache.get_svg(flag["country_code"])
-    if svg is None:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Flag image not available.",
-        )
-
     question_id = game_session_store.store_question(
         session_id=session_id,
         country_code=flag["country_code"],
@@ -57,7 +50,7 @@ async def get_flag(session_id: str) -> FlagQuestion:
 
     return FlagQuestion(
         question_id=question_id,
-        flag_svg=svg.decode(),
+        flag_svg=flag["flag_svg"].decode(),
         options=flag["options"],
     )
 

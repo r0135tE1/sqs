@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from app.repositories.user import UserRepository
 from app.services.auth import hash_password, verify_password
 
-
+# Register User with exception saves against race conditions
 async def register_user(repo: UserRepository, username: str, password: str) -> None:
     if await repo.get_by_username(username):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken.")
