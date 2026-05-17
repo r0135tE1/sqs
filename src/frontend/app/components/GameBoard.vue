@@ -94,6 +94,10 @@
           <button @click="openSignUpFromPrompt" :class="['flex-1 py-2 rounded-lg font-medium text-sm transition-colors', t.btnPrimary]">Sign Up</button>
           <button @click="dismissLoginPrompt" :class="['flex-1 py-2 rounded-lg font-medium text-sm transition-colors', t.btnSecondary]">Continue without saving</button>
         </div>
+        <p :class="['text-center text-xs mt-4', t.textMuted]">
+          Already have an account?
+          <button @click="openLoginFromPrompt" :class="['underline hover:opacity-80 transition-opacity', t.accent]">Log in</button>
+        </p>
       </div>
     </div>
   </Teleport>
@@ -104,7 +108,7 @@
 import { onMounted, onUnmounted, ref, computed, watch } from "vue";
 import { API_URL } from "../config";
 
-const emit = defineEmits<{ 'open-signup': [] }>();
+const emit = defineEmits<{ 'open-signup': []; 'open-login': [] }>();
 
 type FlagQuestion = {
   question_id: string;
@@ -146,6 +150,7 @@ const t = computed(() => props.isDark ? {
 
 const flag = ref<FlagQuestion | null>(null);
 const score = ref(0);
+const sessionBest = ref(0);
 const sessionId = ref<string | null>(null);
 const correctAnswer = ref("");
 const showOverlay = ref(false);
@@ -174,9 +179,11 @@ onUnmounted(() => {
 
 watch(() => props.token, async (val, oldVal) => {
   if (val) {
+    if (!oldVal && sessionBest.value > 0) await saveScoreToBackend();
     fetchPersonalBest();
     if (!oldVal) {
       score.value = 0;
+      sessionBest.value = 0;
       showOverlay.value = false;
       gameOver.value = false;
       flag.value = null;
@@ -205,8 +212,10 @@ async function loadFlag() {
   flagVisible.value = false;
 
   const [response] = await Promise.all([
-    fetch(`${API_URL}/game/flag?session_id=${sessionId.value}`, { cache: "no-store" }),
-    new Promise(resolve => setTimeout(resolve, 200)),
+    fetch(`${API_URL}/game/flag?session_id=${sessionId.value}`, {
+      cache: "no-store"
+    }),
+    new Promise(resolve => setTimeout(resolve, 100)) 
   ]);
 
   if (response.status === 404) { gameOver.value = true; flagVisible.value = true; return; }
@@ -228,7 +237,10 @@ async function checkInput(option: string) {
   if (!response.ok) { console.error("Failed to submit answer:", response.statusText); return; }
 
   const result = await response.json();
-  if (result.correct) score.value = result.score;
+  if (result.correct) {
+    score.value = result.score;
+    sessionBest.value = Math.max(sessionBest.value, result.score);
+  }
   isCorrect.value = result.correct;
   correctAnswer.value = result.correct_answer;
 
@@ -266,12 +278,18 @@ function openSignUpFromPrompt() {
   emit('open-signup');
 }
 
+function openLoginFromPrompt() {
+  showLoginPrompt.value = false;
+  emit('open-login');
+}
+
 function dismissLoginPrompt() {
   showLoginPrompt.value = false;
 }
 
 async function resetGame() {
   score.value = 0;
+  sessionBest.value = 0;
   gameOver.value = false;
   showOverlay.value = false;
   flag.value = null;

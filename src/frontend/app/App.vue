@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { ref, computed } from "vue";
+
 import { API_URL } from "./config";
 import SignUpModal from "./components/SignUpModal.vue";
 import LoginModal from "./components/LoginModal.vue";
@@ -13,8 +14,8 @@ const signUpMessage = ref("");
 const loginMessage = ref("");
 const signUpSuccessMessage = ref("");
 const loginSuccessMessage = ref("");
-const token = ref<string | null>(null);
-const username = ref<string | null>(null);
+const token = ref<string | null>(localStorage.getItem("authToken"));
+const username = ref<string | null>(localStorage.getItem("username"));
 const isDark = ref(localStorage.getItem("theme") !== "light");
 
 const t = computed(() => isDark.value ? {
@@ -44,14 +45,6 @@ function toggleTheme() {
   localStorage.setItem("theme", isDark.value ? "dark" : "light");
 }
 
-onMounted(() => {
-  const savedToken = localStorage.getItem("authToken");
-  const savedUsername = localStorage.getItem("username");
-  if (savedToken) {
-    token.value = savedToken;
-    username.value = savedUsername;
-  }
-});
 
 function openSignUp() { signUpMessage.value = ""; showSignUp.value = true; }
 function closeSignUp() { showSignUp.value = false; }
@@ -172,7 +165,7 @@ async function handleLogin(formData: { username: string; password: string }) {
     <HighscoresModal :isOpen="showHighscores" :token="token"          :isDark="isDark" @close="closeHighscores" />
 
     <div class="container mx-auto px-4 py-8">
-      <GameBoard :token="token" :username="username" :isDark="isDark" @open-signup="openSignUp" />
+      <GameBoard :token="token" :username="username" :isDark="isDark" @open-signup="openSignUp" @open-login="openLogin" />
     </div>
   </div>
 </template>
