@@ -62,7 +62,7 @@ async def test_answer_correct(async_client):
     sid = await _create_session(async_client)
     flag = await _get_flag(async_client, sid)
     qid = flag["question_id"]
-    correct = game_session_store._questions[qid].correct_answer
+    correct = game_session_store.get_correct_answer(qid)
 
     resp = await _answer(async_client, qid, correct)
     assert resp.status_code == 200
@@ -105,7 +105,7 @@ async def test_score_increments_on_consecutive_correct_answers(async_client):
     for expected in range(1, 4):
         flag = await _get_flag(async_client, sid)
         qid = flag["question_id"]
-        correct = game_session_store._questions[qid].correct_answer
+        correct = game_session_store.get_correct_answer(qid)
         resp = await _answer(async_client, qid, correct)
         assert resp.json()["score"] == expected
 
@@ -115,7 +115,7 @@ async def test_score_resets_on_wrong_answer(async_client):
     for _ in range(3):
         flag = await _get_flag(async_client, sid)
         qid = flag["question_id"]
-        correct = game_session_store._questions[qid].correct_answer
+        correct = game_session_store.get_correct_answer(qid)
         await _answer(async_client, qid, correct)
 
     flag = await _get_flag(async_client, sid)
@@ -132,7 +132,7 @@ async def test_seen_flags_not_repeated(async_client):
         assert svg not in seen_svgs, "Same flag shown twice"
         seen_svgs.add(svg)
         qid = flag["question_id"]
-        correct = game_session_store._questions[qid].correct_answer
+        correct = game_session_store.get_correct_answer(qid)
         await _answer(async_client, qid, correct)
 
 
@@ -143,7 +143,7 @@ async def test_all_flags_shown_returns_404(async_client):
         if flag_resp.status_code == 404:
             return
         qid = flag_resp.json()["question_id"]
-        correct = game_session_store._questions[qid].correct_answer
+        correct = game_session_store.get_correct_answer(qid)
         await _answer(async_client, qid, correct)
 
     resp = await async_client.get("/game/flag", params={"session_id": sid})

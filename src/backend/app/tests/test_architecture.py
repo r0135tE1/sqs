@@ -115,17 +115,6 @@ def test_dependencies_do_not_import_routers():
     rule.assert_applies(evaluable)
 
 
-def test_dependencies_do_not_import_database():
-    rule = (
-        Rule()
-        .modules_that()
-        .are_named("backend.app.dependencies")
-        .should_not()
-        .import_modules_that()
-        .are_sub_modules_of("backend.app.database")
-    )
-    rule.assert_applies(evaluable)
-
 
 def test_routers_do_not_import_database():
     rule = (

@@ -16,7 +16,7 @@ async def _session_with_score(client, score: int) -> str:
         if flag_resp.status_code != 200:
             break
         question_id = flag_resp.json()["question_id"]
-        correct = game_session_store._questions[question_id].correct_answer
+        correct = game_session_store.get_correct_answer(question_id)
         await client.post(
             "/game/answer",
             json={"question_id": question_id, "answer": correct},
