@@ -20,8 +20,7 @@ def pg_container():
 
 @pytest.fixture(scope="session")
 def db_async_url(pg_container):
-    # Return a URL object (not str) — str(URL) in SQLAlchemy 2.x hides the
-    # password with *** which causes asyncpg auth failures.
+    # Return a URL object (not str) — str(URL) in SQLAlchemy 2.x hides the password with *** which causes asyncpg auth failures.
     raw = pg_container.get_connection_url()
     return make_url(raw).set(drivername="postgresql+asyncpg")
 

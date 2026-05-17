@@ -76,5 +76,16 @@ class GameSessionStore:
             return None
         return max(session.score, session.best)
 
+    def get_correct_answer(self, question_id: str) -> str | None:
+        question = self._questions.get(question_id)
+        return question.correct_answer if question else None
+
+    # delete session and also orphaned questions (questions that never got answered)
+    def delete_session(self, session_id: str) -> None:
+        self._sessions.pop(session_id, None)
+        orphaned = [qid for qid, q in self._questions.items() if q.session_id == session_id]
+        for qid in orphaned:
+            del self._questions[qid]
+
 
 game_session_store = GameSessionStore()
