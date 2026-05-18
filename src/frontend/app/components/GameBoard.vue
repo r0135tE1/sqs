@@ -27,17 +27,7 @@
         <div v-if="flag" :class="['border w-80 h-48 overflow-hidden transition-opacity duration-200', t.flagBorder, flagVisible ? 'opacity-100' : 'opacity-0']">
           <img :src="flagDataUrl" class="w-full h-full object-cover" alt="Flag" />
         </div>
-        <div v-else-if="gameOver" :class="['flex border rounded-lg w-80 h-48 items-center justify-center', t.gameOverBox]">
-          <div class="text-center">
-            <div :class="['text-2xl font-bold mb-4', t.textPrimary]">Game Over!</div>
-            <div :class="['text-lg mb-6', t.textSecondary]">Final Score: <span :class="['font-semibold', t.accent]">{{ score }}</span></div>
-            <div class="flex gap-3 justify-center">
-              <button @click="resetGame" :class="['px-6 py-2 rounded-lg transition-colors font-medium', t.btnPrimary]">Play Again</button>
-              <button v-if="isAuthenticated" @click="saveScore" :class="['px-6 py-2 rounded-lg transition-colors font-medium', t.btnSecondary]">Save Score</button>
-            </div>
-          </div>
-        </div>
-
+        
         <!-- Correct overlay -->
         <div v-if="showOverlay && isCorrect"
              class="absolute inset-0 bg-emerald-500/95 flex items-center justify-center animate-fade-in">
@@ -116,6 +106,12 @@ type FlagQuestion = {
   options: string[];
 };
 
+type AnswerResponse = {
+  correct: boolean;
+  score: number;
+  correct_answer: string;
+};
+
 const props = defineProps<{
   token?: string | null;
   username?: string | null;
@@ -159,6 +155,7 @@ const gameOver = ref(false);
 const personalBest = ref<number | null>(null);
 const flagVisible = ref(true);
 const showLoginPrompt = ref(false);
+const saveAfterLogin = ref(false);
 const hasShownLoginPrompt = ref(false);
 
 const isAuthenticated = computed(() => !!props.token);
@@ -178,21 +175,20 @@ onUnmounted(() => {
 });
 
 watch(() => props.token, async (val, oldVal) => {
-  if (val) {
-    if (!oldVal && sessionBest.value > 0) await saveScoreToBackend();
+  if (val && !oldVal) {
+    await saveScoreToBackend();
+    await createSession();
     fetchPersonalBest();
-    if (!oldVal) {
-      score.value = 0;
-      sessionBest.value = 0;
-      showOverlay.value = false;
-      gameOver.value = false;
-      flag.value = null;
-      hasShownLoginPrompt.value = false;
-      await createSession();
-      loadFlag();
-    }
+    loadFlag();
   } else {
     personalBest.value = null;
+    score.value = 0;
+    sessionBest.value = 0;
+    showOverlay.value = false;
+    flag.value = null;
+    hasShownLoginPrompt.value = false;
+    await createSession();
+    loadFlag();
   }
 });
 
@@ -236,7 +232,7 @@ async function checkInput(option: string) {
   });
   if (!response.ok) { console.error("Failed to submit answer:", response.statusText); return; }
 
-  const result = await response.json();
+  const result = await response.json() as AnswerResponse;
   if (result.correct) {
     score.value = result.score;
     sessionBest.value = Math.max(sessionBest.value, result.score);
@@ -248,6 +244,7 @@ async function checkInput(option: string) {
     if (isAuthenticated.value && prevScore > 0) saveScoreToBackend();
     if (!isAuthenticated.value && prevScore > 0 && !hasShownLoginPrompt.value) {
       hasShownLoginPrompt.value = true;
+      saveAfterLogin.value = true;
       showLoginPrompt.value = true;
     }
   }
@@ -306,20 +303,10 @@ async function saveScoreToBackend() {
       body: JSON.stringify({ session_id: sessionId.value }),
     });
     fetchPersonalBest();
+    await createSession();
   } catch (error) { console.error("Error saving score:", error); }
 }
 
-async function saveScore() {
-  if (!props.token || !sessionId.value) return;
-  try {
-    const response = await fetch(`${API_URL}/highscores/`, {
-      method: "POST",
-      headers: { "accept": "application/json", "Content-Type": "application/json", "Authorization": `Bearer ${props.token}` },
-      body: JSON.stringify({ session_id: sessionId.value }),
-    });
-    if (response.ok) { await fetchPersonalBest(); resetGame(); }
-  } catch (error) { console.error("Error saving score:", error); }
-}
 </script>
 
 <style scoped>

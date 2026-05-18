@@ -29,6 +29,10 @@
           Login
         </button>
       </form>
+      <p :class="['text-center text-xs mt-5', t.textMuted]">
+        Don't have an account yet?
+        <button @click="$emit('switch-to-signup')" :class="['underline hover:opacity-80 transition-opacity', t.accent]">Sign up</button>
+      </p>
     </div>
   </div>
 </template>
@@ -38,7 +42,7 @@ import { ref, toRef } from "vue"
 import { useModalTheme } from "../composables/useModalTheme"
 
 const props = defineProps<{ isOpen: boolean; message?: string; isDark?: boolean }>()
-const emit = defineEmits(["close", "submit"])
+const emit = defineEmits(["close", "submit", "switch-to-signup"])
 
 const t = useModalTheme(toRef(props, "isDark"))
 

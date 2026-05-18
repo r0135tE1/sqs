@@ -160,8 +160,8 @@ async function handleLogin(formData: { username: string; password: string }) {
       <button @click="signUpSuccessMessage = ''; loginSuccessMessage = ''" class="opacity-70 hover:opacity-100 transition-opacity">×</button>
     </div>
 
-    <SignUpModal    :isOpen="showSignUp"    :message="signUpMessage" :isDark="isDark" @close="closeSignUp"    @submit="handleSignUp" />
-    <LoginModal     :isOpen="showLogin"     :message="loginMessage"   :isDark="isDark" @close="closeLogin"     @submit="handleLogin" />
+    <SignUpModal :isOpen="showSignUp" :message="signUpMessage" :isDark="isDark" @close="closeSignUp" @submit="handleSignUp" @switch-to-login="closeSignUp(); openLogin()" />
+    <LoginModal  :isOpen="showLogin"  :message="loginMessage"  :isDark="isDark" @close="closeLogin"  @submit="handleLogin"  @switch-to-signup="closeLogin(); openSignUp()" />
     <HighscoresModal :isOpen="showHighscores" :token="token"          :isDark="isDark" @close="closeHighscores" />
 
     <div class="container mx-auto px-4 py-8">
