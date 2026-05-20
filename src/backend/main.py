@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -7,14 +8,33 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import auth, game, highscores
 from app.services.flag_cache import flag_cache
+from app.services.game_session import game_session_store
 
 logger = logging.getLogger(__name__)
+
+_SESSION_TTL_SECONDS = 12 * 3600
+_CLEANUP_INTERVAL_SECONDS = 3600
+
+
+async def _session_cleanup_task() -> None:
+    while True:
+        await asyncio.sleep(_CLEANUP_INTERVAL_SECONDS)
+        removed = game_session_store.cleanup_expired(_SESSION_TTL_SECONDS)
+        if removed:
+            logger.info("Cleaned up %d expired game sessions", removed)
+
 
 #API-Startup: cache Flags and run Server
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await flag_cache.load()
+    task = asyncio.create_task(_session_cleanup_task())
     yield
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        pass
 
 
 app = FastAPI(
