@@ -132,12 +132,14 @@ onMounted(async () => {
 
 
 watch(() => props.token, async (val, oldVal) => {
-  if (val) {
-    if (!oldVal && pendingScoreSave.value) {
+  if (val && !oldVal) { //login
+    if (pendingScoreSave.value) { //login after wrong answer from prompt
       pendingScoreSave.value = false;
       await saveScoreToBackend();
+    } else { //normal login 
+      fetchPersonalBest();
     }
-  } else {
+  } else { //logout
     personalBest.value = null;
     pendingScoreSave.value = false;
     score.value = 0;

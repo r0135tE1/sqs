@@ -130,7 +130,7 @@ async function handleLogin(formData: { username: string; password: string }) {
       username.value = formData.username;
       localStorage.setItem("authToken", data.access_token);
       localStorage.setItem("username", formData.username);
-      loginSuccessMessage.value = "Login successful! Welcome back!";
+      loginSuccessMessage.value = "Login successful! Welcome!";
       showLogin.value = false;
       setTimeout(() => { loginSuccessMessage.value = ""; }, 2000);
     } else {
