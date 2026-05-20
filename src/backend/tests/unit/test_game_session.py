@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 
 from app.services.game_session import GameSessionStore
@@ -86,6 +88,35 @@ def test_best_score_preserved_after_wrong_answer():
     store.validate_answer(qid, "WRONG")
 
     assert store.get_best_score(sid) == 3
+
+
+def test_seen_flags_cleared_after_wrong_answer():
+    store, sid = _store_with_session()
+    for code, name in [("DE", "Germany"), ("FR", "France")]:
+        qid = _q(store, sid, code, name)
+        store.validate_answer(qid, name)
+
+    assert len(store.get_session(sid).seen) == 2
+
+    qid = _q(store, sid, "IT", "Italy")
+    store.validate_answer(qid, "WRONG")
+
+    assert len(store.get_session(sid).seen) == 0
+
+
+def test_cleanup_expired_removes_old_sessions():
+    store, sid = _store_with_session()
+    store._sessions[sid].last_active -= timedelta(hours=13)
+    removed = store.cleanup_expired(max_age_seconds=12 * 3600)
+    assert removed == 1
+    assert store._sessions.get(sid) is None
+
+
+def test_cleanup_expired_keeps_active_sessions():
+    store, sid = _store_with_session()
+    removed = store.cleanup_expired(max_age_seconds=12 * 3600)
+    assert removed == 0
+    assert store._sessions.get(sid) is not None
 
 
 def test_best_score_updates_on_new_record():
