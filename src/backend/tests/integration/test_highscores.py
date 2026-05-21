@@ -98,7 +98,9 @@ async def test_save_score_updates_when_new_personal_best(async_client):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 201
-    assert response.json()["message"] == "Score saved."
+    data = response.json()
+    assert data["is_new_best"] is True
+    assert data["highscore"] == 5
 
 
 async def test_save_score_not_new_personal_best(async_client):
@@ -116,7 +118,9 @@ async def test_save_score_not_new_personal_best(async_client):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 201
-    assert response.json()["message"] == "Score not a new personal best."
+    data = response.json()
+    assert data["is_new_best"] is False
+    assert data["highscore"] == 5
 
 
 async def test_get_my_highscore_authenticated(async_client):

@@ -21,6 +21,8 @@ class HighscoreRepository:
         return await self.db.scalar(select(Highscore).where(Highscore.user_id == user_id))
 
     async def upsert(self, user_id: int, score: int) -> bool:
+        if score <= 0:
+            return False
         existing = await self.get_by_user_id(user_id)
         if existing is None:
             self.db.add(Highscore(user_id=user_id, score=score))
