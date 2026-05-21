@@ -79,7 +79,7 @@ import { onMounted, ref, computed, watch } from "vue";
 import { API_URL } from "../config";
 import BaseModal from "./BaseModal.vue";
 
-const emit = defineEmits<{ 'open-signup': []; 'open-login': []; 'session-expired': [] }>();
+const emit = defineEmits<{ 'open-signup': []; 'open-login': []; 'session-expired': []; 'new-highscore': [score: number] }>();
 
 type FlagQuestion = {
   question_id: string;
@@ -108,7 +108,6 @@ const selectedOption = ref("");
 const personalBest = ref<number | null>(null);
 const flagVisible = ref(true);
 const showLoginPrompt = ref(false);
-const pendingScoreSave = ref(false);
 const hasShownLoginPrompt = ref(false);
 
 const isAuthenticated = computed(() => !!props.token);
@@ -133,15 +132,9 @@ onMounted(async () => {
 
 watch(() => props.token, async (val, oldVal) => {
   if (val && !oldVal) { //login
-    if (pendingScoreSave.value) { //login after wrong answer from prompt
-      pendingScoreSave.value = false;
-      await saveScoreToBackend();
-    } else { //normal login 
-      fetchPersonalBest();
-    }
+    await saveScoreToBackend();
   } else { //logout
     personalBest.value = null;
-    pendingScoreSave.value = false;
     score.value = 0;
     showOverlay.value = false;
     flag.value = null;
@@ -208,14 +201,13 @@ async function checkInput(option: string) {
 async function fetchPersonalBest() {
   if (!props.token || !props.username) return;
   try {
-    const res = await fetch(`${API_URL}/highscores/`, {
+    const res = await fetch(`${API_URL}/highscores/me`, {
       headers: { Authorization: `Bearer ${props.token}` },
     });
     if (res.status === 401) { emit('session-expired'); return; }
     if (!res.ok) return;
-    const list: { username: string; score: number }[] = await res.json();
-    const entry = list.find(e => e.username === props.username);
-    if (entry) personalBest.value = entry.score;
+    const data = await res.json();
+    personalBest.value = data.score;
   } catch (err) { console.warn("Failed to fetch personal best:", err); }
 }
 
@@ -229,13 +221,11 @@ async function nextFlag() {
 
 function openSignUpFromPrompt() {
   showLoginPrompt.value = false;
-  pendingScoreSave.value = true;
   emit('open-signup');
 }
 
 function openLoginFromPrompt() {
   showLoginPrompt.value = false;
-  pendingScoreSave.value = true;
   emit('open-login');
 }
 
@@ -252,9 +242,10 @@ async function saveScoreToBackend() {
       body: JSON.stringify({ session_id: sessionId.value }),
     });
     if (res.status === 401) { emit('session-expired'); return; }
+    const data = await res.json();
+    personalBest.value = data.highscore;
+    if (data.is_new_best) emit('new-highscore', data.highscore);
   } catch (error) { console.error("Error saving score:", error); }
-  sessionId.value = null;
-  await createSession();
 }
 
 </script>

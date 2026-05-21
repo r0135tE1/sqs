@@ -41,12 +41,17 @@
       <button @click="sessionExpiredMessage = ''" class="toast-close">×</button>
     </div>
 
+    <div v-if="newHighscoreMessage" class="toast-highscore-banner">
+      {{ newHighscoreMessage }}
+      <button @click="newHighscoreMessage = ''" class="toast-close">×</button>
+    </div>
+
     <AuthModal :isOpen="showSignUp" mode="signup" :message="signUpMessage" @close="closeSignUp" @submit="handleSignUp" @switch="closeSignUp(); openLogin()" />
     <AuthModal :isOpen="showLogin"  mode="login"  :message="loginMessage"  @close="closeLogin"  @submit="handleLogin"  @switch="closeLogin(); openSignUp()" />
     <HighscoresModal :isOpen="showHighscores" :token="token" @close="closeHighscores" />
 
     <main class="content">
-      <GameBoard :token="token" :username="username" @open-signup="openSignUp" @open-login="openLogin" @session-expired="handleSessionExpired" />
+      <GameBoard :token="token" :username="username" @open-signup="openSignUp" @open-login="openLogin" @session-expired="handleSessionExpired" @new-highscore="handleNewHighscore" />
     </main>
   </div>
 </template>
@@ -67,6 +72,7 @@ const loginMessage = ref("");
 const signUpSuccessMessage = ref("");
 const loginSuccessMessage = ref("");
 const sessionExpiredMessage = ref("");
+const newHighscoreMessage = ref("");
 const token = ref<string | null>(localStorage.getItem("authToken"));
 const username = ref<string | null>(localStorage.getItem("username"));
 
@@ -89,6 +95,11 @@ function handleSessionExpired() {
   logout();
   sessionExpiredMessage.value = "Session expired — please log in again.";
   setTimeout(() => { sessionExpiredMessage.value = ""; }, 4000);
+}
+
+function handleNewHighscore(score: number) {
+  newHighscoreMessage.value = `🎉 New high score: ${score}!`;
+  setTimeout(() => { newHighscoreMessage.value = ""; }, 3000);
 }
 
 async function handleSignUp(formData: { username: string; password: string }) {
@@ -336,6 +347,30 @@ async function handleLogin(formData: { username: string; password: string }) {
   }
   .toast-success { background-color: #047857; }
   .toast-warning { background-color: var(--warning); }
+
+  .toast-highscore-banner {
+    position: fixed;
+    top: 5.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--primary);
+    animation: highscore-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes highscore-pop {
+    0%   { opacity: 0; transform: translate(-50%, -1rem) scale(0.9); }
+    100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  }
   .toast-close {
     background: none;
     border: none;

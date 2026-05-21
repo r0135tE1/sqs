@@ -8,3 +8,8 @@ class HighscoreEntry(BaseModel):
 
 class SaveSessionRequest(BaseModel):
     session_id: str
+
+
+class SaveScoreResponse(BaseModel):
+    highscore: int
+    is_new_best: bool
