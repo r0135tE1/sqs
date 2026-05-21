@@ -25,4 +25,7 @@ async def save_score(user_repo: UserRepository, hs_repo: HighscoreRepository, us
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
     current_best, is_new_best = await hs_repo.upsert(user.id, score)
-    return SaveScoreResponse(highscore=current_best, is_new_best=is_new_best)
+    return SaveScoreResponse(
+        highscore=current_best if current_best > 0 else None,
+        is_new_best=is_new_best,
+    )

@@ -11,5 +11,5 @@ class SaveSessionRequest(BaseModel):
 
 
 class SaveScoreResponse(BaseModel):
-    highscore: int
+    highscore: int | None
     is_new_best: bool
