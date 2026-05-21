@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 
 
 class _Question:
@@ -15,6 +16,7 @@ class GameSession:
         self.best = 0
         self.seen: set[str] = set()
         self.current_question_id: str | None = None
+        self.last_active: datetime = datetime.now(timezone.utc)
 
 
 class GameSessionStore:
@@ -29,7 +31,10 @@ class GameSessionStore:
         return session
 
     def get_session(self, session_id: str) -> GameSession | None:
-        return self._sessions.get(session_id)
+        session = self._sessions.get(session_id)
+        if session:
+            session.last_active = datetime.now(timezone.utc)
+        return session
 
     def store_question(self, session_id: str, country_code: str, correct_answer: str) -> str:
         session = self._sessions.get(session_id)
@@ -40,6 +45,7 @@ class GameSessionStore:
             session_id=session_id,
         )
         if session:
+            session.last_active = datetime.now(timezone.utc)
             session.seen.add(country_code)
             session.current_question_id = question_id
         return question_id
@@ -63,6 +69,8 @@ class GameSessionStore:
                 session.best = max(session.best, session.score)
             else:
                 session.score = 0
+                session.seen.clear()
+            session.last_active = datetime.now(timezone.utc)
             session.current_question_id = None
 
         del self._questions[question_id]
@@ -80,12 +88,23 @@ class GameSessionStore:
         question = self._questions.get(question_id)
         return question.correct_answer if question else None
 
-    # delete session and also orphaned questions (questions that never got answered)
     def delete_session(self, session_id: str) -> None:
+        """Delete session and any orphaned unanswered questions."""
         self._sessions.pop(session_id, None)
         orphaned = [qid for qid, q in self._questions.items() if q.session_id == session_id]
         for qid in orphaned:
             del self._questions[qid]
+
+    def cleanup_expired(self, max_age_seconds: int) -> int:
+        """Delete sessions inactive longer than max_age_seconds. Returns count removed."""
+        now = datetime.now(timezone.utc)
+        expired = [
+            sid for sid, s in self._sessions.items()
+            if (now - s.last_active).total_seconds() > max_age_seconds
+        ]
+        for sid in expired:
+            self.delete_session(sid)
+        return len(expired)
 
 
 game_session_store = GameSessionStore()

@@ -119,6 +119,69 @@ async def test_save_score_not_new_personal_best(async_client):
     assert response.json()["message"] == "Score not a new personal best."
 
 
+async def test_get_my_highscore_authenticated(async_client):
+    token = await _register_and_login(async_client, "me_user1")
+    session_id = await _session_with_score(async_client, 3)
+    await async_client.post(
+        "/highscores/",
+        json={"session_id": session_id},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    response = await async_client.get(
+        "/highscores/me", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["username"] == "me_user1"
+    assert data["score"] == 3
+
+
+async def test_get_my_highscore_no_token(async_client):
+    response = await async_client.get("/highscores/me")
+    assert response.status_code == 401
+
+
+async def test_get_my_highscore_invalid_token(async_client):
+    response = await async_client.get(
+        "/highscores/me", headers={"Authorization": "Bearer invalid.token.here"}
+    )
+    assert response.status_code == 401
+
+
+async def test_get_my_highscore_no_score_yet(async_client):
+    token = await _register_and_login(async_client, "me_no_score")
+    response = await async_client.get(
+        "/highscores/me", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 404
+
+
+async def test_get_my_highscore_only_own(async_client):
+    """A user only sees their own score, not another user's."""
+    token_a = await _register_and_login(async_client, "me_user_a")
+    session_a = await _session_with_score(async_client, 7)
+    await async_client.post(
+        "/highscores/",
+        json={"session_id": session_a},
+        headers={"Authorization": f"Bearer {token_a}"},
+    )
+
+    token_b = await _register_and_login(async_client, "me_user_b")
+    session_b = await _session_with_score(async_client, 2)
+    await async_client.post(
+        "/highscores/",
+        json={"session_id": session_b},
+        headers={"Authorization": f"Bearer {token_b}"},
+    )
+
+    response = await async_client.get(
+        "/highscores/me", headers={"Authorization": f"Bearer {token_b}"}
+    )
+    assert response.status_code == 200
+    assert response.json()["username"] == "me_user_b"
+    assert response.json()["score"] == 2
+
+
 async def test_highscores_ordered_by_score_desc(async_client):
     for username, score in [("leader_high", 5), ("leader_low", 2)]:
         token = await _register_and_login(async_client, username)

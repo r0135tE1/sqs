@@ -27,6 +27,22 @@ async def get_highscores(
     return await highscore_service.get_top_highscores(hs_repo)
 
 
+@router.get(
+    "/me",
+    summary="Get own highscore (protected)",
+    description=(
+        "Returns the highscore of the currently authenticated user. "
+        "Requires a valid JWT in the `Authorization: Bearer <token>` header."
+    ),
+)
+async def get_my_highscore(
+    current_user: Annotated[str, Depends(get_current_user)],
+    user_repo: Annotated[UserRepository, Depends(get_user_repo)],
+    hs_repo: Annotated[HighscoreRepository, Depends(get_highscore_repo)],
+) -> HighscoreEntry:
+    return await highscore_service.get_user_highscore(user_repo, hs_repo, current_user)
+
+
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
@@ -47,5 +63,4 @@ async def save_score(
     if score is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
     result = await highscore_service.save_score(user_repo, hs_repo, current_user, score)
-    game_session_store.delete_session(body.session_id)
     return result
