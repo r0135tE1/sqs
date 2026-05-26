@@ -1,0 +1,41 @@
+# Usage
+
+This guide walks you through running the application locally with Docker.
+
+## Running with Docker
+
+Running the application with Docker is the recommended way to get started, as it
+sets up the frontend, backend, and all required services for you.
+
+### Prerequisites
+
+Before you begin, make sure [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+is installed and running on your machine.
+
+### Starting the application
+
+First, generate the `.env` file. The setup script creates it for you and fills in
+a randomly generated JWT secret:
+
+```bash
+./setup.sh
+```
+
+Next, build the images and start all containers:
+
+```bash
+docker compose up --build
+```
+
+The first build may take a few minutes.
+
+### Available services
+
+After startup, the following services are reachable:
+
+| Service             | URL                          |
+| ------------------- | ---------------------------- |
+| Frontend            | <http://localhost>           |
+| Backend API         | <http://localhost:8000>      |
+| API Docs (Swagger)  | <http://localhost:8000/docs> |
+
