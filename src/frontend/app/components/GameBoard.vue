@@ -1,182 +1,199 @@
 <template>
-  <div :class="['max-w-2xl mx-auto rounded-xl shadow-lg border p-8 transition-colors duration-300', t.card]">
-
+  <div class="card">
     <!-- Stats bar -->
-    <div :class="['flex justify-between items-center mb-8 p-4 rounded-lg border', t.stats]">
-      <div v-if="isAuthenticated" :class="['font-medium flex items-center gap-1.5', t.textSecondary]">
+    <div class="stats">
+      <div v-if="isAuthenticated" class="stat-item">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M8 1.5 L9.5 5.5 H13.5 L10.5 8 L11.5 12 L8 9.5 L4.5 12 L5.5 8 L2.5 5.5 H6.5 Z" fill="currentColor" opacity="0.85"/>
         </svg>
-        Highscore: <span :class="['font-semibold', t.accent]">{{ personalBest ?? '—' }}</span>
+        Highscore: <span class="accent">{{ personalBest ?? '—' }}</span>
       </div>
-      <div v-else :class="['text-sm italic', t.textMuted]">Log in to track your best score</div>
-      <div :class="['font-medium', t.textSecondary]">
-        Score: <span :class="['font-semibold', t.accent]">{{ score }}</span>
+      <div v-else class="stat-empty">Log in to track your high score</div>
+      <div class="stat-item">
+        Score: <span class="accent">{{ score }}</span>
       </div>
     </div>
 
     <!-- Title -->
-    <div class="text-center mb-8">
-      <h1 :class="['text-3xl font-bold mb-2', t.textPrimary]">Guess the Country!</h1>
-      <p :class="t.textMuted">Look at the flag and choose the correct country</p>
+    <div class="title-block">
+      <h1 class="title">Guess the Country!</h1>
+      <p class="subtitle">Look at the flag and choose the correct country</p>
     </div>
 
-    <div class="flex flex-col items-center gap-6">
-      <!-- Flag -->
-      <div class="relative">
-        <div v-if="flag" :class="['border w-80 h-48 overflow-hidden transition-opacity duration-300', t.flagBorder, flagVisible ? 'opacity-100' : 'opacity-0']">
-          <img :src="flag.flag_url" :alt="`Flag of ${flag.country_name}`" class="w-full h-full object-cover" @load="flagVisible = true" />
+    <div class="game">
+      <!-- Skeleton -->
+      <template v-if="!flag">
+        <div class="skeleton-flag"></div>
+        <div class="grid">
+          <div v-for="i in 4" :key="i" class="skeleton-button"></div>
         </div>
-        <div v-else-if="gameOver" :class="['flex border rounded-lg w-80 h-48 items-center justify-center', t.gameOverBox]">
-          <div class="text-center">
-            <div :class="['text-2xl font-bold mb-4', t.textPrimary]">Game Over!</div>
-            <div :class="['text-lg mb-6', t.textSecondary]">Final Score: <span :class="['font-semibold', t.accent]">{{ score }}</span></div>
-            <div class="flex gap-3 justify-center">
-              <button @click="resetGame" :class="['px-6 py-2 rounded-lg transition-colors font-medium', t.btnPrimary]">Play Again</button>
-              <button v-if="isAuthenticated" @click="saveScore" :class="['px-6 py-2 rounded-lg transition-colors font-medium', t.btnSecondary]">Save Score</button>
-            </div>
-          </div>
+      </template>
+
+      <!-- Game content -->
+      <template v-else>
+        <div :class="['flag-box', flagVisible ? 'visible' : 'hidden']">
+          <img :src="flagDataUrl" class="flag-img" alt="Flag" />
         </div>
 
-        <!-- Correct overlay -->
-        <div v-if="showOverlay && isCorrect"
-             class="absolute inset-0 bg-emerald-500/95 flex items-center justify-center animate-fade-in">
-          <div class="text-center text-white">
-            <div class="text-4xl font-bold mb-2">✓</div>
-            <div class="text-xl font-semibold mb-1">Correct!</div>
-            <div class="text-lg mb-4">{{ flag?.country_name }}</div>
-            <button @click="nextFlag" class="px-6 py-2 bg-white text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition-colors">
-              Next Flag
-            </button>
-          </div>
+        <div :class="['grid', flagVisible ? 'visible' : 'hidden']">
+          <button
+            v-for="option in flag.options"
+            :key="option"
+            :disabled="showOverlay"
+            @click="checkInput(option)"
+            :class="['answer-btn', answerBtnState(option)]"
+          >
+            <span class="answer-text">{{ option }}</span>
+          </button>
         </div>
 
-        <!-- Wrong overlay -->
-        <div v-if="showOverlay && !isCorrect"
-             class="absolute inset-0 bg-rose-500/95 flex items-center justify-center animate-fade-in">
-          <div class="text-center text-white">
-            <div class="text-4xl font-bold mb-1">✗</div>
-            <div class="text-xl font-semibold mb-1">Wrong!</div>
-            <div class="text-base mb-2">Score has been reset</div>
-            <div class="text-lg mb-3">{{ flag?.country_name }}</div>
-            <button @click="nextFlag" class="px-6 py-2 bg-white text-rose-700 rounded-lg font-semibold hover:bg-rose-50 transition-colors">
-              Try Again
-            </button>
-          </div>
+        <div v-if="showOverlay" :class="['result-strip', isCorrect ? 'correct' : 'wrong']">
+          <span class="result-msg">
+            {{ isCorrect ? '✓ Correct!' : `✗  ${correctAnswer}` }}
+          </span>
+          <button @click="nextFlag" :class="['result-btn', isCorrect ? 'correct' : 'wrong']">
+            {{ isCorrect ? 'Next →' : 'Try Again →' }}
+          </button>
         </div>
-      </div>
-
-      <!-- Answer buttons -->
-      <div class="grid grid-cols-2 w-full max-w-md gap-3 transition-opacity duration-300" :class="flagVisible ? 'opacity-100' : 'opacity-0'">
-        <button
-          v-for="option in flag?.options ?? []"
-          :key="option"
-          :disabled="showOverlay"
-          @click="checkInput(option)"
-          :class="['h-14 px-4 border rounded-lg transition-colors font-medium disabled:opacity-40 disabled:cursor-not-allowed text-sm flex items-center justify-center text-center overflow-hidden', t.btnAnswer]"
-        >
-          <span class="line-clamp-2">{{ option }}</span>
-        </button>
-      </div>
+      </template>
     </div>
   </div>
+
+  <BaseModal :isOpen="showLoginPrompt" maxWidth="24rem" @close="dismissLoginPrompt">
+    <div class="prompt-title">Save your high score!</div>
+    <p class="prompt-text">You're not logged in. Sign up to track your scores and compete on the leaderboard.</p>
+    <div class="prompt-actions">
+      <button @click="openSignUpFromPrompt" class="btn btn-primary prompt-action">Sign Up</button>
+      <button @click="dismissLoginPrompt" class="btn btn-neutral prompt-action">Continue without saving</button>
+    </div>
+    <p class="prompt-footer">
+      Already have an account?
+      <button @click="openLoginFromPrompt" class="link">Log in</button>
+    </p>
+  </BaseModal>
 </template>
 
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, computed, watch } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { API_URL } from "../config";
+import BaseModal from "./BaseModal.vue";
 
-type Flag = {
-  country_code: string;
-  country_name: string;
-  flag_url: string;
+const emit = defineEmits<{ 'open-signup': []; 'open-login': []; 'session-expired': []; 'new-highscore': [score: number] }>();
+
+type FlagQuestion = {
+  question_id: string;
+  flag_svg: string;
   options: string[];
+};
+
+type AnswerResponse = {
+  correct: boolean;
+  score: number;
+  correct_answer: string;
 };
 
 const props = defineProps<{
   token?: string | null;
   username?: string | null;
-  isDark?: boolean;
 }>();
 
-const t = computed(() => props.isDark ? {
-  card:        "bg-slate-800 border-slate-700",
-  stats:       "bg-slate-700/50 border-slate-600",
-  textPrimary: "text-slate-100",
-  textSecondary:"text-slate-300",
-  textMuted:   "text-slate-500",
-  accent:      "text-sky-400",
-  flagBorder:  "border-slate-600",
-  gameOverBox: "bg-slate-700 border-slate-600",
-  btnPrimary:  "bg-sky-600 text-white hover:bg-sky-500",
-  btnSecondary:"bg-slate-600 text-white hover:bg-slate-500",
-  btnAnswer:   "bg-slate-700 border-slate-600 text-slate-100 hover:bg-sky-600 hover:border-sky-500 hover:text-white",
-} : {
-  card:        "bg-white border-gray-300",
-  stats:       "bg-gray-100 border-gray-300",
-  textPrimary: "text-gray-900",
-  textSecondary:"text-gray-700",
-  textMuted:   "text-gray-500",
-  accent:      "text-sky-600",
-  flagBorder:  "border-gray-500",
-  gameOverBox: "bg-gray-100 border-gray-300",
-  btnPrimary:  "bg-sky-600 text-white hover:bg-sky-700",
-  btnSecondary:"bg-gray-200 text-gray-800 hover:bg-gray-300",
-  btnAnswer:   "bg-gray-100 border-gray-300 text-gray-900 hover:bg-sky-600 hover:border-sky-600 hover:text-white",
-});
-
-const flag = ref<Flag | null>(null);
+const flag = ref<FlagQuestion | null>(null);
 const score = ref(0);
-const seen = new Set<string>();
+const sessionId = ref<string | null>(null);
+const correctAnswer = ref("");
 const showOverlay = ref(false);
 const isCorrect = ref(false);
-const gameOver = ref(false);
+const selectedOption = ref("");
 const personalBest = ref<number | null>(null);
 const flagVisible = ref(true);
+const showLoginPrompt = ref(false);
+const hasShownLoginPrompt = ref(false);
 
 const isAuthenticated = computed(() => !!props.token);
+const flagDataUrl = computed(() =>
+  flag.value ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(flag.value.flag_svg)}` : ""
+);
 
-onMounted(() => {
+function answerBtnState(option: string) {
+  if (showOverlay.value) {
+    if (option === correctAnswer.value) return "correct";
+    if (option === selectedOption.value) return "wrong";
+    return "dimmed";
+  }
+  return option === selectedOption.value ? "selected" : "";
+}
+
+onMounted(async () => {
+  await createSession();
   loadFlag();
-  document.addEventListener('keydown', handleKeyDown);
-  if (props.token) fetchPersonalBest();
 });
 
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown);
+
+watch(() => props.token, async (val, oldVal) => {
+  if (val && !oldVal) { //login
+    await saveScoreToBackend();
+  } else { //logout
+    personalBest.value = null;
+    score.value = 0;
+    showOverlay.value = false;
+    flag.value = null;
+    hasShownLoginPrompt.value = false;
+    await createSession();
+    loadFlag();
+  }
 });
 
-watch(() => props.token, (val) => { if (val) fetchPersonalBest(); else personalBest.value = null; });
 
-function handleKeyDown(event: KeyboardEvent) {
-  if (showOverlay.value && event.key === 'Enter') nextFlag();
+async function createSession() {
+  const response = await fetch(`${API_URL}/game/session`, { method: "POST" });
+  if (!response.ok) { console.error("Failed to create session:", response.statusText); return; }
+  const data = await response.json();
+  sessionId.value = data.session_id;
+  fetchPersonalBest();
 }
 
 async function loadFlag() {
+  if (!sessionId.value) return;
   flagVisible.value = false;
-  const params = [...seen].map(code => `exclude=${code}`).join("&");
-  const response = await fetch(`${API_URL}/flags/random?${params}`, { cache: "no-store" });
 
-  if (response.status === 404) { gameOver.value = true; flagVisible.value = true; return; }
+  const [response] = await Promise.all([
+    fetch(`${API_URL}/game/flag?session_id=${sessionId.value}`, {
+      cache: "no-store"
+    }),
+    new Promise(resolve => setTimeout(resolve, 200))
+  ]);
+
   if (!response.ok) { console.error("Failed to load flag:", response.statusText); flagVisible.value = true; return; }
 
-  const data = (await response.json()) as Flag;
-  flag.value = data;
-  seen.add(flag.value.country_code);
+  flag.value = (await response.json()) as FlagQuestion;
+  flagVisible.value = true;
 }
 
-function checkInput(option: string) {
+async function checkInput(option: string) {
   if (!flag.value || showOverlay.value) return;
-  if (option === flag.value.country_name) {
-    score.value++;
-    isCorrect.value = true;
-  } else {
-    if (score.value > 0 && (personalBest.value === null || score.value > personalBest.value)) {
-      saveScoreToBackend(score.value);
+  selectedOption.value = option;
+
+  const response = await fetch(`${API_URL}/game/answer`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question_id: flag.value.question_id, answer: option }),
+  });
+  if (!response.ok) { console.error("Failed to submit answer:", response.statusText); return; }
+
+  const result = await response.json() as AnswerResponse;
+  if (result.correct) {
+    score.value = result.score;
+  }
+  isCorrect.value = result.correct;
+  correctAnswer.value = result.correct_answer;
+
+  if (!result.correct) {
+    if (isAuthenticated.value && score.value > 0) saveScoreToBackend();
+    if (!isAuthenticated.value && score.value > 0 && !hasShownLoginPrompt.value) {
+      hasShownLoginPrompt.value = true;
+      showLoginPrompt.value = true;
     }
-    score.value = 0;
-    isCorrect.value = false;
   }
   showOverlay.value = true;
 }
@@ -184,55 +201,282 @@ function checkInput(option: string) {
 async function fetchPersonalBest() {
   if (!props.token || !props.username) return;
   try {
-    const res = await fetch(`${API_URL}/highscores/`, {
+    const res = await fetch(`${API_URL}/highscores/me`, {
       headers: { Authorization: `Bearer ${props.token}` },
     });
+    if (res.status === 401) { emit('session-expired'); return; }
     if (!res.ok) return;
-    const list: { username: string; score: number }[] = await res.json();
-    const entry = list.find(e => e.username === props.username);
-    if (entry) personalBest.value = entry.score;
+    const data = await res.json();
+    personalBest.value = data.score;
   } catch (err) { console.warn("Failed to fetch personal best:", err); }
 }
 
-function nextFlag() { showOverlay.value = false; loadFlag(); }
-
-function resetGame() {
-  score.value = 0;
-  seen.clear();
-  gameOver.value = false;
+async function nextFlag() {
+  if (!isCorrect.value) score.value = 0;
   showOverlay.value = false;
+  selectedOption.value = "";
+  if (!sessionId.value) await createSession();
   loadFlag();
 }
 
-async function saveScoreToBackend(scoreToSave: number) {
-  if (!props.token) return;
+function openSignUpFromPrompt() {
+  showLoginPrompt.value = false;
+  emit('open-signup');
+}
+
+function openLoginFromPrompt() {
+  showLoginPrompt.value = false;
+  emit('open-login');
+}
+
+function dismissLoginPrompt() {
+  showLoginPrompt.value = false;
+}
+
+async function saveScoreToBackend() {
+  if (!props.token || !sessionId.value) return;
   try {
-    await fetch(`${API_URL}/highscores/`, {
+    const res = await fetch(`${API_URL}/highscores/`, {
       method: "POST",
       headers: { "accept": "application/json", "Content-Type": "application/json", "Authorization": `Bearer ${props.token}` },
-      body: JSON.stringify({ score: scoreToSave }),
+      body: JSON.stringify({ session_id: sessionId.value }),
     });
-    fetchPersonalBest();
+    if (res.status === 401) { emit('session-expired'); return; }
+    const data = await res.json();
+    personalBest.value = data.highscore;
+    if (data.is_new_best) emit('new-highscore', data.highscore);
   } catch (error) { console.error("Error saving score:", error); }
 }
 
-async function saveScore() {
-  if (!props.token) return;
-  try {
-    const response = await fetch(`${API_URL}/highscores/`, {
-      method: "POST",
-      headers: { "accept": "application/json", "Content-Type": "application/json", "Authorization": `Bearer ${props.token}` },
-      body: JSON.stringify({ score: score.value }),
-    });
-    if (response.ok) { await fetchPersonalBest(); resetGame(); }
-  } catch (error) { console.error("Error saving score:", error); }
-}
 </script>
 
 <style scoped>
+.card {
+  max-width: 42rem;
+  margin: 0 auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+  border: 1px solid var(--border-subtle);
+  background-color: var(--surface);
+  padding: 2rem;
+}
+
+/* Stats bar */
+.stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background-color: rgba(51, 65, 85, 0.5);
+}
+
+.stat-item {
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.stat-empty {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.accent { font-weight: 600; color: var(--accent); }
+
+/* Title */
+.title-block { text-align: center; margin-bottom: 2rem; }
+
+.title {
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+}
+
+.subtitle { color: var(--text-muted); margin: 0; }
+
+/* Game container */
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Skeleton */
+.skeleton-flag {
+  width: 20rem;
+  height: 12rem;
+  border-radius: 0.25rem;
+  background-color: var(--surface-2);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.skeleton-button {
+  height: 3.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--surface-2);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Flag */
+.flag-box {
+  width: 20rem;
+  height: 12rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.2s;
+}
+.flag-box.visible { opacity: 1; }
+.flag-box.hidden { opacity: 0; }
+
+.flag-img { max-width: 100%; max-height: 100%; }
+
+/* Answer buttons grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  max-width: 28rem;
+  gap: 0.75rem;
+  transition: opacity 0.2s;
+}
+.grid.visible { opacity: 1; }
+.grid.hidden { opacity: 0; }
+
+.answer-btn {
+  height: 3.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--border);
+  background-color: var(--surface-2);
+  color: var(--text);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.answer-btn:hover:not(:disabled) {
+  background-color: var(--primary);
+  border-color: var(--primary-hover);
+  color: white;
+}
+
+.answer-btn.selected {
+  background-color: var(--primary-deep);
+  border-color: var(--primary);
+  color: var(--text);
+  cursor: default;
+}
+
+.answer-btn.correct {
+  background-color: var(--correct);
+  border-color: var(--correct);
+  color: white;
+  cursor: default;
+}
+
+.answer-btn.wrong {
+  background-color: var(--wrong);
+  border-color: var(--wrong);
+  color: white;
+  cursor: default;
+}
+
+.answer-btn.dimmed {
+  background-color: rgba(51, 65, 85, 0.5);
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.answer-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Result strip */
+.result-strip {
+  width: 100%;
+  max-width: 28rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  animation: fade-in 0.5s ease-out;
+}
+.result-strip.correct { background-color: rgba(16, 185, 129, 0.1); }
+.result-strip.wrong   { background-color: rgba(244, 63, 94, 0.1); }
+
+.result-msg { font-weight: 500; font-size: 0.875rem; }
+.result-strip.correct .result-msg { color: var(--correct); }
+.result-strip.wrong   .result-msg { color: var(--text-secondary); }
+
+.result-btn {
+  padding: 0.375rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  transition: background-color 0.15s;
+}
+.result-btn.correct { background-color: var(--correct); }
+.result-btn.correct:hover { background-color: var(--correct-hover); }
+.result-btn.wrong   { background-color: var(--wrong); }
+.result-btn.wrong:hover   { background-color: var(--wrong-hover); }
+
 @keyframes fade-in {
   from { opacity: 0; transform: scale(0.8); }
   to   { opacity: 1; transform: scale(1); }
 }
-.animate-fade-in { animation: fade-in 0.5s ease-out; }
+
+/* Login prompt */
+.prompt-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.prompt-text {
+  font-size: 0.875rem;
+  margin: 0 0 1.5rem;
+  color: var(--text-secondary);
+}
+
+.prompt-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.prompt-action { flex: 1; }
+
+.prompt-footer {
+  text-align: center;
+  font-size: 0.75rem;
+  margin: 1rem 0 0;
+  color: var(--text-muted);
+}
 </style>

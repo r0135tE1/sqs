@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.dependencies import get_current_user, get_highscore_repo, get_user_repo
-from app.models.highscore import HighscoreEntry, SaveSessionRequest
+from app.models.highscore import HighscoreEntry, SaveScoreResponse, SaveSessionRequest
 from app.repositories.highscore import HighscoreRepository
 from app.repositories.user import UserRepository
 from app.services import highscore as highscore_service
@@ -58,7 +58,7 @@ async def save_score(
     current_user: Annotated[str, Depends(get_current_user)],
     user_repo: Annotated[UserRepository, Depends(get_user_repo)],
     hs_repo: Annotated[HighscoreRepository, Depends(get_highscore_repo)],
-) -> dict:
+) -> SaveScoreResponse:
     score = game_session_store.get_best_score(body.session_id)
     if score is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")

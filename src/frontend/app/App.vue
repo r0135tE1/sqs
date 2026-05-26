@@ -1,8 +1,66 @@
+<template>
+  <div class="page">
+    <nav class="nav">
+      <div class="brand">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="2" width="2.5" height="28" rx="1.25" fill="#94a3b8"/>
+          <circle cx="6.25" cy="2.5" r="2.5" fill="#94a3b8"/>
+          <path d="M7.5 5 C12 3 20 7 26 4.5 C20 9 12 7 7.5 10 Z" fill="url(#stripe1)"/>
+          <path d="M7.5 10 C12 7 20 11 26 8.5 C20 13 12 11 7.5 14 Z" fill="white" opacity="0.9"/>
+          <path d="M7.5 14 C12 11 20 15 26 12.5 C20 17 12 15 7.5 18 Z" fill="url(#stripe3)"/>
+          <defs>
+            <linearGradient id="stripe1" x1="7" y1="4" x2="26" y2="8" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#f97316"/>
+              <stop offset="100%" stop-color="#ef4444"/>
+            </linearGradient>
+            <linearGradient id="stripe3" x1="7" y1="13" x2="26" y2="16" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#6366f1"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        Fun With Flags
+      </div>
+      <div class="nav-actions">
+        <div v-if="token" class="username">{{ username }}</div>
+        <button v-if="token"  class="btn btn-primary" type="button" @click="openHighscores">Highscores</button>
+        <span v-if="!token" class="login-hint">Log in to save your scores</span>
+        <button v-if="!token" class="btn btn-ghost"   type="button" @click="openSignUp">Sign Up</button>
+        <button v-if="!token" class="btn btn-primary" type="button" @click="openLogin">Log In</button>
+        <button v-if="token"  class="btn btn-logout"  type="button" @click="logout">Logout</button>
+      </div>
+    </nav>
+
+    <div v-if="signUpSuccessMessage || loginSuccessMessage" class="toast toast-success">
+      {{ signUpSuccessMessage || loginSuccessMessage }}
+      <button @click="signUpSuccessMessage = ''; loginSuccessMessage = ''" class="toast-close">×</button>
+    </div>
+
+    <div v-if="sessionExpiredMessage" class="toast toast-warning">
+      {{ sessionExpiredMessage }}
+      <button @click="sessionExpiredMessage = ''" class="toast-close">×</button>
+    </div>
+
+    <div v-if="newHighscoreMessage" class="toast-highscore-banner">
+      {{ newHighscoreMessage }}
+      <button @click="newHighscoreMessage = ''" class="toast-close">×</button>
+    </div>
+
+    <AuthModal :isOpen="showSignUp" mode="signup" :message="signUpMessage" @close="closeSignUp" @submit="handleSignUp" @switch="closeSignUp(); openLogin()" />
+    <AuthModal :isOpen="showLogin"  mode="login"  :message="loginMessage"  @close="closeLogin"  @submit="handleLogin"  @switch="closeLogin(); openSignUp()" />
+    <HighscoresModal :isOpen="showHighscores" :token="token" @close="closeHighscores" />
+
+    <main class="content">
+      <GameBoard :token="token" :username="username" @open-signup="openSignUp" @open-login="openLogin" @session-expired="handleSessionExpired" @new-highscore="handleNewHighscore" />
+    </main>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { ref } from "vue";
+
 import { API_URL } from "./config";
-import SignUpModal from "./components/SignUpModal.vue";
-import LoginModal from "./components/LoginModal.vue";
+import AuthModal from "./components/AuthModal.vue";
 import HighscoresModal from "./components/HighscoresModal.vue";
 import GameBoard from "./components/GameBoard.vue";
 
@@ -13,45 +71,10 @@ const signUpMessage = ref("");
 const loginMessage = ref("");
 const signUpSuccessMessage = ref("");
 const loginSuccessMessage = ref("");
-const token = ref<string | null>(null);
-const username = ref<string | null>(null);
-const isDark = ref(localStorage.getItem("theme") !== "light");
-
-const t = computed(() => isDark.value ? {
-  page:       "bg-slate-900",
-  nav:        "bg-slate-800 border-slate-700",
-  navText:    "text-slate-100",
-  userText:   "text-slate-300",
-  btnPrimary: "bg-sky-600 hover:bg-sky-500 text-white",
-  btnGhost:   "bg-slate-700 border border-slate-600 text-slate-200 hover:bg-slate-600",
-  btnLogout:  "bg-slate-700 border border-slate-600 text-slate-300 hover:bg-rose-600 hover:text-white hover:border-rose-600",
-  toast:      "bg-emerald-700 text-white",
-  body:       "bg-slate-900",
-} : {
-  page:       "bg-gray-100",
-  nav:        "bg-white border-gray-300 shadow-sm",
-  navText:    "text-gray-900",
-  userText:   "text-gray-700",
-  btnPrimary: "bg-sky-600 hover:bg-sky-700 text-white",
-  btnGhost:   "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50",
-  btnLogout:  "bg-white border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 hover:border-red-300",
-  toast:      "bg-emerald-600 text-white",
-  body:       "bg-gray-100",
-});
-
-function toggleTheme() {
-  isDark.value = !isDark.value;
-  localStorage.setItem("theme", isDark.value ? "dark" : "light");
-}
-
-onMounted(() => {
-  const savedToken = localStorage.getItem("authToken");
-  const savedUsername = localStorage.getItem("username");
-  if (savedToken) {
-    token.value = savedToken;
-    username.value = savedUsername;
-  }
-});
+const sessionExpiredMessage = ref("");
+const newHighscoreMessage = ref("");
+const token = ref<string | null>(localStorage.getItem("authToken"));
+const username = ref<string | null>(localStorage.getItem("username"));
 
 function openSignUp() { signUpMessage.value = ""; showSignUp.value = true; }
 function closeSignUp() { showSignUp.value = false; }
@@ -68,6 +91,17 @@ function logout() {
   loginMessage.value = signUpMessage.value = loginSuccessMessage.value = signUpSuccessMessage.value = "";
 }
 
+function handleSessionExpired() {
+  logout();
+  sessionExpiredMessage.value = "Session expired — please log in again.";
+  setTimeout(() => { sessionExpiredMessage.value = ""; }, 4000);
+}
+
+function handleNewHighscore(score: number) {
+  newHighscoreMessage.value = `🎉 New high score: ${score}!`;
+  setTimeout(() => { newHighscoreMessage.value = ""; }, 3000);
+}
+
 async function handleSignUp(formData: { username: string; password: string }) {
   signUpMessage.value = "";
   signUpSuccessMessage.value = "";
@@ -78,14 +112,14 @@ async function handleSignUp(formData: { username: string; password: string }) {
       body: JSON.stringify(formData),
     });
     if (response.ok) {
-      signUpSuccessMessage.value = "Sign up successful! You can now log in.";
       showSignUp.value = false;
-      setTimeout(() => { signUpSuccessMessage.value = ""; }, 2000);
+      await handleLogin(formData);
     } else {
       const error = await response.json();
+      const detail = typeof error.detail === "string" ? error.detail : null;
       signUpMessage.value = response.status === 409
         ? "Username already taken. Please choose a different username."
-        : error.detail || "Sign up failed. Please try again.";
+        : detail ?? "Sign up failed. Please try again.";
     }
   } catch {
     signUpMessage.value = "Network error. Please check your connection and try again.";
@@ -107,7 +141,7 @@ async function handleLogin(formData: { username: string; password: string }) {
       username.value = formData.username;
       localStorage.setItem("authToken", data.access_token);
       localStorage.setItem("username", formData.username);
-      loginSuccessMessage.value = "Login successful! Welcome back!";
+      loginSuccessMessage.value = "Login successful! Welcome!";
       showLogin.value = false;
       setTimeout(() => { loginSuccessMessage.value = ""; }, 2000);
     } else {
@@ -122,63 +156,28 @@ async function handleLogin(formData: { username: string; password: string }) {
 }
 </script>
 
-<template>
-  <div :class="['min-h-screen transition-colors duration-300', t.page]">
-    <div :class="['flex justify-between items-center border-b px-6 py-4', t.nav]">
-      <div :class="['text-2xl flex items-center gap-2', t.navText]" style="font-family: 'Pacifico', cursive;">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Pole -->
-          <rect x="5" y="2" width="2.5" height="28" rx="1.25" fill="#94a3b8"/>
-          <!-- Ball finial -->
-          <circle cx="6.25" cy="2.5" r="2.5" fill="#94a3b8"/>
-          <!-- Waving flag -->
-          <path d="M7.5 5 C12 3 20 7 26 4.5 C20 9 12 7 7.5 10 Z" fill="url(#stripe1)"/>
-          <path d="M7.5 10 C12 7 20 11 26 8.5 C20 13 12 11 7.5 14 Z" fill="white" opacity="0.9"/>
-          <path d="M7.5 14 C12 11 20 15 26 12.5 C20 17 12 15 7.5 18 Z" fill="url(#stripe3)"/>
-          <defs>
-            <linearGradient id="stripe1" x1="7" y1="4" x2="26" y2="8" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#f97316"/>
-              <stop offset="100%" stop-color="#ef4444"/>
-            </linearGradient>
-            <linearGradient id="stripe3" x1="7" y1="13" x2="26" y2="16" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#3b82f6"/>
-              <stop offset="100%" stop-color="#6366f1"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        Fun With Flags
-      </div>
-      <div class="flex gap-2 items-center">
-        <div v-if="token" :class="['text-sm font-medium mr-2', t.userText]">{{ username }}</div>
-        <button v-if="token"  :class="['px-4 py-2 rounded-lg transition-colors font-medium text-sm', t.btnPrimary]" type="button" @click="openHighscores">Highscores</button>
-        <span v-if="!token" :class="['text-sm mr-1 hidden sm:inline', t.userText]">Log in to save your scores</span>
-        <button v-if="!token" :class="['px-4 py-2 rounded-lg transition-colors font-medium text-sm', t.btnGhost]"    type="button" @click="openSignUp">Sign Up</button>
-        <button v-if="!token" :class="['px-4 py-2 rounded-lg transition-colors font-medium text-sm', t.btnPrimary]"  type="button" @click="openLogin">Log In</button>
-        <button v-if="token"  :class="['px-4 py-2 rounded-lg transition-colors font-medium text-sm', t.btnLogout]"   type="button" @click="logout">Logout</button>
-        <!-- Theme toggle -->
-        <button @click="toggleTheme" :class="['px-3 py-2 rounded-lg transition-colors font-medium text-sm', t.btnGhost]" type="button" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
-          {{ isDark ? '☀' : '🌙' }}
-        </button>
-      </div>
-    </div>
-
-    <div v-if="signUpSuccessMessage || loginSuccessMessage" :class="['fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2 text-sm font-medium', t.toast]">
-      {{ signUpSuccessMessage || loginSuccessMessage }}
-      <button @click="signUpSuccessMessage = ''; loginSuccessMessage = ''" class="opacity-70 hover:opacity-100 transition-opacity">×</button>
-    </div>
-
-    <SignUpModal    :isOpen="showSignUp"    :message="signUpMessage"  :isDark="isDark" @close="closeSignUp"    @submit="handleSignUp" />
-    <LoginModal     :isOpen="showLogin"     :message="loginMessage"   :isDark="isDark" @close="closeLogin"     @submit="handleLogin" />
-    <HighscoresModal :isOpen="showHighscores" :token="token"          :isDark="isDark" @close="closeHighscores" />
-
-    <div class="container mx-auto px-4 py-8">
-      <GameBoard :token="token" :username="username" :isDark="isDark" />
-    </div>
-  </div>
-</template>
-
 <style>
-  @import 'tailwindcss';
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface-2: #334155;
+    --surface-3: #475569;
+    --border: #475569;
+    --border-subtle: #334155;
+    --text: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --accent: #38bdf8;
+    --primary: #0284c7;
+    --primary-hover: #0ea5e9;
+    --primary-deep: #0c4a6e;
+    --correct: #10b981;
+    --correct-hover: #059669;
+    --wrong: #f43f5e;
+    --wrong-hover: #e11d48;
+    --warning: #d97706;
+  }
 
   @font-face {
     font-family: 'Pacifico';
@@ -188,13 +187,202 @@ async function handleLogin(formData: { username: string; password: string }) {
     font-display: swap;
   }
 
+  *, *::before, *::after { box-sizing: border-box; }
+
   body {
     margin: 0;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
   }
 
-  @keyframes fade-in {
-    from { opacity: 0; transform: scale(0.95); }
-    to   { opacity: 1; transform: scale(1); }
+  button { font: inherit; cursor: pointer; }
+
+  #app {
+    animation: app-enter 0.25s ease-out;
   }
-  .animate-fade-in { animation: fade-in 0.3s ease-out; }
+
+  @keyframes app-enter {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Shared utility classes */
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border: 1px solid transparent;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .btn-primary {
+    background-color: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover { background-color: var(--primary-hover); }
+
+  .btn-ghost {
+    background-color: var(--surface-2);
+    border-color: var(--border);
+    color: var(--text-secondary);
+  }
+  .btn-ghost:hover { background-color: var(--surface-3); }
+
+  .btn-neutral {
+    background-color: var(--surface-3);
+    color: var(--text);
+  }
+  .btn-neutral:hover { background-color: #64748b; }
+
+  .btn-logout {
+    background-color: var(--surface-2);
+    border-color: var(--border);
+    color: var(--text-secondary);
+  }
+  .btn-logout:hover {
+    background-color: var(--wrong);
+    color: white;
+    border-color: var(--wrong);
+  }
+
+  .link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--accent);
+    text-decoration: underline;
+    transition: opacity 0.15s;
+    cursor: pointer;
+  }
+  .link:hover { opacity: 0.8; }
+
+  .label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.375rem;
+    color: var(--text-secondary);
+  }
+
+  .input {
+    width: 100%;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--border);
+    background-color: var(--surface-2);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input::placeholder { color: var(--text-muted); }
+  .input:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--primary-hover);
+  }
+</style>
+
+<style scoped>
+  .page {
+    min-height: 100vh;
+    background-color: var(--bg);
+  }
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-subtle);
+    background-color: var(--surface);
+    padding: 1rem 1.5rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    color: var(--text);
+    font-family: 'Pacifico', cursive;
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .username {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-right: 0.5rem;
+  }
+
+  .login-hint {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-right: 0.25rem;
+  }
+  @media (max-width: 640px) {
+    .login-hint { display: none; }
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+  }
+  .toast-success { background-color: #047857; }
+  .toast-warning { background-color: var(--warning); }
+
+  .toast-highscore-banner {
+    position: fixed;
+    top: 5.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--primary);
+    animation: highscore-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes highscore-pop {
+    0%   { opacity: 0; transform: translate(-50%, -1rem) scale(0.9); }
+    100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  }
+  .toast-close {
+    background: none;
+    border: none;
+    color: white;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+  .toast-close:hover { opacity: 1; }
+
+  .content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
 </style>

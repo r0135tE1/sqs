@@ -20,13 +20,15 @@ class HighscoreRepository:
     async def get_by_user_id(self, user_id: int) -> Highscore | None:
         return await self.db.scalar(select(Highscore).where(Highscore.user_id == user_id))
 
-    async def upsert(self, user_id: int, score: int) -> bool:
+    async def upsert(self, user_id: int, score: int) -> tuple[int, bool]:
+        """Persist score if it beats the existing best. Returns (current_best, was_saved)."""
         existing = await self.get_by_user_id(user_id)
+        existing_score = existing.score if existing else 0
+        if score <= 0 or score <= existing_score:
+            return existing_score, False
         if existing is None:
             self.db.add(Highscore(user_id=user_id, score=score))
-        elif score > existing.score:
-            existing.score = score
         else:
-            return False
+            existing.score = score
         await self.db.commit()
-        return True
+        return score, True
