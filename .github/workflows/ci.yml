@@ -8,7 +8,7 @@ on:
 
 jobs:
   unit-tests:
-    name: Backend Unit Tests
+    name: Unit Tests
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -30,7 +30,7 @@ jobs:
           path: src/backend/coverage.xml
 
   integration-tests:
-    name: Backend Integration Tests
+    name: Integration Tests
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -52,7 +52,7 @@ jobs:
           path: src/backend/coverage.xml
 
   architecture-tests:
-    name: Backend Architecture Tests
+    name: Architecture Tests
     runs-on: ubuntu-latest
     defaults:
       run:
