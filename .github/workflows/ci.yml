@@ -42,7 +42,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install dependencies
-        run: pip install -r requirements.txt -r dev-requirements.txt
+        run: pip install --only-binary :all: --require-hashes -r requirements.txt
       - name: Run integration tests
         run: pytest tests/integration --cov=app --cov-report=xml -v
       - name: Upload coverage
@@ -64,7 +64,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install dependencies
-        run: pip install -r requirements.txt -r dev-requirements.txt
+        run: pip install --only-binary :all: --require-hashes -r requirements.txt
       - name: Run architecture tests
         run: pytest app/tests -v
 
