@@ -43,7 +43,7 @@ async def test_register_user_integrity_error_maps_to_conflict():
     """A race that slips past the pre-check surfaces as IntegrityError -> 409."""
     repo = Mock()
     repo.get_by_username = AsyncMock(return_value=None)
-    repo.create = AsyncMock(side_effect=IntegrityError("stmt", {}, Exception("dup")))
+    repo.create = AsyncMock(side_effect=IntegrityError("stmt", {}, ValueError("dup")))
 
     with pytest.raises(HTTPException) as exc:
         await register_user(repo, "alice", "password123")
