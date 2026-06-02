@@ -503,9 +503,9 @@ tests/
 
 ---
 
-### Schritt 4 — `docs/architecture/08_crosscutting_concepts.md`
+### Schritt 4 — `docs/architecture/08_crosscutting_concepts.md` ✅ ERLEDIGT
 
-#### 4.1 "Prefetch & Caching"-Abschnitt — zwei Korrekturen
+#### 4.1 ✅ "Prefetch & Caching"-Abschnitt — zwei Korrekturen
 
 **Satz 1 ersetzen:**
 > ~~"On application startup the Backend fetches all flags from the public API and stores them inside the Persistence component."~~
@@ -521,9 +521,9 @@ tests/
 
 ---
 
-### Schritt 5 — `docs/architecture/11_risks_and_technical_debts.md`
+### Schritt 5 — `docs/architecture/11_risks_and_technical_debts.md` ✅ ERLEDIGT
 
-#### 5.1 Technical Debt 1 — Beschreibung korrigieren
+#### 5.1 ✅ Technical Debt 1 — Beschreibung korrigieren
 
 **Alt:**
 > **Highscore stored in memory only** — The active highscore is not persisted mid-session. A backend restart loses the current highscore.
@@ -533,9 +533,9 @@ tests/
 
 ---
 
-### Schritt 6 — `README.md` (Root)
+### Schritt 6 — `README.md` (Root) ✅ ERLEDIGT
 
-#### 6.1 Architecture Tests — venv-Name und Requirements korrigieren
+#### 6.1 ✅ Architecture Tests — venv-Name und Requirements korrigieren
 
 **Alt:**
 ```bash
@@ -581,6 +581,6 @@ pip install --only-binary :all: --require-hashes -r requirements.lock
 | 14 | `docs/architecture/06_runtime_view.md` | "Fetch Flag": kein DB-Store, kein periodischer Refresh | ✅ |
 | 15 | `docs/architecture/06_runtime_view.md` | "Correct Guess": Frontend validiert nicht mehr, Backend validiert via `/game/answer` | ✅ |
 | 16 | `docs/architecture/06_runtime_view.md` | "Incorrect Guess": Score-Persistierung ist expliziter User-Schritt | ✅ |
-| 17 | `docs/architecture/08_crosscutting_concepts.md` | "Prefetch & Caching": Flags nicht in DB, kein periodischer Refresh | ⬜ |
-| 18 | `docs/architecture/11_risks_and_technical_debts.md` | Technical Debt 1: "Highscore" → "aktive Spielsession" | ⬜ |
-| 19 | `README.md` (Root) | `venv` → `.venv`, `requirements.txt` → `requirements.lock` | ⬜ |
+| 17 | `docs/architecture/08_crosscutting_concepts.md` | "Prefetch & Caching": Flags nicht in DB, kein periodischer Refresh | ✅ |
+| 18 | `docs/architecture/11_risks_and_technical_debts.md` | Technical Debt 1: "Highscore" → "aktive Spielsession" | ✅ |
+| 19 | `README.md` (Root) | `venv` → `.venv`, `requirements.txt` → `requirements.lock` | ✅ |
