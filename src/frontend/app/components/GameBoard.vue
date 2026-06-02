@@ -21,8 +21,19 @@
     </div>
 
     <div class="game">
+      <!-- Load error -->
+      <template v-if="loadFailed && !flag">
+        <div class="load-error">
+          <div class="load-error-icon">⚠</div>
+          <p class="load-error-text">Could not load the next flag. Check your connection.</p>
+          <button @click="loadFlag" :disabled="reloading" class="btn btn-primary">
+            {{ reloading ? 'Retrying…' : 'Retry' }}
+          </button>
+        </div>
+      </template>
+
       <!-- Skeleton -->
-      <template v-if="!flag">
+      <template v-else-if="!flag">
         <div class="skeleton-flag"></div>
         <div class="grid">
           <div v-for="i in 4" :key="i" class="skeleton-button"></div>
@@ -39,7 +50,7 @@
           <button
             v-for="option in flag.options"
             :key="option"
-            :disabled="showOverlay"
+            :disabled="showOverlay || submitting"
             @click="checkInput(option)"
             :class="['answer-btn', answerBtnState(option)]"
           >
@@ -129,6 +140,9 @@ const personalBest = ref<number | null>(null);
 const flagVisible = ref(true);
 const showLoginPrompt = ref(false);
 const hasShownLoginPrompt = ref(false);
+const submitting = ref(false);
+const loadFailed = ref(false);
+const reloading = ref(false);
 
 const isAuthenticated = computed(() => !!props.token);
 const flagDataUrl = computed(() =>
@@ -176,7 +190,8 @@ async function createSession() {
 }
 
 async function loadFlag() {
-  if (!sessionId.value) return;
+  if (!sessionId.value || reloading.value) return;
+  reloading.value = true;
   flagVisible.value = false;
 
   try {
@@ -185,15 +200,21 @@ async function loadFlag() {
       new Promise((resolve) => setTimeout(resolve, 200)),
     ]);
     flag.value = data;
-  } catch (err) {
-    handleApiError(err, "Could not load the next flag.");
+    loadFailed.value = false;
+  } catch {
+    // The inline error banner is the user-facing feedback;
+    // no toast (would stack on every retry).
+    flag.value = null;
+    loadFailed.value = true;
   } finally {
     flagVisible.value = true;
+    reloading.value = false;
   }
 }
 
 async function checkInput(option: string) {
-  if (!flag.value || showOverlay.value) return;
+  if (!flag.value || showOverlay.value || submitting.value) return;
+  submitting.value = true;
   selectedOption.value = option;
 
   let result: AnswerResponse;
@@ -206,6 +227,8 @@ async function checkInput(option: string) {
     handleApiError(err, "Could not submit your answer.");
     selectedOption.value = "";
     return;
+  } finally {
+    submitting.value = false;
   }
 
   if (result.correct) score.value = result.score;
@@ -333,6 +356,31 @@ async function saveScoreToBackend() {
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+}
+
+/* Load error */
+.load-error {
+  width: 20rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background-color: rgba(244, 63, 94, 0.05);
+}
+
+.load-error-icon {
+  font-size: 2rem;
+  color: var(--wrong);
+}
+
+.load-error-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0 0 0.5rem;
 }
 
 /* Skeleton */
