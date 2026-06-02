@@ -287,9 +287,9 @@ jobs:
 
 ---
 
-### Schritt 2 — `src/backend/README.md`
+### Schritt 2 — `src/backend/README.md` ✅ ERLEDIGT
 
-#### 2.1 Projektstruktur-Tabelle korrigieren
+#### 2.1 ✅ Projektstruktur-Tabelle korrigieren
 
 ```
 models/flag.py      →  löschen (existiert nicht)
@@ -327,7 +327,7 @@ Korrigierter `app/`-Block:
 
 ---
 
-#### 2.2 Endpoints-Tabelle komplett ersetzen
+#### 2.2 ✅ Endpoints-Tabelle komplett ersetzen
 
 **Public**
 
@@ -350,7 +350,7 @@ Korrigierter `app/`-Block:
 
 ---
 
-#### 2.3 "How Flags Work"-Sektion komplett neu schreiben
+#### 2.3 ✅ "How Flags Work"-Sektion komplett neu schreiben
 
 ```markdown
 ## How the Game Works
@@ -408,7 +408,7 @@ Wenn alle Länder in einer Session gezeigt wurden, gibt `GET /game/flag` `404` z
 
 ---
 
-#### 2.4 Test-Struktur-Abschnitt korrigieren
+#### 2.4 ✅ Test-Struktur-Abschnitt korrigieren
 
 ```
 tests/
@@ -537,10 +537,10 @@ pip install --only-binary :all: --require-hashes -r requirements.lock
 | 7 | `docs/test-concept.md` | Coverage-Tabelle (unvollständig) komplett entfernt, Fließtext bleibt | ✅ |
 | 8 | `docs/test-concept.md` | Test Directory Layout: `test_game.py`, `test_security.py`, `test_game_session.py`, kein `e2e/` | ✅ |
 | 9 | `docs/test-concept.md` | CI-Snippet: Python 3.12, 4 separate Jobs, `requirements.lock` | ✅ |
-| 10 | `src/backend/README.md` | Projektstruktur: `models/flag.py` → `models/game.py`, `game_session.py` ergänzen | ⬜ |
-| 11 | `src/backend/README.md` | Endpoints-Tabelle komplett ersetzen (Session-API, `/highscores/me`) | ⬜ |
-| 12 | `src/backend/README.md` | "How Flags Work" → "How the Game Works" (Session-Flow) | ⬜ |
-| 13 | `src/backend/README.md` | Test-Struktur: `test_game.py`, `test_security.py`, `test_game_session.py` | ⬜ |
+| 10 | `src/backend/README.md` | Projektstruktur: `models/flag.py` → `models/game.py`, `game_session.py` ergänzen | ✅ |
+| 11 | `src/backend/README.md` | Endpoints-Tabelle komplett ersetzen (Session-API, `/highscores/me`) | ✅ |
+| 12 | `src/backend/README.md` | "How Flags Work" → "How the Game Works" (Session-Flow) | ✅ |
+| 13 | `src/backend/README.md` | Test-Struktur: `test_game.py`, `test_security.py`, `test_game_session.py` | ✅ |
 | 14 | `docs/architecture/06_runtime_view.md` | "Fetch Flag": kein DB-Store, kein periodischer Refresh | ⬜ |
 | 15 | `docs/architecture/06_runtime_view.md` | "Correct Guess": Frontend validiert nicht mehr, Backend validiert via `/game/answer` | ⬜ |
 | 16 | `docs/architecture/06_runtime_view.md` | "Incorrect Guess": Score-Persistierung ist expliziter User-Schritt | ⬜ |
