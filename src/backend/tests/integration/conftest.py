@@ -42,7 +42,7 @@ async def async_client(db_async_url, seeded_flag_cache):
 
     with patch.object(flag_cache, "load", new_callable=AsyncMock):
         transport = ASGITransport(app=app)
-        async with AsyncClient(transport=transport, base_url="http://test") as client:
+        async with AsyncClient(transport=transport, base_url="http://test") as client:  # NOSONAR
             yield client
 
     app.dependency_overrides.clear()

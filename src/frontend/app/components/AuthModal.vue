@@ -63,7 +63,7 @@ function submit() {
   font-size: 0.875rem;
   border: 1px solid #be123c;
   background-color: rgba(190, 18, 60, 0.25);
-  color: #7f1d1d;
+  color: #FFFFFF;
 }
 
 .form {
