@@ -76,10 +76,30 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from "vue";
-import { API_URL } from "../config";
+import { apiFetch, ApiError, NetworkError } from "../api/client";
+import { useNotifications } from "../composables/useNotifications";
 import BaseModal from "./BaseModal.vue";
 
 const emit = defineEmits<{ 'open-signup': []; 'open-login': []; 'session-expired': []; 'new-highscore': [score: number] }>();
+const notify = useNotifications();
+
+/**
+ * Centralized handler: emits 'session-expired' on 401, shows a toast for
+ * unexpected system errors, swallows known recoverable cases. Returns whether
+ * the caller should treat the error as handled.
+ */
+function handleApiError(err: unknown, userMessage: string): void {
+  if (err instanceof ApiError && err.status === 401) {
+    emit('session-expired');
+    return;
+  }
+  if (err instanceof NetworkError) {
+    notify.error("Network error — please check your connection.");
+    return;
+  }
+  notify.error(userMessage);
+  console.error(userMessage, err);
+}
 
 type FlagQuestion = {
   question_id: string;
@@ -146,45 +166,49 @@ watch(() => props.token, async (val, oldVal) => {
 
 
 async function createSession() {
-  const response = await fetch(`${API_URL}/game/session`, { method: "POST" });
-  if (!response.ok) { console.error("Failed to create session:", response.statusText); return; }
-  const data = await response.json();
-  sessionId.value = data.session_id;
-  fetchPersonalBest();
+  try {
+    const data = await apiFetch<{ session_id: string }>("/game/session", { method: "POST" });
+    sessionId.value = data.session_id;
+    fetchPersonalBest();
+  } catch (err) {
+    handleApiError(err, "Could not start a new game.");
+  }
 }
 
 async function loadFlag() {
   if (!sessionId.value) return;
   flagVisible.value = false;
 
-  const [response] = await Promise.all([
-    fetch(`${API_URL}/game/flag?session_id=${sessionId.value}`, {
-      cache: "no-store"
-    }),
-    new Promise(resolve => setTimeout(resolve, 200))
-  ]);
-
-  if (!response.ok) { console.error("Failed to load flag:", response.statusText); flagVisible.value = true; return; }
-
-  flag.value = (await response.json()) as FlagQuestion;
-  flagVisible.value = true;
+  try {
+    const [data] = await Promise.all([
+      apiFetch<FlagQuestion>(`/game/flag?session_id=${sessionId.value}`, { cache: "no-store" }),
+      new Promise((resolve) => setTimeout(resolve, 200)),
+    ]);
+    flag.value = data;
+  } catch (err) {
+    handleApiError(err, "Could not load the next flag.");
+  } finally {
+    flagVisible.value = true;
+  }
 }
 
 async function checkInput(option: string) {
   if (!flag.value || showOverlay.value) return;
   selectedOption.value = option;
 
-  const response = await fetch(`${API_URL}/game/answer`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question_id: flag.value.question_id, answer: option }),
-  });
-  if (!response.ok) { console.error("Failed to submit answer:", response.statusText); return; }
-
-  const result = await response.json() as AnswerResponse;
-  if (result.correct) {
-    score.value = result.score;
+  let result: AnswerResponse;
+  try {
+    result = await apiFetch<AnswerResponse>("/game/answer", {
+      method: "POST",
+      json: { question_id: flag.value.question_id, answer: option },
+    });
+  } catch (err) {
+    handleApiError(err, "Could not submit your answer.");
+    selectedOption.value = "";
+    return;
   }
+
+  if (result.correct) score.value = result.score;
   isCorrect.value = result.correct;
   correctAnswer.value = result.correct_answer;
 
@@ -199,16 +223,19 @@ async function checkInput(option: string) {
 }
 
 async function fetchPersonalBest() {
-  if (!props.token || !props.username) return;
+  if (!props.token) return;
   try {
-    const res = await fetch(`${API_URL}/highscores/me`, {
-      headers: { Authorization: `Bearer ${props.token}` },
-    });
-    if (res.status === 401) { emit('session-expired'); return; }
-    if (!res.ok) return;
-    const data = await res.json();
-    personalBest.value = data.score;
-  } catch (err) { console.warn("Failed to fetch personal best:", err); }
+    const data = await apiFetch<{ score: number }>("/highscores/me", { token: props.token });
+    personalBest.value = data.score || null;
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      emit('session-expired');
+      return;
+    }
+    // 404 means "no highscore yet" — that's fine, leave personalBest as null.
+    if (err instanceof ApiError && err.status === 404) return;
+    console.warn("Failed to fetch personal best:", err);
+  }
 }
 
 async function nextFlag() {
@@ -236,16 +263,15 @@ function dismissLoginPrompt() {
 async function saveScoreToBackend() {
   if (!props.token || !sessionId.value) return;
   try {
-    const res = await fetch(`${API_URL}/highscores/`, {
-      method: "POST",
-      headers: { "accept": "application/json", "Content-Type": "application/json", "Authorization": `Bearer ${props.token}` },
-      body: JSON.stringify({ session_id: sessionId.value }),
-    });
-    if (res.status === 401) { emit('session-expired'); return; }
-    const data = await res.json();
-    personalBest.value = data.highscore;
-    if (data.is_new_best) emit('new-highscore', data.highscore);
-  } catch (error) { console.error("Error saving score:", error); }
+    const data = await apiFetch<{ highscore: number | null; is_new_best: boolean }>(
+      "/highscores/",
+      { method: "POST", token: props.token, json: { session_id: sessionId.value } },
+    );
+    if (data.highscore !== null) personalBest.value = data.highscore;
+    if (data.is_new_best && data.highscore !== null) emit('new-highscore', data.highscore);
+  } catch (err) {
+    handleApiError(err, "Could not save your score.");
+  }
 }
 
 </script>

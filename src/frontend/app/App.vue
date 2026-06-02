@@ -31,27 +31,16 @@
       </div>
     </nav>
 
-    <div v-if="signUpSuccessMessage || loginSuccessMessage" class="toast toast-success">
-      {{ signUpSuccessMessage || loginSuccessMessage }}
-      <button @click="signUpSuccessMessage = ''; loginSuccessMessage = ''" class="toast-close">×</button>
-    </div>
-
-    <div v-if="sessionExpiredMessage" class="toast toast-warning">
-      {{ sessionExpiredMessage }}
-      <button @click="sessionExpiredMessage = ''" class="toast-close">×</button>
-    </div>
-
-    <div v-if="newHighscoreMessage" class="toast-highscore-banner">
-      {{ newHighscoreMessage }}
-      <button @click="newHighscoreMessage = ''" class="toast-close">×</button>
-    </div>
+    <NotificationStack />
 
     <AuthModal :isOpen="showSignUp" mode="signup" :message="signUpMessage" @close="closeSignUp" @submit="handleSignUp" @switch="closeSignUp(); openLogin()" />
     <AuthModal :isOpen="showLogin"  mode="login"  :message="loginMessage"  @close="closeLogin"  @submit="handleLogin"  @switch="closeLogin(); openSignUp()" />
     <HighscoresModal :isOpen="showHighscores" :token="token" @close="closeHighscores" />
 
     <main class="content">
-      <GameBoard :token="token" :username="username" @open-signup="openSignUp" @open-login="openLogin" @session-expired="handleSessionExpired" @new-highscore="handleNewHighscore" />
+      <ErrorBoundary>
+        <GameBoard :token="token" :username="username" @open-signup="openSignUp" @open-login="openLogin" @session-expired="handleSessionExpired" @new-highscore="handleNewHighscore" />
+      </ErrorBoundary>
     </main>
   </div>
 </template>
@@ -59,22 +48,23 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { API_URL } from "./config";
+import { apiFetch, ApiError, NetworkError } from "./api/client";
+import { useNotifications } from "./composables/useNotifications";
 import AuthModal from "./components/AuthModal.vue";
 import HighscoresModal from "./components/HighscoresModal.vue";
 import GameBoard from "./components/GameBoard.vue";
+import NotificationStack from "./components/NotificationStack.vue";
+import ErrorBoundary from "./components/ErrorBoundary.vue";
 
 const showSignUp = ref(false);
 const showLogin = ref(false);
 const showHighscores = ref(false);
 const signUpMessage = ref("");
 const loginMessage = ref("");
-const signUpSuccessMessage = ref("");
-const loginSuccessMessage = ref("");
-const sessionExpiredMessage = ref("");
-const newHighscoreMessage = ref("");
 const token = ref<string | null>(localStorage.getItem("authToken"));
 const username = ref<string | null>(localStorage.getItem("username"));
+
+const notify = useNotifications();
 
 function openSignUp() { signUpMessage.value = ""; showSignUp.value = true; }
 function closeSignUp() { showSignUp.value = false; }
@@ -88,70 +78,66 @@ function logout() {
   username.value = null;
   localStorage.removeItem("authToken");
   localStorage.removeItem("username");
-  loginMessage.value = signUpMessage.value = loginSuccessMessage.value = signUpSuccessMessage.value = "";
+  loginMessage.value = signUpMessage.value = "";
 }
 
 function handleSessionExpired() {
   logout();
-  sessionExpiredMessage.value = "Session expired — please log in again.";
-  setTimeout(() => { sessionExpiredMessage.value = ""; }, 4000);
+  notify.warning("Session expired — please log in again.");
 }
 
 function handleNewHighscore(score: number) {
-  newHighscoreMessage.value = `🎉 New high score: ${score}!`;
-  setTimeout(() => { newHighscoreMessage.value = ""; }, 3000);
+  notify.highscore(`🎉 New high score: ${score}!`);
+}
+
+/**
+ * Errors from auth endpoints belong INLINE in the form (the user is looking
+ * right at it). System-level errors (network, 5xx) get a toast on top.
+ */
+function describeAuthError(err: unknown, conflictMsg: string, fallbackMsg: string): string {
+  if (err instanceof NetworkError) return "Network error. Please check your connection and try again.";
+  if (err instanceof ApiError) {
+    if (err.status === 409) return conflictMsg;
+    if (err.status === 401) return "Invalid username or password. Please try again.";
+    return err.detail || fallbackMsg;
+  }
+  return fallbackMsg;
 }
 
 async function handleSignUp(formData: { username: string; password: string }) {
   signUpMessage.value = "";
-  signUpSuccessMessage.value = "";
   try {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: { "accept": "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-    if (response.ok) {
-      showSignUp.value = false;
-      await handleLogin(formData);
-    } else {
-      const error = await response.json();
-      const detail = typeof error.detail === "string" ? error.detail : null;
-      signUpMessage.value = response.status === 409
-        ? "Username already taken. Please choose a different username."
-        : detail ?? "Sign up failed. Please try again.";
-    }
-  } catch {
-    signUpMessage.value = "Network error. Please check your connection and try again.";
+    await apiFetch("/auth/register", { method: "POST", json: formData });
+    showSignUp.value = false;
+    await handleLogin(formData);
+  } catch (err) {
+    signUpMessage.value = describeAuthError(
+      err,
+      "Username already taken. Please choose a different username.",
+      "Sign up failed. Please try again.",
+    );
   }
 }
 
 async function handleLogin(formData: { username: string; password: string }) {
   loginMessage.value = "";
-  loginSuccessMessage.value = "";
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const data = await apiFetch<{ access_token: string }>("/auth/login", {
       method: "POST",
-      headers: { "accept": "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      json: formData,
     });
-    if (response.ok) {
-      const data = await response.json();
-      token.value = data.access_token;
-      username.value = formData.username;
-      localStorage.setItem("authToken", data.access_token);
-      localStorage.setItem("username", formData.username);
-      loginSuccessMessage.value = "Login successful! Welcome!";
-      showLogin.value = false;
-      setTimeout(() => { loginSuccessMessage.value = ""; }, 2000);
-    } else {
-      const error = await response.json();
-      loginMessage.value = response.status === 401
-        ? "Invalid username or password. Please try again."
-        : error.detail || "Login failed. Please try again.";
-    }
-  } catch {
-    loginMessage.value = "Network error. Please check your connection and try again.";
+    token.value = data.access_token;
+    username.value = formData.username;
+    localStorage.setItem("authToken", data.access_token);
+    localStorage.setItem("username", formData.username);
+    notify.success("Login successful! Welcome!");
+    showLogin.value = false;
+  } catch (err) {
+    loginMessage.value = describeAuthError(
+      err,
+      "",
+      "Login failed. Please try again.",
+    );
   }
 }
 </script>
@@ -329,56 +315,6 @@ async function handleLogin(formData: { username: string; password: string }) {
   @media (max-width: 640px) {
     .login-hint { display: none; }
   }
-
-  .toast {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4);
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: white;
-  }
-  .toast-success { background-color: #047857; }
-  .toast-warning { background-color: var(--warning); }
-
-  .toast-highscore-banner {
-    position: fixed;
-    top: 5.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.875rem 1.5rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: white;
-    background-color: var(--primary);
-    animation: highscore-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes highscore-pop {
-    0%   { opacity: 0; transform: translate(-50%, -1rem) scale(0.9); }
-    100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-  }
-  .toast-close {
-    background: none;
-    border: none;
-    color: white;
-    opacity: 0.7;
-    transition: opacity 0.15s;
-  }
-  .toast-close:hover { opacity: 1; }
 
   .content {
     max-width: 1280px;
