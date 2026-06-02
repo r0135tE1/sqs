@@ -89,6 +89,28 @@ testcontainers[postgres]>=4.0
 | `test_get_current_user_invalid_token` | Raises `HTTP 401` for an invalid token |
 | `test_get_current_user_expired_token` | Raises `HTTP 401` for an expired token |
 
+#### `tests/unit/test_game_session.py`
+
+| Test case | What is verified |
+|---|---|
+| `test_create_session_returns_unique_ids` | Two sessions receive different UUIDs |
+| `test_create_session_initial_state` | score, best, seen, current_question_id are initially empty/0 |
+| `test_get_session_returns_same_object` | `get_session()` returns the same object |
+| `test_get_session_unknown_returns_none` | Unknown session_id → `None` |
+| `test_store_question_adds_country_to_seen` | Country code is added to `session.seen` |
+| `test_store_question_returns_unique_ids` | Two questions receive different UUIDs |
+| `test_validate_correct_answer_increments_score` | Correct answer → score +1, correct=True |
+| `test_validate_wrong_answer_resets_score` | Wrong answer → score=0, correct=False |
+| `test_best_score_preserved_after_wrong_answer` | `best` stays at 3 after score reset |
+| `test_seen_flags_cleared_after_wrong_answer` | `seen` set is cleared on wrong answer |
+| `test_cleanup_expired_removes_old_sessions` | Sessions inactive longer than TTL are removed |
+| `test_cleanup_expired_keeps_active_sessions` | Active sessions are not removed |
+| `test_validate_answer_removes_question` | Question is deleted from `_questions` after being answered |
+| `test_validate_answer_invalid_question_id_raises` | Unknown question_id → `ValueError` |
+| `test_get_best_score_unknown_session_returns_none` | Unknown session_id → `None` |
+| `test_delete_session_removes_session` | Session and score are no longer retrievable |
+| `test_delete_session_removes_orphaned_questions` | Open questions belonging to the session are also deleted |
+
 ---
 
 ### 3.2 Integration Tests
@@ -118,25 +140,44 @@ testcontainers[postgres]>=4.0
 | `test_login_wrong_password` | `POST /auth/login` | `401` |
 | `test_login_unknown_user` | `POST /auth/login` | `401` |
 
-#### `tests/integration/test_flags.py`
+#### `tests/integration/test_game.py`
 
 | Test case | HTTP | Expected |
 |---|---|---|
-| `test_random_flag_ok` | `GET /flags/random` | `200`, valid `FlagResponse` shape |
-| `test_random_flag_exclude_all` | `GET /flags/random?exclude=...` (all codes) | `404` |
-| `test_random_flag_empty_cache` | `GET /flags/random` with empty cache | `404` |
-| `test_random_flag_options_count` | Response `options` has 4 entries | shape check |
+| `test_create_session_returns_session_id` | `POST /game/session` | `201`, body contains `session_id` |
+| `test_get_flag_returns_correct_fields` | `GET /game/flag?session_id=...` | `200`, keys: `question_id`, `flag_svg`, `options` |
+| `test_get_flag_no_correct_answer_in_response` | `GET /game/flag?session_id=...` | `country_name` is never in the response |
+| `test_get_flag_svg_is_valid` | `GET /game/flag?session_id=...` | `flag_svg` contains `<svg` markup, no CDN URL |
+| `test_get_flag_has_four_options` | `GET /game/flag?session_id=...` | `options` has exactly 4 entries |
+| `test_get_flag_unknown_session` | `GET /game/flag?session_id=invalid` | `404` |
+| `test_answer_correct` | `POST /game/answer` | `200`, `correct=true`, `score=1` |
+| `test_answer_wrong` | `POST /game/answer` | `200`, `correct=false`, `score=0` |
+| `test_answer_invalid_question_id` | `POST /game/answer` with unknown question_id | `400` |
+| `test_answer_question_can_only_be_used_once` | `POST /game/answer` submitted twice | `400` on second call |
+| `test_score_increments_on_consecutive_correct_answers` | 3 correct answers in sequence | score reaches 3 |
+| `test_score_resets_on_wrong_answer` | 3 correct, then 1 wrong | score=0 |
+| `test_seen_flags_not_repeated` | 5× `GET /game/flag` | no SVG appears twice |
+| `test_all_flags_shown_returns_404` | All flags in the session seen | `404` |
 
 #### `tests/integration/test_highscores.py`
 
 | Test case | HTTP | Expected |
 |---|---|---|
 | `test_get_highscores_authenticated` | `GET /highscores/` (valid JWT) | `200`, list |
-| `test_get_highscores_no_token` | `GET /highscores/` (no header) | `403` |
+| `test_get_highscores_no_token` | `GET /highscores/` (no header) | `401` |
 | `test_get_highscores_invalid_token` | `GET /highscores/` (bad token) | `401` |
-| `test_save_score_authenticated` | `POST /highscores/` (valid JWT) | `201` |
-| `test_save_score_no_token` | `POST /highscores/` (no header) | `403` |
+| `test_save_score_authenticated` | `POST /highscores/` (valid JWT), body: `{ "session_id": "..." }` | `201` |
+| `test_save_score_no_token` | `POST /highscores/` (no header) | `401` |
+| `test_save_score_unknown_session` | `POST /highscores/` with unknown `session_id` | `404` |
+| `test_arbitrary_score_rejected` | Body `{ "score": 99999 }` instead of `session_id` | `422` |
+| `test_save_score_updates_when_new_personal_best` | New record → `is_new_best=true`, `highscore=5` | `201` |
+| `test_save_score_not_new_personal_best` | No new record → `is_new_best=false`, old record unchanged | `201` |
 | `test_highscores_ordered_by_score_desc` | Save two scores, check order | order check |
+| `test_get_my_highscore_authenticated` | `GET /highscores/me` (valid JWT) | `200`, `{ username, score }` |
+| `test_get_my_highscore_no_token` | `GET /highscores/me` (no header) | `401` |
+| `test_get_my_highscore_invalid_token` | `GET /highscores/me` (bad token) | `401` |
+| `test_get_my_highscore_no_score_yet` | No highscore saved yet | `404` |
+| `test_get_my_highscore_only_own` | User B sees only their own score, not user A's | isolation check |
 
 #### `tests/integration/test_flag_cache_load.py` (Resilience)
 
@@ -148,6 +189,24 @@ testcontainers[postgres]>=4.0
 | `test_load_non_200_status` | `FlagCache.load()` with HTTP 500 response leaves cache empty |
 
 > These directly test the **Resilience** quality goal: the service must not crash even when `restcountries.com` is down.
+
+#### `tests/integration/test_security.py` (Penetration / Auth-Bypass)
+
+| Test case | What is verified |
+|---|---|
+| `test_sql_injection_in_username_rejected` | SQL injection in username → `422` |
+| `test_xss_payload_in_username_rejected` | XSS payload in username → `422` |
+| `test_oversized_username_rejected` | Username > 50 characters → `422` |
+| `test_blank_password_rejected` | Whitespace-only password → `422` |
+| `test_too_short_password_rejected` | Password below minimum length → `422` |
+| `test_no_token_get_highscores_rejected` | No Bearer token on `GET /highscores/` → `401` |
+| `test_no_token_post_highscores_rejected` | No Bearer token on `POST /highscores/` → `401` |
+| `test_forged_jwt_rejected` | Tampered JWT → `401` |
+| `test_expired_jwt_rejected` | Expired JWT → `401` |
+| `test_jwt_wrong_secret_rejected` | JWT signed with wrong secret → `401` |
+| `test_garbage_token_rejected` | Non-JWT string as Bearer token → `401` |
+| `test_arbitrary_score_in_body_rejected` | Body `{ "score": 99999999 }` instead of `session_id` → `422` |
+| `test_nonexistent_session_rejected` | Unknown `session_id` in body → `404` |
 
 ---
 
@@ -161,22 +220,27 @@ testcontainers[postgres]>=4.0
 
 #### Covered flows
 
-1. **Guest game flow:** `GET /flags/random` 5× with growing `exclude` list → verify no repeat → final call with all excluded returns `404`.
-2. **Registered user flow:** `POST /auth/register` → `POST /auth/login` → `POST /highscores/` → `GET /highscores/` → score appears in top 10.
+1. **Guest game flow:** `POST /game/session` → `GET /game/flag` (with `session_id`) 5× → `POST /game/answer` after each flag → after all flags shown: `GET /game/flag` returns `404`.
+2. **Registered user flow:** `POST /auth/register` → `POST /auth/login` → `POST /game/session` → N× (`GET /game/flag` + `POST /game/answer`) → `POST /highscores/` with `{ session_id }` → `GET /highscores/` → score appears in top 10.
 3. **Token expiry flow:** Login → force-create an expired token → `GET /highscores/` returns `401`.
 
 ---
 
 ### 3.4 Security / Penetration Tests
 
-#### Dynamic (DAST) — manual or scheduled CI job
+#### Automated — `tests/integration/test_security.py`
 
-Use **OWASP ZAP** in headless mode (`zap-baseline.py`) against the running Docker Compose stack.
+Security tests are implemented as automated pytest integration tests and run in the CI pipeline.
+They cover three categories:
 
-Key scenarios to probe manually or via ZAP:
-- Send forged / expired / missing JWT to every protected endpoint → expect `401`/`403`, not `500`.
-- Send oversized payloads (`score: 99999999`) to `POST /highscores/` → verify no crash.
-- Attempt SQL injection strings in `username` field of registration → DB constraint or validation must reject, not crash.
+1. **Input Validation** — SQL injection, XSS, oversized username, blank/short password → all rejected with `422`
+2. **Auth Bypass** — no token, forged JWT, expired JWT, wrong secret, garbage token → all rejected with `401`
+3. **Score Manipulation** — submitting an arbitrary `score` value directly in the body is rejected with `422`; the score is always read server-side from the game session
+
+#### Dynamic (DAST) — optional manual testing
+
+**OWASP ZAP** can additionally be used in headless mode (`zap-baseline.py`) against the running
+Docker Compose stack for dynamic analysis. This is not part of the automated CI pipeline.
 
 ---
 
@@ -191,18 +255,6 @@ pytest --cov=app --cov-report=xml --cov-fail-under=80
 The XML report (`coverage.xml`) is forwarded to SonarQube via `sonar-scanner` so that coverage is tracked and visualised there centrally.
 
 Coverage is measured over the `app/` package (all routers, services, models, dependencies). `alembic/` and `main.py` bootstrap code are excluded from the measurement.
-
-Expected coverage breakdown per module:
-
-| Module | Expected coverage |
-|---|---|
-| `services/auth.py` | ~100% |
-| `services/flag_cache.py` | ~95% |
-| `dependencies.py` | ~100% |
-| `routers/flags.py` | ~100% |
-| `routers/auth.py` | ~95% |
-| `routers/highscores.py` | ~95% |
-| `config.py` / `database/` | ~70% (mostly config, hard to test exhaustively) |
 
 ---
 
@@ -248,22 +300,26 @@ sonar.qualitygate.wait=true
 ```
 src/backend/
 ├── tests/
-│   ├── conftest.py              # shared fixtures (async_client, test_db, seeded_flag_cache)
+│   ├── conftest.py              # shared fixture: seeded_flag_cache
 │   ├── unit/
 │   │   ├── test_auth_service.py
 │   │   ├── test_flag_cache.py
+│   │   ├── test_game_session.py
 │   │   └── test_dependencies.py
-│   ├── integration/
-│   │   ├── test_health.py
-│   │   ├── test_auth.py
-│   │   ├── test_flags.py
-│   │   ├── test_highscores.py
-│   │   └── test_flag_cache_load.py
-│   └── e2e/
-│       └── test_full_flows.py
+│   └── integration/
+│       ├── conftest.py          # PostgreSQL container + async_client fixture
+│       ├── test_health.py
+│       ├── test_auth.py
+│       ├── test_game.py
+│       ├── test_highscores.py
+│       ├── test_flag_cache_load.py
+│       └── test_security.py
+├── app/
+│   └── tests/
+│       └── test_architecture.py # Architecture tests (pytestarch)
 ├── sonar-project.properties
 ├── pytest.ini                   # asyncio_mode = auto, testpaths = tests
-└── dev-requirements.txt
+└── requirements.lock
 ```
 
 ---
@@ -271,28 +327,62 @@ src/backend/
 ## 7. CI Pipeline (GitHub Actions)
 
 ```yaml
-# .github/workflows/backend.yml (sketch)
+# .github/workflows/tests.yml
 jobs:
-  quality:
+  unit-tests:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env: { POSTGRES_PASSWORD: test }
-        ports: ["5432:5432"]
+    defaults:
+      run:
+        working-directory: src/backend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-      - run: pip install -r src/backend/dev-requirements.txt
-      - run: pytest --cov=app --cov-report=xml --cov-fail-under=80   # unit + integration + coverage
-      - uses: SonarSource/sonarqube-scan-action@v3                    # static analysis + quality gate
+        with: { python-version: "3.12" }
+      - run: pip install --only-binary :all: --require-hashes -r requirements.lock
+      - run: pytest tests/unit --cov=app --cov-report=xml -v
+      - uses: actions/upload-artifact@v4
+        with: { name: unit-coverage, path: src/backend/coverage.xml }
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install --only-binary :all: --require-hashes -r requirements.lock
+      - run: pytest tests/integration --cov=app --cov-report=xml -v
+      - uses: actions/upload-artifact@v4
+        with: { name: integration-coverage, path: src/backend/coverage.xml }
+
+  architecture-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install --only-binary :all: --require-hashes -r requirements.lock
+      - run: pytest app/tests -v
+
+  sonarqube:
+    needs: [unit-tests, integration-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/download-artifact@v4
+        with: { name: unit-coverage, path: src/backend/coverage/unit }
+      - uses: actions/download-artifact@v4
+        with: { name: integration-coverage, path: src/backend/coverage/integration }
+      - uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 ```
-
-E2E tests run in a separate job that first does `docker compose up -d` and waits for the healthcheck.
 
 ---
 
