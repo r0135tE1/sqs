@@ -22,7 +22,7 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
                 appShell = component "App" "Application shell. Manages global authentication state, persists the JWT token in localStorage, and orchestrates modal visibility."
 
-                gameBoard = component "GameBoard" "Core game component. Fetches random flags, validates guesses, tracks score and round progress, and persists scores to the backend."
+                gameBoard = component "GameBoard" "Core game component. Creates a game session, fetches flags by session ID, submits answers to the backend, receives server-side score updates, and persists the session score to the backend."
 
                 loginModal = component "LoginModal" "Presentational modal with a username/password form." 
 
@@ -37,20 +37,22 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
                 authRouter = component "Auth Router" "Handles user registration and login. Delegates password hashing and token creation to the Auth Service."
 
-                flagsRouter = component "Flags Router" "Returns a random unseen flag from the in-memory cache, excluding country codes supplied by the client."
+                gameRouter = component "Game Router" "Session-based game endpoints: POST /game/session creates a session, GET /game/flag returns the next flag with inline SVG, POST /game/answer validates the answer server-side and updates the session score."
 
-                highscoresRouter = component "Highscores Router" "Protected endpoints. Returns the top-10 leaderboard, persists a player's score. Both require a valid JWT." 
+                highscoresRouter = component "Highscores Router" "Protected endpoints. Returns the top-10 leaderboard (GET /highscores/), the authenticated user's own highscore (GET /highscores/me), and persists a session score (POST /highscores/). All require a valid JWT."
 
                 authService = component "Auth Service" "Stateless utilities for bcrypt password hashing/verification and HS256 JWT creation/decoding."
 
-                flagCache = component "Flag Cache" "Fetches all country data from the Public API once at startup and stores it in memory. Returns a random unseen flag from the in-memory cache, excluding country codes supplied by the client." 
+                flagCache = component "Flag Cache" "Fetches all country metadata and SVG images from the Public API once at startup and stores them in memory. Flag data is never written to the database. Returns a random unseen flag for a given session."
 
-                authDependency = component "Auth Dependency" "FastAPI dependency. Extracts the Bearer token from the Authorization header, decodes it via Auth Service, and returns the username or raises HTTP 401." 
+                gameSessionStore = component "Game Session Store" "In-memory store for active game sessions. Tracks seen flags, current score, best score, and open questions per session. A background task removes sessions inactive for more than 12 hours."
 
-                databaseLayer = component "Database Layer" "Async SQLAlchemy engine, session factory, get_db() dependency, and ORM models."
+                authDependency = component "Auth Dependency" "FastAPI dependency. Extracts the Bearer token from the Authorization header, decodes it via Auth Service, and returns the username or raises HTTP 401."
+
+                databaseLayer = component "Database Layer" "Async SQLAlchemy engine, session factory, get_db() dependency, and ORM models (User, Highscore)."
             }
 
-            persistence = container "Persistence" "Saves player and game data - saves flag data" {
+            persistence = container "Persistence" "Saves player credentials and highscores. Flag data is not stored here — it is held in-memory by the backend." {
                 tags "Database"
             }
         }
@@ -79,31 +81,37 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
         appShell       -> backend "POST /auth/register – register new user" "JSON / REST"
         appShell       -> backend "POST /auth/login – obtain JWT token" "JSON / REST"
-        gameBoard      -> backend "GET /flags/random – fetch next flag" "JSON / REST"
-        gameBoard      -> backend "POST /highscores/ – save score (Bearer token)" "JSON / REST"
+        gameBoard      -> backend "POST /game/session – create session" "JSON / REST"
+        gameBoard      -> backend "GET /game/flag – fetch next flag" "JSON / REST"
+        gameBoard      -> backend "POST /game/answer – submit answer" "JSON / REST"
+        gameBoard      -> backend "POST /highscores/ – save session score (Bearer token)" "JSON / REST"
         highscoresModal -> backend "GET /highscores/ – fetch top-10 leaderboard (Bearer token)" "JSON / REST"
+        highscoresModal -> backend "GET /highscores/me – fetch own highscore (Bearer token)" "JSON / REST"
 
         appShell        -> authRouter       "POST /auth/register, POST /auth/login" "JSON / REST"
-        gameBoard       -> flagsRouter      "GET /flags/random" "JSON / REST"
+        gameBoard       -> gameRouter       "POST /game/session, GET /game/flag, POST /game/answer" "JSON / REST"
         gameBoard       -> highscoresRouter "POST /highscores/" "JSON / REST"
-        highscoresModal -> highscoresRouter "GET /highscores/" "JSON / REST"
+        highscoresModal -> highscoresRouter "GET /highscores/, GET /highscores/me" "JSON / REST"
 
         # ──────────────────────────────────────────
         # Beziehungen – Komponenten Backend
         # ──────────────────────────────────────────
-        appBootstrap -> authRouter       "Registers router" ""
-        appBootstrap -> flagsRouter      "Registers router" ""
-        appBootstrap -> highscoresRouter "Registers router" ""
-        appBootstrap -> flagCache        "Calls load() on startup" ""
+        appBootstrap -> authRouter        "Registers router" ""
+        appBootstrap -> gameRouter        "Registers router" ""
+        appBootstrap -> highscoresRouter  "Registers router" ""
+        appBootstrap -> flagCache         "Calls load() on startup" ""
+        appBootstrap -> gameSessionStore  "Runs cleanup task every hour" ""
 
-        authRouter       -> authService   "Hashes passwords and creates JWT tokens via" ""
-        authRouter       -> databaseLayer "Reads/writes User records via" "SQLAlchemy async"
-        flagsRouter      -> flagCache     "Retrieves random flag from" ""
-        highscoresRouter -> authDependency "Validates Bearer token via" ""
-        highscoresRouter -> databaseLayer "Reads/writes Highscore and User records via" "SQLAlchemy async"
-        authDependency   -> authService   "Decodes JWT via" ""
-        flagCache        -> publicApi     "Fetches all countries on startup from" "REST / HTTP"
-        databaseLayer    -> persistence   "Persists and queries data in" "SQL / asyncpg"
+        authRouter       -> authService      "Hashes passwords and creates JWT tokens via" ""
+        authRouter       -> databaseLayer    "Reads/writes User records via" "SQLAlchemy async"
+        gameRouter       -> flagCache        "Retrieves random unseen flag from" ""
+        gameRouter       -> gameSessionStore "Creates sessions, stores questions, validates answers via" ""
+        highscoresRouter -> authDependency   "Validates Bearer token via" ""
+        highscoresRouter -> databaseLayer    "Reads/writes Highscore and User records via" "SQLAlchemy async"
+        highscoresRouter -> gameSessionStore "Reads best score for a session via" ""
+        authDependency   -> authService      "Decodes JWT via" ""
+        flagCache        -> publicApi        "Fetches all countries and SVG images on startup from" "REST / HTTP"
+        databaseLayer    -> persistence      "Persists and queries data in" "SQL / asyncpg"
 
         # ──────────────────────────────────────────
         # Deployment

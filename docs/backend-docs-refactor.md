@@ -42,6 +42,41 @@ zustandslosen `GET /flags/random`-Endpunkt auf ein **server-seitiges Session-Sys
 
 ---
 
+### Schritt 0 — `structurizr/workspace.dsl` ✅ ERLEDIGT
+
+DSL-Datei für das C4-Modell (Kapitel 5 Building Block View) wurde aktualisiert.
+
+#### 0.1 ✅ `gameBoard`-Beschreibung aktualisiert
+Validierung ist jetzt server-seitig — Beschreibung entfernt "validates guesses".
+
+#### 0.2 ✅ `flagsRouter` → `gameRouter` (umbenannt + neue Beschreibung)
+Beschreibt jetzt die Session-API: `POST /game/session`, `GET /game/flag`, `POST /game/answer`.
+
+#### 0.3 ✅ `gameSessionStore` als neue Komponente ergänzt
+In-memory Store für aktive Sessions, Score-Tracking und Fragen. Inkl. stündlichem Cleanup.
+
+#### 0.4 ✅ `highscoresRouter`-Beschreibung aktualisiert
+Erwähnt jetzt `GET /highscores/me` als neuen Endpunkt.
+
+#### 0.5 ✅ `flagCache`-Beschreibung aktualisiert
+Stellt klar: SVG-Bilder werden gecacht, Flags nie in die DB geschrieben.
+
+#### 0.6 ✅ `persistence`-Beschreibung korrigiert
+"saves flag data" entfernt — Flags sind in-memory only.
+
+#### 0.7 ✅ Frontend-Beziehungen aktualisiert
+`GET /flags/random` → `POST /game/session`, `GET /game/flag`, `POST /game/answer`.
+`GET /highscores/me` als neue Beziehung von `highscoresModal` ergänzt.
+
+#### 0.8 ✅ Backend-Beziehungen aktualisiert
+`flagsRouter` → `gameRouter` in allen Beziehungen ersetzt.
+Neue Beziehungen: `gameRouter → gameSessionStore`, `highscoresRouter → gameSessionStore`, `appBootstrap → gameSessionStore`.
+
+> ⚠️ **Manuell nötig:** `docs/architecture/img/Components_Backend.svg` muss nach den DSL-Änderungen
+> neu aus Structurizr exportiert werden (`docker run structurizr/structurizr local` → Export im Browser).
+
+---
+
 ### Schritt 1 — `docs/test-concept.md` ✅ ERLEDIGT
 
 #### 1.1 ✅ Sektion 3.1 — Neue Unit-Test-Datei ergänzen
@@ -430,9 +465,9 @@ tests/
 
 ---
 
-### Schritt 3 — `docs/architecture/06_runtime_view.md`
+### Schritt 3 — `docs/architecture/06_runtime_view.md` ✅ ERLEDIGT
 
-#### 3.1 "Fetch Flag"-Abschnitt — zwei Sätze korrigieren
+#### 3.1 ✅ "Fetch Flag"-Abschnitt — zwei Sätze korrigieren
 
 **Satz 1 löschen/ersetzen:**
 > ~~"All flags are queried from the Persistence component and are cached in the Backend."~~
@@ -448,7 +483,7 @@ tests/
 
 ---
 
-#### 3.2 "Guess Country - Correct Guess" — Beschreibung anpassen
+#### 3.2 ✅ "Guess Country - Correct Guess" — Beschreibung anpassen
 
 **Satz löschen/ersetzen:**
 > ~~"The Frontend validates the guess and adjusts the highscore."~~
@@ -458,7 +493,7 @@ tests/
 
 ---
 
-#### 3.3 "Guess Country - Incorrect Guess" — Beschreibung anpassen
+#### 3.3 ✅ "Guess Country - Incorrect Guess" — Beschreibung anpassen
 
 **Satz löschen/ersetzen:**
 > ~~"The current highscore is forwarded to the Backend to be persisted."~~
@@ -528,6 +563,8 @@ pip install --only-binary :all: --require-hashes -r requirements.lock
 |---|---|---|
 | # | Datei | Was ändern | Status |
 |---|---|---|---|
+| 0 | `structurizr/workspace.dsl` | `flagsRouter` → `gameRouter`, `gameSessionStore` neu, Beziehungen aktualisiert | ✅ |
+| — | `docs/architecture/img/Components_Backend.svg` | Neu aus Structurizr exportieren (manuell) | ⚠️ manuell |
 | 1 | `docs/test-concept.md` | Neue Sektion `test_game_session.py` (17 Tests) hinzufügen | ✅ |
 | 2 | `docs/test-concept.md` | `test_flags.py`-Tabelle → `test_game.py` (Session-API-Tests) ersetzen | ✅ |
 | 3 | `docs/test-concept.md` | Neue Sektion `test_security.py` (13 Tests) hinzufügen | ✅ |
@@ -541,9 +578,9 @@ pip install --only-binary :all: --require-hashes -r requirements.lock
 | 11 | `src/backend/README.md` | Endpoints-Tabelle komplett ersetzen (Session-API, `/highscores/me`) | ✅ |
 | 12 | `src/backend/README.md` | "How Flags Work" → "How the Game Works" (Session-Flow) | ✅ |
 | 13 | `src/backend/README.md` | Test-Struktur: `test_game.py`, `test_security.py`, `test_game_session.py` | ✅ |
-| 14 | `docs/architecture/06_runtime_view.md` | "Fetch Flag": kein DB-Store, kein periodischer Refresh | ⬜ |
-| 15 | `docs/architecture/06_runtime_view.md` | "Correct Guess": Frontend validiert nicht mehr, Backend validiert via `/game/answer` | ⬜ |
-| 16 | `docs/architecture/06_runtime_view.md` | "Incorrect Guess": Score-Persistierung ist expliziter User-Schritt | ⬜ |
+| 14 | `docs/architecture/06_runtime_view.md` | "Fetch Flag": kein DB-Store, kein periodischer Refresh | ✅ |
+| 15 | `docs/architecture/06_runtime_view.md` | "Correct Guess": Frontend validiert nicht mehr, Backend validiert via `/game/answer` | ✅ |
+| 16 | `docs/architecture/06_runtime_view.md` | "Incorrect Guess": Score-Persistierung ist expliziter User-Schritt | ✅ |
 | 17 | `docs/architecture/08_crosscutting_concepts.md` | "Prefetch & Caching": Flags nicht in DB, kein periodischer Refresh | ⬜ |
 | 18 | `docs/architecture/11_risks_and_technical_debts.md` | Technical Debt 1: "Highscore" → "aktive Spielsession" | ⬜ |
 | 19 | `README.md` (Root) | `venv` → `.venv`, `requirements.txt` → `requirements.lock` | ⬜ |
