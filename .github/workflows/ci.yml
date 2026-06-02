@@ -3,6 +3,8 @@ name: CI
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -105,6 +107,6 @@ jobs:
           name: integration-coverage
           path: src/backend/coverage/integration
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
