@@ -88,6 +88,91 @@ jobs:
       - name: Type check
         run: npm run type-check
 
+  frontend-unit-tests:
+    name: Frontend Unit & Component Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Run Vitest
+        run: npm run test:run
+
+  frontend-e2e-tests:
+    name: Frontend E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: src/frontend
+        run: npm ci --ignore-scripts
+      - name: Install Playwright browsers
+        working-directory: src/frontend
+        run: npx playwright install --with-deps chromium
+      - name: Create .env for docker compose
+        run: |
+          cat > .env <<EOF
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=postgres
+          POSTGRES_DB=funwithflags
+          JWT_SECRET=ci-test-secret-not-for-production
+          EOF
+      - name: Start stack
+        run: docker compose up -d --build
+      - name: Wait for backend
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8000/health > /dev/null; then
+              echo "Backend is healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend never became healthy"
+          docker compose logs backend
+          exit 1
+      - name: Wait for frontend
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost > /dev/null; then
+              echo "Frontend is reachable"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Frontend never became reachable"
+          docker compose logs frontend
+          exit 1
+      - name: Run Playwright tests
+        working-directory: src/frontend
+        run: npx playwright test
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: src/frontend/playwright-report
+          retention-days: 7
+      - name: Dump container logs on failure
+        if: failure()
+        run: docker compose logs
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
   sonarqube:
     name: SonarQube
     runs-on: ubuntu-latest
