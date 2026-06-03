@@ -33,8 +33,8 @@
 
     <NotificationStack />
 
-    <AuthModal :isOpen="showSignUp" mode="signup" :message="signUpMessage" @close="closeSignUp" @submit="handleSignUp" @switch="closeSignUp(); openLogin()" />
-    <AuthModal :isOpen="showLogin"  mode="login"  :message="loginMessage"  @close="closeLogin"  @submit="handleLogin"  @switch="closeLogin(); openSignUp()" />
+    <AuthModal :isOpen="showSignUp" mode="signup" :message="signUpMessage" :submitting="signUpSubmitting" @close="closeSignUp" @submit="handleSignUp" @switch="closeSignUp(); openLogin()" />
+    <AuthModal :isOpen="showLogin"  mode="login"  :message="loginMessage"  :submitting="loginSubmitting"  @close="closeLogin"  @submit="handleLogin"  @switch="closeLogin(); openSignUp()" />
     <HighscoresModal :isOpen="showHighscores" :token="token" @close="closeHighscores" />
 
     <main class="content">
@@ -61,6 +61,8 @@ const showLogin = ref(false);
 const showHighscores = ref(false);
 const signUpMessage = ref("");
 const loginMessage = ref("");
+const signUpSubmitting = ref(false);
+const loginSubmitting = ref(false);
 const token = ref<string | null>(localStorage.getItem("authToken"));
 const username = ref<string | null>(localStorage.getItem("username"));
 
@@ -105,6 +107,8 @@ function describeAuthError(err: unknown, conflictMsg: string, fallbackMsg: strin
 }
 
 async function handleSignUp(formData: { username: string; password: string }) {
+  if (signUpSubmitting.value) return;
+  signUpSubmitting.value = true;
   signUpMessage.value = "";
   try {
     await apiFetch("/auth/register", { method: "POST", json: formData });
@@ -116,10 +120,14 @@ async function handleSignUp(formData: { username: string; password: string }) {
       "Username already taken. Please choose a different username.",
       "Sign up failed. Please try again.",
     );
+  } finally {
+    signUpSubmitting.value = false;
   }
 }
 
 async function handleLogin(formData: { username: string; password: string }) {
+  if (loginSubmitting.value) return;
+  loginSubmitting.value = true;
   loginMessage.value = "";
   try {
     const data = await apiFetch<{ access_token: string }>("/auth/login", {
@@ -138,6 +146,8 @@ async function handleLogin(formData: { username: string; password: string }) {
       "",
       "Login failed. Please try again.",
     );
+  } finally {
+    loginSubmitting.value = false;
   }
 }
 </script>

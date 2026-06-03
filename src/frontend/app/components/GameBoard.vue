@@ -25,8 +25,8 @@
       <template v-if="loadFailed && !flag">
         <div class="load-error">
           <div class="load-error-icon">⚠</div>
-          <p class="load-error-text">Could not load the next flag. Check your connection.</p>
-          <button @click="loadFlag" :disabled="reloading" class="btn btn-primary">
+          <p class="load-error-text">Could not reach the server. Check your connection.</p>
+          <button @click="tryReload" :disabled="reloading" class="btn btn-primary">
             {{ reloading ? 'Retrying…' : 'Retry' }}
           </button>
         </div>
@@ -189,6 +189,15 @@ async function createSession() {
   }
 }
 
+function discardSessionState(reason?: string) {
+  if (reason && score.value > 0) notify.warning(reason);
+  sessionId.value = null;
+  score.value = 0;
+  selectedOption.value = "";
+  showOverlay.value = false;
+  hasShownLoginPrompt.value = false;
+}
+
 async function loadFlag() {
   if (!sessionId.value || reloading.value) return;
   reloading.value = true;
@@ -201,15 +210,38 @@ async function loadFlag() {
     ]);
     flag.value = data;
     loadFailed.value = false;
-  } catch {
-    // The inline error banner is the user-facing feedback;
-    // no toast (would stack on every retry).
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) {
+      // Session is gone (backend restart, TTL cleanup). Wipe local state so the
+      // next retry creates a fresh session — otherwise we'd re-send the dead id.
+      discardSessionState("Game session expired — starting over.");
+    }
     flag.value = null;
     loadFailed.value = true;
   } finally {
     flagVisible.value = true;
     reloading.value = false;
   }
+}
+
+async function tryReload() {
+  if (!sessionId.value) await createSession();
+  await loadFlag();
+}
+
+function handleAnswerError(err: unknown) {
+  // Any submit failure leaves the question in an indeterminate state — clear
+  // the flag and surface the retry banner. That's a single, consistent recovery
+  // path for both transient network errors and stale-session (404) cases.
+  if (err instanceof ApiError && err.status === 404) {
+    discardSessionState("Game session expired — starting over.");
+  } else if (!(err instanceof ApiError) && !(err instanceof NetworkError)) {
+    // Unexpected non-API, non-network error — log it for debugging.
+    console.error("Unexpected answer error:", err);
+  }
+  flag.value = null;
+  loadFailed.value = true;
+  selectedOption.value = "";
 }
 
 async function checkInput(option: string) {
@@ -224,8 +256,7 @@ async function checkInput(option: string) {
       json: { question_id: flag.value.question_id, answer: option },
     });
   } catch (err) {
-    handleApiError(err, "Could not submit your answer.");
-    selectedOption.value = "";
+    handleAnswerError(err);
     return;
   } finally {
     submitting.value = false;
