@@ -22,5 +22,12 @@ export default defineConfig({
     globals: true,
     include: ['tests/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['tests/e2e/**', 'node_modules/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      reportsDirectory: './coverage',
+      include: ['app/**/*.{ts,vue}'],
+      exclude: ['app/main.ts', 'app/env.d.ts'],
+    },
   },
 })

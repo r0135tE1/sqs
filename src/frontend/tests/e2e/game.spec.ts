@@ -51,37 +51,42 @@ test('login with wrong password shows an error', async ({ page }) => {
 test('anonymous user sees signup prompt after wrong answer with score', async ({ page }) => {
   await expect(page.locator('.flag-img')).toBeVisible({ timeout: 5000 })
 
-  // Try answers until we get one right (we don't know which is correct)
-  // then deliberately give a wrong one.
+  /**
+   * Click "Next"/"Try Again" and wait for the next flag to be fully loaded.
+   * The frontend's loadFlag has a 200ms artificial delay, so just waiting for
+   * .flag-img to be in DOM is not enough — we'd click the next answer while
+   * flag.value still holds the old (already-consumed) question_id and the
+   * backend would 400 us.
+   */
+  async function advanceToNextFlag() {
+    const flagResponse = page.waitForResponse(
+      (resp) => resp.url().includes('/game/flag') && resp.ok(),
+    )
+    await page.locator('.result-btn').click()
+    await flagResponse
+    // Result strip should be gone before we click the next answer
+    await expect(page.locator('.result-strip')).toBeHidden()
+  }
+
+  // Try answers until we get one right to set up score > 0
   let gotCorrect = false
   for (let attempt = 0; attempt < 5 && !gotCorrect; attempt++) {
     await page.locator('.answer-btn').first().click()
     await expect(page.locator('.result-strip')).toBeVisible()
-
-    const isCorrect = await page.locator('.result-strip.correct').isVisible()
-    if (isCorrect) {
-      gotCorrect = true
-      await page.getByRole('button', { name: /Next/ }).click()
-      await expect(page.locator('.flag-img')).toBeVisible()
-    } else {
-      // Wrong first try; click Try Again and loop.
-      await page.getByRole('button', { name: /Try Again/ }).click()
-      await expect(page.locator('.flag-img')).toBeVisible()
-    }
+    gotCorrect = await page.locator('.result-strip.correct').isVisible()
+    await advanceToNextFlag()
   }
 
   if (!gotCorrect) {
     test.skip(true, 'Could not get a correct answer in 5 attempts to set up prompt scenario')
   }
 
-  // Now answer until wrong (4 attempts max — at least one must be wrong out of 4).
-  // First attempt is likely wrong since we always click the first button.
+  // Now answer until wrong — first button is likely wrong since flag changed
   for (let i = 0; i < 4; i++) {
     await page.locator('.answer-btn').first().click()
     await expect(page.locator('.result-strip')).toBeVisible()
     if (await page.locator('.result-strip.wrong').isVisible()) break
-    await page.getByRole('button', { name: /Next/ }).click()
-    await expect(page.locator('.flag-img')).toBeVisible()
+    await advanceToNextFlag()
   }
 
   await expect(page.getByText('Save your high score!')).toBeVisible()
