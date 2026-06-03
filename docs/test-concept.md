@@ -40,11 +40,11 @@ testcontainers[postgres]>=4.0
 
 The test suite follows the classic test pyramid with three layers, each building on the one below.
 
-**Unit tests** form the base and make up the majority of tests. They cover pure logic in isolation — no database, no HTTP, no external services. Dependencies are replaced with mocks or test doubles. Unit tests are fast, deterministic, and pinpoint exactly which function is broken.
+**Unit tests** form the base and make up the majority of tests. They cover pure logic. Dependencies are replaced with mocks or test doubles.
 
-**Integration tests** sit in the middle layer. They wire together the full HTTP stack (router → service → repository) against a real PostgreSQL instance spun up via `testcontainers`. This layer verifies that components interact correctly — that the right status codes are returned, database writes actually persist, and authentication is enforced end-to-end.
+**Integration tests** sit in the middle layer. They wire together the full HTTP stack (router → service → repository) against a real PostgreSQL instance spun up via `testcontainers`. This layer verifies that components interact correctly, for example that the right status codes are returned, database writes actually persist, and authentication is enforced end-to-end.
 
-**End-to-end tests** sit at the top and are deliberately few. They run against the complete Docker Compose stack and cover the most critical user flows (guest game, registered user saving a highscore, token expiry). They are slower and more brittle by nature, so only the happy paths and a handful of failure scenarios are covered here.
+**End-to-end tests** sit at the top and are deliberately few. They run against the complete Docker Compose stack and cover the most critical user flows. (NOTE: NOT DONE YET) 
 
 ### 3.1 Unit Tests
 
@@ -241,10 +241,14 @@ They cover three categories:
 Docker Compose stack for dynamic analysis. This is not part of the automated CI pipeline.
 
 ---
+## 4. Static Code Analysis — SonarQube
 
-## 4. Coverage Requirement
+SonarQube is the single static analysis tool for this project. It covers:
 
-The quality goal demands **≥80% code coverage**.
+- **Code smells** — maintainability issues, duplicated blocks, overly complex functions
+- **Bugs** — likely runtime errors detected statically
+- **Security hotspots** — e.g. hardcoded credentials, weak crypto usage
+- **Coverage gate** — enforces ≥80% coverage based on the `coverage.xml` report
 
 ```bash
 pytest --cov=app --cov-report=xml --cov-fail-under=80
@@ -254,24 +258,13 @@ The XML report (`coverage.xml`) is forwarded to SonarQube via `sonar-scanner` so
 
 Coverage is measured over the `app/` package (all routers, services, models, dependencies). `alembic/` and `main.py` bootstrap code are excluded from the measurement.
 
----
-
-## 5. Static Code Analysis — SonarQube
-
-SonarQube is the single static analysis tool for this project. It covers:
-
-- **Code smells** — maintainability issues, duplicated blocks, overly complex functions
-- **Bugs** — likely runtime errors detected statically
-- **Security hotspots** — e.g. hardcoded credentials, weak crypto usage
-- **Coverage gate** — enforces ≥80% coverage based on the `coverage.xml` report
-
 ### CI integration
 
 SonarQube runs as a dedicated job in the GitHub Actions pipeline after the unit and integration test jobs have completed. Both jobs upload their `coverage.xml` artifacts, which SonarQube then merges into a single coverage report. The Quality Gate is configured to block the pipeline if coverage drops below 80% or if any new bugs or security hotspots are introduced. Configuration is kept in `sonar-project.properties` at the backend root.
 
 ---
 
-## 6. Test Directory Layout
+## 5. Test Directory Layout
 
 ```
 src/backend/
@@ -300,7 +293,7 @@ src/backend/
 
 ---
 
-## 7. Summary: Requirement Traceability
+## 6. Summary: Requirement Traceability
 
 | Quality requirement | Addressed by |
 |---|---|

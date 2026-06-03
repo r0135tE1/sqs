@@ -4,23 +4,22 @@
 
 ![Runtime View Start](chapter5-7Pics/runtime_view/runtime-fetch-flag.svg)
 
-The player starts a game by creating a session (`POST /game/session`). The Frontend then requests the next flag (`GET /game/flag?session_id=...`). The Backend picks a random unseen country from the in-memory `FlagCache` and returns the flag SVG inline along with four answer options and a `question_id`. The correct answer is stored server-side and never sent to the client.
+On application startup, the Backend fetches all country data and flag images from the public API and stores them exclusively in-memory (`FlagCache`). The cache is loaded once at startup and serves all flag requests for the lifetime of the process.
 
-On application startup, the Backend fetches all country data and flag images from the public API and stores them exclusively in-memory (`FlagCache`). Flag data is never written to the database. The cache is loaded once at startup and serves all flag requests for the lifetime of the process.
-
+The player starts a game by creating a session. The Frontend then requests the next flag. The Backend picks a random unseen country from the in-memory `FlagCache` and returns the flag SVG inline along with four answer options and a `question_id`. The correct answer is stored server-side and never sent to the client.
 ## Guess Country - Correct Guess
 
 We assume that the flags are already cached in the backend.
 
 ![Runtime View Guess - Correct](chapter5-7Pics/runtime_view/runtime-correct-guess.svg)
 
-The Player guesses a country. The Frontend submits the answer to the Backend via `POST /game/answer`. The Backend validates the answer server-side, increments the session score by 1, and returns `{ correct: true, score, correct_answer }` to the Frontend. The Frontend then requests a new flag to start the next round.
+The Player guesses a country. The Frontend submits the answer to the Backend. The Backend validates the answer server-side, increments the session score by 1, and returns it to the Frontend. The Frontend then requests a new flag to start the next round.
 
 ## Guess Country - Incorrect Guess
 
 ![Runtime View Guess - Incorrect](chapter5-7Pics/runtime_view/runtime-incorrect-guess.svg)
 
-The Player guesses a country. The Frontend submits the answer to the Backend via `POST /game/answer`. The Backend validates the answer server-side, resets the session score to 0, and returns `{ correct: false, score: 0, correct_answer }` to the Frontend. The correct answer is shown to the Player. The score is only persisted to the database when the user explicitly saves it via `POST /highscores/` with their `session_id`.
+The Player guesses a country. The Frontend submits the answer to the Backend. The Backend validates the answer server-side, resets the session score to 0, and returns it to the Frontend. The correct answer is shown to the Player. The score is only persisted to the database when the user explicitly saves it via `POST /highscores/` with their `session_id`.
 
 ## Sign Up and Login
 
