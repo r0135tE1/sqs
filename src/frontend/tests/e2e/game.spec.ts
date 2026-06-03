@@ -52,19 +52,17 @@ test('anonymous user sees signup prompt after wrong answer with score', async ({
   await expect(page.locator('.flag-img')).toBeVisible({ timeout: 5000 })
 
   /**
-   * Click "Next"/"Try Again" and wait for the next flag to be fully loaded.
-   * The frontend's loadFlag has a 200ms artificial delay, so just waiting for
-   * .flag-img to be in DOM is not enough — we'd click the next answer while
-   * flag.value still holds the old (already-consumed) question_id and the
-   * backend would 400 us.
+   * Click "Next"/"Try Again" and wait until the new flag is actually rendered.
+   * waitForResponse alone fires when headers arrive, but Vue still needs a
+   * tick to assign flag.value and re-render. The most reliable signal is
+   * that the flag image's `src` (the base64 SVG data URL) has actually changed.
    */
   async function advanceToNextFlag() {
-    const flagResponse = page.waitForResponse(
-      (resp) => resp.url().includes('/game/flag') && resp.ok(),
-    )
+    const oldSrc = (await page.locator('.flag-img').getAttribute('src')) ?? ''
     await page.locator('.result-btn').click()
-    await flagResponse
-    // Result strip should be gone before we click the next answer
+    await expect(page.locator('.flag-img')).not.toHaveAttribute('src', oldSrc, {
+      timeout: 5000,
+    })
     await expect(page.locator('.result-strip')).toBeHidden()
   }
 
