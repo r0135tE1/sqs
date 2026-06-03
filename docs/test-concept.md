@@ -38,15 +38,13 @@ testcontainers[postgres]>=4.0
 
 ## 3. Test Pyramid
 
-```
-         /\
-        /  \   E2E (Docker Compose)
-       /----\
-      /      \  Integration (routers + real DB)
-     /--------\
-    /          \  Unit (services, pure logic)
-   /____________\
-```
+The test suite follows the classic test pyramid with three layers, each building on the one below.
+
+**Unit tests** form the base and make up the majority of tests. They cover pure logic in isolation — no database, no HTTP, no external services. Dependencies are replaced with mocks or test doubles. Unit tests are fast, deterministic, and pinpoint exactly which function is broken.
+
+**Integration tests** sit in the middle layer. They wire together the full HTTP stack (router → service → repository) against a real PostgreSQL instance spun up via `testcontainers`. This layer verifies that components interact correctly — that the right status codes are returned, database writes actually persist, and authentication is enforced end-to-end.
+
+**End-to-end tests** sit at the top and are deliberately few. They run against the complete Docker Compose stack and cover the most critical user flows (guest game, registered user saving a highscore, token expiry). They are slower and more brittle by nature, so only the happy paths and a handful of failure scenarios are covered here.
 
 ### 3.1 Unit Tests
 
@@ -269,29 +267,7 @@ SonarQube is the single static analysis tool for this project. It covers:
 
 ### CI integration
 
-```yaml
-# excerpt from .github/workflows/backend.yml
-- name: Run tests and collect coverage
-  run: pytest --cov=app --cov-report=xml --cov-fail-under=80
-
-- name: SonarQube Scan
-  uses: SonarSource/sonarqube-scan-action@v3
-  env:
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-```
-
-### `sonar-project.properties`
-
-```properties
-sonar.projectKey=fun-with-flags-backend
-sonar.sources=app
-sonar.tests=tests
-sonar.python.coverage.reportPaths=coverage.xml
-sonar.qualitygate.wait=true
-```
-
-`sonar.qualitygate.wait=true` causes the CI step to fail if the SonarQube Quality Gate is not passed, which enforces the *"no open issues"* requirement.
+SonarQube runs as a dedicated job in the GitHub Actions pipeline after the unit and integration test jobs have completed. Both jobs upload their `coverage.xml` artifacts, which SonarQube then merges into a single coverage report. The Quality Gate is configured to block the pipeline if coverage drops below 80% or if any new bugs or security hotspots are introduced. Configuration is kept in `sonar-project.properties` at the backend root.
 
 ---
 
@@ -324,69 +300,7 @@ src/backend/
 
 ---
 
-## 7. CI Pipeline (GitHub Actions)
-
-```yaml
-# .github/workflows/tests.yml
-jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: src/backend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: pip install --only-binary :all: --require-hashes -r requirements.lock
-      - run: pytest tests/unit --cov=app --cov-report=xml -v
-      - uses: actions/upload-artifact@v4
-        with: { name: unit-coverage, path: src/backend/coverage.xml }
-
-  integration-tests:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: src/backend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: pip install --only-binary :all: --require-hashes -r requirements.lock
-      - run: pytest tests/integration --cov=app --cov-report=xml -v
-      - uses: actions/upload-artifact@v4
-        with: { name: integration-coverage, path: src/backend/coverage.xml }
-
-  architecture-tests:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: src/backend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: pip install --only-binary :all: --require-hashes -r requirements.lock
-      - run: pytest app/tests -v
-
-  sonarqube:
-    needs: [unit-tests, integration-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/download-artifact@v4
-        with: { name: unit-coverage, path: src/backend/coverage/unit }
-      - uses: actions/download-artifact@v4
-        with: { name: integration-coverage, path: src/backend/coverage/integration }
-      - uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-```
-
----
-
-## 8. Summary: Requirement Traceability
+## 7. Summary: Requirement Traceability
 
 | Quality requirement | Addressed by |
 |---|---|
