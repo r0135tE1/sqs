@@ -22,16 +22,12 @@ The Player guesses a country. The Frontend submits the answer to the Backend via
 
 The Player guesses a country. The Frontend submits the answer to the Backend via `POST /game/answer`. The Backend validates the answer server-side, resets the session score to 0, and returns `{ correct: false, score: 0, correct_answer }` to the Frontend. The correct answer is shown to the Player. The score is only persisted to the database when the user explicitly saves it via `POST /highscores/` with their `session_id`.
 
-## Sign Up
+## Sign Up and Login
 
 ![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
 
-The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The backend checks if the user already exists. If no user exists, a new one will be created (Persistence) and the Player will be notified.
+The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The Backend checks if the user already exists. If no user exists, a new one will be created (Persistence) and the Player will be notified.
 
-If the user already exists, the Player will be notified respectively and no new user will stored in the Persistence component.
+If the user already exists, the Player will be notified respectively and no new user will be stored in the Persistence component.
 
-## Login
-
-![Runtime View Login](chapter5-7Pics/runtime_view/runtime-login.svg)
-
-The Player enters login data. The Frontend forwards the data to the Backend. The Backend queries the Persistence Component for the credentials. The backend validates the data provided by the Player and the data in the Persistence component. If the data matches, a token is returned which authenticates the Player.
+After a successful sign up, the Frontend automatically triggers a login with the same credentials. The Backend validates the credentials, creates a JWT token and returns it to the Frontend. From this point on, the Player is authenticated and the token is used for all protected requests (e.g. saving a highscore).
