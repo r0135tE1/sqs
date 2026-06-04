@@ -33,26 +33,36 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
             backend = container "Backend" "handles API requests - handles game logic - manages persistence" "Python / FastAPI" "API" {
 
-                appBootstrap = component "Application Bootstrap" "Initialises the FastAPI app, registers routers, configures CORS middleware, triggers FlagCache preload at startup, and exposes the /health endpoint."
+                appBootstrap = component "Application Bootstrap" "Initialises the app, registers routers, configures CORS, and triggers FlagCache preload at startup."
 
-                authRouter = component "Auth Router" "Handles user registration and login. Delegates password hashing and token creation to the Auth Service."
+                authRouter = component "Auth Router" "Handles user registration and login."
 
-                gameRouter = component "Game Router" "Session-based game endpoints: POST /game/session creates a session, GET /game/flag returns the next flag with inline SVG, POST /game/answer validates the answer server-side and updates the session score."
+                gameRouter = component "Game Router" "Manages game sessions: creates sessions, serves flags, and validates answers."
 
-                highscoresRouter = component "Highscores Router" "Protected endpoints. Returns the top-10 leaderboard (GET /highscores/), the authenticated user's own highscore (GET /highscores/me), and persists a session score (POST /highscores/). All require a valid JWT."
+                highscoresRouter = component "Highscores Router" "Protected endpoints for leaderboard and score persistence. Requires valid JWT."
 
-                authService = component "Auth Service" "Stateless utilities for bcrypt password hashing/verification and HS256 JWT creation/decoding."
+                authService = component "Auth Service" "Password hashing/verification and JWT creation/decoding."
 
-                flagCache = component "Flag Cache" "Fetches all country metadata and SVG images from the Public API once at startup and stores them in memory. Flag data is never written to the database. Returns a random unseen flag for a given session."
+                flagCache = component "Flag Cache" "Loads country metadata and SVG images from the Public API at startup. Serves random unseen flags per session."
 
-                gameSessionStore = component "Game Session Store" "In-memory store for active game sessions. Tracks seen flags, current score, best score, and open questions per session. A background task removes sessions inactive for more than 12 hours."
+                gameSessionStore = component "Game Session Store" "In-memory store for active game sessions. Tracks flags, scores, and open questions. Cleans up inactive sessions."
 
-                authDependency = component "Auth Dependency" "FastAPI dependency. Extracts the Bearer token from the Authorization header, decodes it via Auth Service, and returns the username or raises HTTP 401."
+                authDependency = component "Auth Dependency" "Validates the Bearer token and returns the authenticated username."
 
-                databaseLayer = component "Database Layer" "Async SQLAlchemy engine, session factory, get_db() dependency, and ORM models (User, Highscore)."
+                databaseLayer = component "Database Layer" "SQLAlchemy engine, session factory, and ORM models (User, Highscore)."
+
+                userRepository = component "User Repository" "DB queries for User records: lookup and creation."
+
+                highscoreRepository = component "Highscore Repository" "DB queries for Highscore records: top-10, upsert, and lookup by user."
+
+                userService = component "User Service" "Registration and authentication logic."
+
+                highscoreService = component "Highscore Service" "Highscore business logic: leaderboard retrieval, user score lookup, and score persistence."
+
+                appConfig = component "Config" "Pydantic Settings for database URL, JWT secret, CORS origins, and API URL."
             }
 
-            persistence = container "Persistence" "Saves player credentials and highscores. Flag data is not stored here — it is held in-memory by the backend." {
+            persistence = container "Persistence" "Saves player credentials and highscores." {
                 tags "Database"
             }
         }
@@ -102,16 +112,23 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         appBootstrap -> flagCache         "Calls load() on startup" ""
         appBootstrap -> gameSessionStore  "Runs cleanup task every hour" ""
 
-        authRouter       -> authService      "Hashes passwords and creates JWT tokens via" ""
-        authRouter       -> databaseLayer    "Reads/writes User records via" "SQLAlchemy async"
+        authRouter       -> authService      "Creates JWT token via" ""
+        authRouter       -> userService      "Delegates registration and authentication to" ""
         gameRouter       -> flagCache        "Retrieves random unseen flag from" ""
         gameRouter       -> gameSessionStore "Creates sessions, stores questions, validates answers via" ""
         highscoresRouter -> authDependency   "Validates Bearer token via" ""
-        highscoresRouter -> databaseLayer    "Reads/writes Highscore and User records via" "SQLAlchemy async"
+        highscoresRouter -> highscoreService "Delegates highscore operations to" ""
         highscoresRouter -> gameSessionStore "Reads best score for a session via" ""
         authDependency   -> authService      "Decodes JWT via" ""
         flagCache        -> publicApi        "Fetches all countries and SVG images on startup from" "REST / HTTP"
         databaseLayer    -> persistence      "Persists and queries data in" "SQL / asyncpg"
+        userService      -> authService      "Hashes and verifies passwords via" ""
+        userService      -> userRepository   "Reads/writes User records via" ""
+        userRepository   -> databaseLayer    "Executes queries via" "SQLAlchemy async"
+        highscoreService -> userRepository   "Looks up user by username via" ""
+        highscoreService -> highscoreRepository "Reads/writes Highscore records via" ""
+        highscoreRepository -> databaseLayer "Executes queries via" "SQLAlchemy async"
+        appBootstrap     -> appConfig        "Reads configuration from" ""
 
         # ──────────────────────────────────────────
         # Deployment
