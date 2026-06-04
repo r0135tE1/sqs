@@ -1,25 +1,23 @@
 import { vi } from "vitest"
 import { flushPromises } from "@vue/test-utils"
 
-/** Shape for a happy-path JSON response. */
-export const okJson = (data: unknown) => ({
-  ok: true,
-  status: 200,
-  json: async () => data,
-})
+/**
+ * Minimal Response stand-in for fetch mocks. The unknown→Response cast lives
+ * here once so call sites can `return okJson(...)` without per-return casts.
+ */
+export const okJson = (data: unknown): Response =>
+  ({ ok: true, status: 200, json: async () => data } as unknown as Response)
 
-/** Shape for an error response with optional body. */
-export const errJson = (status: number, body: unknown = {}) => ({
-  ok: false,
-  status,
-  json: async () => body,
-})
+export const errJson = (status: number, body: unknown = {}): Response =>
+  ({ ok: false, status, json: async () => body } as unknown as Response)
+
+type Handler = (url: string, opts?: RequestInit) => Response | null
 
 interface FetchMock {
   /** Match by url substring. */
-  on(matcher: string, response: unknown): void
-  /** Custom predicate — return non-null to handle the request. */
-  onMatching(predicate: (url: string, opts?: RequestInit) => unknown | null): void
+  on(matcher: string, response: Response): void
+  /** Custom predicate — return null to pass the request on to the next handler. */
+  onMatching(predicate: Handler): void
   calls: () => unknown[][]
 }
 
@@ -29,14 +27,14 @@ interface FetchMock {
  * overrides the earlier response — useful for sequencing.
  */
 export function makeFetchMock(): FetchMock {
-  const handlers: Array<(url: string, opts?: RequestInit) => unknown | null> = []
+  const handlers: Handler[] = []
 
-  const mock = vi.fn(async (url: string, opts?: RequestInit) => {
+  const mock = vi.fn(async (url: string, opts?: RequestInit): Promise<Response> => {
     for (let i = handlers.length - 1; i >= 0; i--) {
       const result = handlers[i]!(url, opts)
-      if (result !== null) return result as Response
+      if (result !== null) return result
     }
-    return okJson({}) as unknown as Response
+    return okJson({})
   })
 
   globalThis.fetch = mock as unknown as typeof fetch

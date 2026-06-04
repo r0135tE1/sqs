@@ -21,13 +21,13 @@ describe('App error and edge-case flows', () => {
     fetchMock.on('/auth/register', errJson(409, { detail: 'taken' }))
 
     const wrapper = mount(App)
-    await settle(wrapper)
+    await settle()
 
     await wrapper.findAll('button').find((b) => b.text() === 'Sign Up')!.trigger('click')
     await wrapper.find('#signup-username').setValue('marinus')
     await wrapper.find('#signup-password').setValue('password123')
     await wrapper.find('form').trigger('submit')
-    await settle(wrapper)
+    await settle()
 
     expect(wrapper.find('.error-box').text()).toContain('Username already taken')
     expect(localStorage.getItem('authToken')).toBeNull()
@@ -40,19 +40,19 @@ describe('App error and edge-case flows', () => {
     // /auth/register handler that rejects (network failure)
     globalThis.fetch = vi.fn(async (url: string) => {
       if (url.includes('/auth/register')) throw new Error('Network')
-      if (url.includes('/game/session')) return okJson({ session_id: 's1' }) as unknown as Response
-      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] }) as unknown as Response
-      return okJson({}) as unknown as Response
+      if (url.includes('/game/session')) return okJson({ session_id: 's1' })
+      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
+      return okJson({})
     }) as unknown as typeof fetch
 
     const wrapper = mount(App)
-    await settle(wrapper)
+    await settle()
 
     await wrapper.findAll('button').find((b) => b.text() === 'Sign Up')!.trigger('click')
     await wrapper.find('#signup-username').setValue('marinus')
     await wrapper.find('#signup-password').setValue('password123')
     await wrapper.find('form').trigger('submit')
-    await settle(wrapper)
+    await settle()
 
     expect(wrapper.find('.error-box').text()).toContain('Network error')
   })
@@ -64,13 +64,13 @@ describe('App error and edge-case flows', () => {
     fetchMock.on('/auth/login', errJson(500, { detail: 'server boom' }))
 
     const wrapper = mount(App)
-    await settle(wrapper)
+    await settle()
 
     await wrapper.findAll('button').find((b) => b.text() === 'Log In')!.trigger('click')
     await wrapper.find('#login-username').setValue('marinus')
     await wrapper.find('#login-password').setValue('password123')
     await wrapper.find('form').trigger('submit')
-    await settle(wrapper)
+    await settle()
 
     expect(wrapper.find('.error-box').text()).toContain('server boom')
   })
@@ -101,13 +101,13 @@ describe('App error and edge-case flows', () => {
         // Slow login — never resolves so we can spam clicks
         return await new Promise<Response>(() => {})
       }
-      if (url.includes('/game/session')) return okJson({ session_id: 's1' }) as unknown as Response
-      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] }) as unknown as Response
-      return okJson({}) as unknown as Response
+      if (url.includes('/game/session')) return okJson({ session_id: 's1' })
+      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
+      return okJson({})
     }) as unknown as typeof fetch
 
     const wrapper = mount(App)
-    await settle(wrapper)
+    await settle()
 
     await wrapper.findAll('button').find((b) => b.text() === 'Log In')!.trigger('click')
     await wrapper.find('#login-username').setValue('marinus')

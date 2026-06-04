@@ -23,13 +23,13 @@ describe('GameBoard error/recovery paths', () => {
   it('shows the retry banner when loadFlag fails', async () => {
     let flagCalls = 0
     globalThis.fetch = vi.fn(async (url: string) => {
-      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' }) as unknown as Response
+      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) {
         flagCalls++
         if (flagCalls === 1) throw new Error('Network')
-        return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] }) as unknown as Response
+        return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       }
-      return okJson({}) as unknown as Response
+      return okJson({})
     }) as unknown as typeof fetch
 
     const wrapper = await mountAndSettle({ token: null, username: null })
@@ -41,13 +41,13 @@ describe('GameBoard error/recovery paths', () => {
   it('Retry button recovers and loads the flag', async () => {
     let flagCalls = 0
     globalThis.fetch = vi.fn(async (url: string) => {
-      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' }) as unknown as Response
+      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) {
         flagCalls++
         if (flagCalls === 1) throw new Error('Network')
-        return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] }) as unknown as Response
+        return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       }
-      return okJson({}) as unknown as Response
+      return okJson({})
     }) as unknown as typeof fetch
 
     const wrapper = await mountAndSettle({ token: null, username: null })
@@ -63,10 +63,10 @@ describe('GameBoard error/recovery paths', () => {
 
   it('discards stale session on 404 from /game/answer', async () => {
     globalThis.fetch = vi.fn(async (url: string) => {
-      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' }) as unknown as Response
-      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] }) as unknown as Response
-      if (url.endsWith('/game/answer')) return errJson(404, { detail: 'Session not found' }) as unknown as Response
-      return okJson({}) as unknown as Response
+      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
+      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
+      if (url.endsWith('/game/answer')) return errJson(404, { detail: 'Session not found' })
+      return okJson({})
     }) as unknown as typeof fetch
 
     const wrapper = await mountAndSettle({ token: null, username: null })
@@ -82,17 +82,17 @@ describe('GameBoard error/recovery paths', () => {
   it('saves the score and emits new-highscore when authenticated and new best', async () => {
     let answerCalls = 0
     globalThis.fetch = vi.fn(async (url: string) => {
-      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' }) as unknown as Response
-      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] }) as unknown as Response
-      if (url.includes('/highscores/me')) return okJson({ score: 0 }) as unknown as Response
+      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
+      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
+      if (url.includes('/highscores/me')) return okJson({ score: 0 })
       if (url.endsWith('/game/answer')) {
         answerCalls++
         return answerCalls === 1
-          ? okJson({ correct: true, score: 1, correct_answer: 'A' }) as unknown as Response
-          : okJson({ correct: false, score: 0, correct_answer: 'A' }) as unknown as Response
+          ? okJson({ correct: true, score: 1, correct_answer: 'A' })
+          : okJson({ correct: false, score: 0, correct_answer: 'A' })
       }
-      if (url.endsWith('/highscores/')) return okJson({ highscore: 1, is_new_best: true }) as unknown as Response
-      return okJson({}) as unknown as Response
+      if (url.endsWith('/highscores/')) return okJson({ highscore: 1, is_new_best: true })
+      return okJson({})
     }) as unknown as typeof fetch
 
     const wrapper = await mountAndSettle({ token: 'tok', username: 'marinus' })
@@ -114,10 +114,10 @@ describe('GameBoard error/recovery paths', () => {
 
   it('does not stack toasts when answer endpoint is offline (relies on dedupe)', async () => {
     globalThis.fetch = vi.fn(async (url: string) => {
-      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' }) as unknown as Response
-      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] }) as unknown as Response
+      if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
+      if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       if (url.endsWith('/game/answer')) throw new Error('Network')
-      return okJson({}) as unknown as Response
+      return okJson({})
     }) as unknown as typeof fetch
 
     const wrapper = await mountAndSettle({ token: null, username: null })
