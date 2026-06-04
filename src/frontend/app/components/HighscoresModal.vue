@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import { API_URL } from "../config";
+import { apiFetch, ApiError, NetworkError } from "../api/client";
 import BaseModal from "./BaseModal.vue";
 
 interface HighscoreEntry { username: string; score: number; }
@@ -63,13 +63,15 @@ async function loadHighscores() {
   loading.value = true;
   error.value = "";
   try {
-    const response = await fetch(`${API_URL}/highscores/`, {
-      headers: { Authorization: `Bearer ${props.token}` },
-    });
-    if (response.ok) { highscores.value = await response.json(); }
-    else { error.value = "Failed to load highscores. Please try again."; }
-  } catch {
-    error.value = "Network error. Please check your connection.";
+    highscores.value = await apiFetch<HighscoreEntry[]>("/highscores/", { token: props.token });
+  } catch (err) {
+    if (err instanceof NetworkError) {
+      error.value = "Network error. Please check your connection.";
+    } else if (err instanceof ApiError) {
+      error.value = "Failed to load highscores. Please try again.";
+    } else {
+      error.value = "Something went wrong.";
+    }
   } finally {
     loading.value = false;
   }

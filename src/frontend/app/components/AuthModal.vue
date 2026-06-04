@@ -3,20 +3,21 @@
     <div v-if="message || localError" class="error-box">{{ message || localError }}</div>
 
     <form @submit.prevent="submit" class="form">
-      <div>
-        <label :for="`${mode}-username`" class="label">Username</label>
-        <input :id="`${mode}-username`" v-model="form.username" type="text"
-               :placeholder="mode === 'login' ? 'Enter your username' : 'Choose a username'"
-               autocomplete="username" class="input" required />
+      <div v-for="field in fields" :key="field.key">
+        <label :for="`${mode}-${field.key}`" class="label">{{ field.label }}</label>
+        <input
+          :id="`${mode}-${field.key}`"
+          v-model="form[field.key]"
+          :type="field.type"
+          :placeholder="mode === 'login' ? field.placeholderLogin : field.placeholderSignup"
+          :autocomplete="mode === 'login' ? field.autocompleteLogin : field.autocompleteSignup"
+          class="input"
+          required
+        />
       </div>
-      <div>
-        <label :for="`${mode}-password`" class="label">Password</label>
-        <input :id="`${mode}-password`" v-model="form.password" type="password"
-               :placeholder="mode === 'login' ? 'Enter your password' : 'Create a password'"
-               :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
-               class="input" required />
-      </div>
-      <button type="submit" class="submit-btn">{{ mode === 'login' ? 'Login' : 'Sign Up' }}</button>
+      <button type="submit" :disabled="submitting" class="submit-btn">
+        {{ submitting ? 'Submitting…' : (mode === 'login' ? 'Login' : 'Sign Up') }}
+      </button>
     </form>
     <p class="footer">
       {{ mode === 'login' ? "Don't have an account yet?" : "Already have an account?" }}
@@ -29,11 +30,32 @@
 import { ref, watch } from "vue"
 import BaseModal from "./BaseModal.vue"
 
-const props = defineProps<{ isOpen: boolean; mode: "login" | "signup"; message?: string }>()
+const props = defineProps<{ isOpen: boolean; mode: "login" | "signup"; message?: string; submitting?: boolean }>()
 const emit = defineEmits(["close", "submit", "switch"])
 
 const form = ref({ username: "", password: "" })
 const localError = ref("")
+
+const fields = [
+  {
+    key: "username" as const,
+    label: "Username",
+    type: "text",
+    placeholderLogin: "Enter your username",
+    placeholderSignup: "Choose a username",
+    autocompleteLogin: "username",
+    autocompleteSignup: "username",
+  },
+  {
+    key: "password" as const,
+    label: "Password",
+    type: "password",
+    placeholderLogin: "Enter your password",
+    placeholderSignup: "Create a password",
+    autocompleteLogin: "current-password",
+    autocompleteSignup: "new-password",
+  },
+]
 
 watch(() => props.isOpen, (v) => {
   localError.value = ""
@@ -51,6 +73,7 @@ function validate() {
 }
 
 function submit() {
+  if (props.submitting) return
   if (validate()) emit("submit", form.value)
 }
 </script>
@@ -83,7 +106,11 @@ function submit() {
   margin-top: 0.25rem;
   transition: background-color 0.15s;
 }
-.submit-btn:hover { background-color: #0369a1; }
+.submit-btn:hover:not(:disabled) { background-color: #0369a1; }
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .footer {
   text-align: center;
