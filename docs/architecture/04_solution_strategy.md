@@ -11,14 +11,14 @@
 - **Infrastructure & CI/CD:** A runnable GitHub pipeline is used for continuous integration. The local deployment relies on Docker Compose to ensure the system starts with a maximum of 2 commands
 - **Documentation & Modeling:** Documentation using the arc42 standard on readthedocs and a C4-model
 - **Analysis:** Sonarcube to analyse test coverage
-- **Testing:** Testing according to test pyramid
+- **Testing:** Testing according to [test concept](../test-concept.md)
 
 ## Top-level Decomposition
 
 The system is decomposed into 3 distinct layers:
 
 1. **Frontend:** Handles user interaction and renders the UI. Calls Backend API
-2. **Backend:** Contains the business logic, handles authentication, and acts as a gateway to the external service. It exposes at least one publicly accessible endpoint and at least one secured endpoint
+2. **Backend:** Contains the business logic, handles authentication, and acts as a gateway to the external service
 3. **Persistence Layer:** Securely stores player credentials, highscores and flag information
 
 ## Decisions to Achieve Quality Goals
