@@ -1,9 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import HighscoresModal from '../../app/components/HighscoresModal.vue'
-
-const okJson = (data: unknown) => ({ ok: true, status: 200, json: async () => data })
-const errJson = () => ({ ok: false, status: 500, json: async () => ({}) })
+import { okJson, errJson } from '../helpers/fetchMock'
 
 describe('HighscoresModal', () => {
   beforeEach(() => {
@@ -28,13 +26,26 @@ describe('HighscoresModal', () => {
   })
 
   it('shows error state when fetch fails', async () => {
-    globalThis.fetch = vi.fn().mockResolvedValue(errJson())
+    globalThis.fetch = vi.fn().mockResolvedValue(errJson(500))
     const wrapper = mount(HighscoresModal, {
       props: { isOpen: true, token: 'fake-token' },
     })
     await flushPromises()
     expect(wrapper.find('.spinner').exists()).toBe(false)
     expect(wrapper.text()).toContain('Failed to load highscores')
+  })
+
+  it('shows generic "Something went wrong" on unexpected error', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => { throw new SyntaxError('invalid JSON') },
+    }) as unknown as typeof fetch
+    const wrapper = mount(HighscoresModal, {
+      props: { isOpen: true, token: 'fake-token' },
+    })
+    await flushPromises()
+    expect(wrapper.text()).toContain('Something went wrong')
   })
 
   it('shows error on network exception', async () => {

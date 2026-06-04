@@ -23,8 +23,11 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('register, auto-login, and persist session across reload', async ({ page }) => {
-  // Unique username so the test is repeatable without DB cleanup
-  const username = `e2e_${Date.now()}_${Math.floor(Math.random() * 1000)}`
+  // Unique username so the test is repeatable without DB cleanup.
+  // randomUUID is cryptographically random and avoids the SonarQube
+  // pseudorandom-usage warning, which would (correctly) flag Math.random
+  // in any security-sensitive code path even if this isn't one.
+  const username = `e2e_${crypto.randomUUID().slice(0, 8)}`
   const password = 'password123'
 
   // Step 1: open sign-up modal
@@ -44,7 +47,7 @@ test('register, auto-login, and persist session across reload', async ({ page })
   // Step 4: a token should be stored
   const tokenAfterLogin = await page.evaluate(() => localStorage.getItem('authToken'))
   expect(tokenAfterLogin).toBeTruthy()
-  expect(tokenAfterLogin!.length).toBeGreaterThan(20) // sanity check it's an actual JWT
+  expect(tokenAfterLogin?.length ?? 0).toBeGreaterThan(20) // sanity check it's an actual JWT
 
   // Step 5: reload the page and check the user is still logged in
   await page.reload()

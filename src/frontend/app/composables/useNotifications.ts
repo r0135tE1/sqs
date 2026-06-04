@@ -37,11 +37,7 @@ function add(type: NotificationType, message: string, durationMs?: number): stri
     return existing.id
   }
 
-  const id =
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `n-${Date.now()}-${Math.random()}`
-
+  const id = crypto.randomUUID()
   notifications.value.push({ id, type, message })
   scheduleDismiss(id, dur)
   return id

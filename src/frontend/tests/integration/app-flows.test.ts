@@ -1,46 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import App from '../../app/App.vue'
-
-const okJson = (data: unknown) => ({ ok: true, status: 200, json: async () => data })
-const errJson = (status: number, body: unknown = {}) => ({
-  ok: false,
-  status,
-  json: async () => body,
-})
-
-/**
- * URL-routed fetch mock. Each handler is keyed by a substring match on the URL.
- * Later registrations override earlier ones — useful for sequencing responses.
- */
-function makeFetchMock() {
-  const handlers: Array<(url: string, opts?: RequestInit) => unknown | null> = []
-
-  const mock = vi.fn(async (url: string, opts?: RequestInit) => {
-    for (let i = handlers.length - 1; i >= 0; i--) {
-      const result = handlers[i]!(url, opts)
-      if (result !== null) return result as Response
-    }
-    return okJson({}) as unknown as Response
-  })
-
-  globalThis.fetch = mock as unknown as typeof fetch
-
-  return {
-    on(matcher: string, response: unknown) {
-      handlers.push((url) => (url.includes(matcher) ? response : null))
-    },
-    onMatching(predicate: (url: string, opts?: RequestInit) => unknown | null) {
-      handlers.push(predicate)
-    },
-    calls: () => mock.mock.calls,
-  }
-}
-
-async function settleApp(wrapper: ReturnType<typeof mount>) {
-  await vi.runAllTimersAsync()
-  await flushPromises()
-}
+import { okJson, errJson, makeFetchMock, settle as settleApp } from '../helpers/fetchMock'
 
 describe('App integration flows', () => {
   beforeEach(() => {

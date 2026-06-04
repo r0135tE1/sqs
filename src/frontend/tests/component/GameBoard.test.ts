@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import GameBoard from '../../app/components/GameBoard.vue'
-
-const okJson = (data: unknown) => ({ ok: true, status: 200, json: async () => data })
+import { okJson } from '../helpers/fetchMock'
 
 function mockHappyPath() {
   const fetchMock = vi.fn(async (url: string) => {
