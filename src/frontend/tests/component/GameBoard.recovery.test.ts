@@ -30,7 +30,7 @@ describe('GameBoard error/recovery paths', () => {
         return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       }
       return okJson({})
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     const wrapper = await mountAndSettle({ token: null, username: null })
 
@@ -48,7 +48,7 @@ describe('GameBoard error/recovery paths', () => {
         return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       }
       return okJson({})
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     const wrapper = await mountAndSettle({ token: null, username: null })
     expect(wrapper.find('.load-error').exists()).toBe(true)
@@ -67,11 +67,11 @@ describe('GameBoard error/recovery paths', () => {
       if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       if (url.endsWith('/game/answer')) return errJson(404, { detail: 'Session not found' })
       return okJson({})
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     const wrapper = await mountAndSettle({ token: null, username: null })
 
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.findAll('.answer-btn')[0].trigger('click')
     await flushPromises()
 
     // Stale state cleared → load-error banner shown
@@ -93,19 +93,19 @@ describe('GameBoard error/recovery paths', () => {
       }
       if (url.endsWith('/highscores/')) return okJson({ highscore: 1, is_new_best: true })
       return okJson({})
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     const wrapper = await mountAndSettle({ token: 'tok', username: 'marinus' })
 
     // Correct answer → score = 1
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.findAll('.answer-btn')[0].trigger('click')
     await flushPromises()
     await wrapper.find('.result-btn').trigger('click')
     await vi.runAllTimersAsync()
     await flushPromises()
 
     // Wrong answer → triggers save
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.findAll('.answer-btn')[0].trigger('click')
     await flushPromises()
 
     expect(wrapper.emitted('new-highscore')).toBeTruthy()
@@ -118,11 +118,11 @@ describe('GameBoard error/recovery paths', () => {
       if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       if (url.endsWith('/game/answer')) throw new Error('Network')
       return okJson({})
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     const wrapper = await mountAndSettle({ token: null, username: null })
 
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.findAll('.answer-btn')[0].trigger('click')
     await flushPromises()
 
     // After failure, the flag-box is cleared and the retry banner shows
