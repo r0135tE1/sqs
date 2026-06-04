@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import App from '../../app/App.vue'
-import { okJson, errJson, makeFetchMock, settle as settleApp, installFetchMock, findButtonByText } from '../helpers/fetchMock'
+import { okJson, errJson, makeFetchMock, settle as settleApp, findButtonByText } from '../helpers/fetchMock'
 
 describe('App integration flows', () => {
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe('App integration flows', () => {
     fetchMock.on('/highscores/me', okJson({ score: 0 }))
 
     const wrapper = mount(App)
-    await settleApp(wrapper)
+    await settleApp()
 
     expect(wrapper.text()).not.toContain('marinus')
 
@@ -38,7 +38,7 @@ describe('App integration flows', () => {
     await wrapper.find('#signup-username').setValue('marinus')
     await wrapper.find('#signup-password').setValue('password123')
     await wrapper.find('form').trigger('submit')
-    await settleApp(wrapper)
+    await settleApp()
 
     // After successful signup → login → token stored, username in nav
     expect(localStorage.getItem('authToken')).toBe('jwt-token')
@@ -57,13 +57,13 @@ describe('App integration flows', () => {
     fetchMock.on('/auth/login', errJson(401, { detail: 'wrong password' }))
 
     const wrapper = mount(App)
-    await settleApp(wrapper)
+    await settleApp()
 
     await findButtonByText(wrapper, 'Log In').trigger('click')
     await wrapper.find('#login-username').setValue('marinus')
     await wrapper.find('#login-password').setValue('wrongpassword')
     await wrapper.find('form').trigger('submit')
-    await settleApp(wrapper)
+    await settleApp()
 
     expect(wrapper.find('.error-box').text()).toContain('Invalid username or password')
     expect(localStorage.getItem('authToken')).toBeNull()
@@ -89,18 +89,18 @@ describe('App integration flows', () => {
     })
 
     const wrapper = mount(App)
-    await settleApp(wrapper)
+    await settleApp()
 
     // Correct answer
     await wrapper.find('.answer-btn').trigger('click')
-    await settleApp(wrapper)
+    await settleApp()
     // Click "Next" to dismiss result strip
     await wrapper.find('.result-btn').trigger('click')
-    await settleApp(wrapper)
+    await settleApp()
 
     // Wrong answer
     await wrapper.find('.answer-btn').trigger('click')
-    await settleApp(wrapper)
+    await settleApp()
 
     // Login prompt should appear
     expect(wrapper.text()).toContain('Save your high score')
@@ -120,12 +120,12 @@ describe('App integration flows', () => {
     fetchMock.on('/highscores/me', okJson({ score: 42 }))
 
     const wrapper = mount(App)
-    await settleApp(wrapper)
+    await settleApp()
 
     expect(wrapper.text()).toContain('marinus')
 
     await findButtonByText(wrapper, 'Logout').trigger('click')
-    await settleApp(wrapper)
+    await settleApp()
 
     expect(localStorage.getItem('authToken')).toBeNull()
     expect(localStorage.getItem('username')).toBeNull()
@@ -158,13 +158,13 @@ describe('App integration flows', () => {
     })
 
     const wrapper = mount(App)
-    await settleApp(wrapper)
+    await settleApp()
 
     // Correct
     await wrapper.find('.answer-btn').trigger('click')
-    await settleApp(wrapper)
+    await settleApp()
     await wrapper.find('.result-btn').trigger('click')
-    await settleApp(wrapper)
+    await settleApp()
     // Wrong → triggers save. Use plain flushPromises so the 3s toast-timeout
     // doesn't get advanced — it would clear the message before we assert.
     await wrapper.find('.answer-btn').trigger('click')
