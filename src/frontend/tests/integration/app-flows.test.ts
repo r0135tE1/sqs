@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import App from '../../app/App.vue'
-import { okJson, errJson, makeFetchMock, settle as settleApp } from '../helpers/fetchMock'
+import { okJson, errJson, makeFetchMock, settle as settleApp, installFetchMock, findButtonByText } from '../helpers/fetchMock'
 
 describe('App integration flows', () => {
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe('App integration flows', () => {
     expect(wrapper.text()).not.toContain('marinus')
 
     // Open sign-up modal
-    await wrapper.findAll('button').find((b) => b.text() === 'Sign Up')!.trigger('click')
+    await findButtonByText(wrapper, 'Sign Up').trigger('click')
 
     // Fill and submit form
     await wrapper.find('#signup-username').setValue('marinus')
@@ -59,7 +59,7 @@ describe('App integration flows', () => {
     const wrapper = mount(App)
     await settleApp(wrapper)
 
-    await wrapper.findAll('button').find((b) => b.text() === 'Log In')!.trigger('click')
+    await findButtonByText(wrapper, 'Log In').trigger('click')
     await wrapper.find('#login-username').setValue('marinus')
     await wrapper.find('#login-password').setValue('wrongpassword')
     await wrapper.find('form').trigger('submit')
@@ -92,14 +92,14 @@ describe('App integration flows', () => {
     await settleApp(wrapper)
 
     // Correct answer
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.find('.answer-btn').trigger('click')
     await settleApp(wrapper)
     // Click "Next" to dismiss result strip
     await wrapper.find('.result-btn').trigger('click')
     await settleApp(wrapper)
 
     // Wrong answer
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.find('.answer-btn').trigger('click')
     await settleApp(wrapper)
 
     // Login prompt should appear
@@ -124,7 +124,7 @@ describe('App integration flows', () => {
 
     expect(wrapper.text()).toContain('marinus')
 
-    await wrapper.findAll('button').find((b) => b.text() === 'Logout')!.trigger('click')
+    await findButtonByText(wrapper, 'Logout').trigger('click')
     await settleApp(wrapper)
 
     expect(localStorage.getItem('authToken')).toBeNull()
@@ -161,13 +161,13 @@ describe('App integration flows', () => {
     await settleApp(wrapper)
 
     // Correct
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.find('.answer-btn').trigger('click')
     await settleApp(wrapper)
     await wrapper.find('.result-btn').trigger('click')
     await settleApp(wrapper)
     // Wrong → triggers save. Use plain flushPromises so the 3s toast-timeout
     // doesn't get advanced — it would clear the message before we assert.
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.find('.answer-btn').trigger('click')
     await flushPromises()
 
     expect(wrapper.text()).toContain('New high score')

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import App from '../../app/App.vue'
-import { okJson, errJson, makeFetchMock, settle } from '../helpers/fetchMock'
+import { okJson, errJson, makeFetchMock, settle, installFetchMock, findButtonByText } from '../helpers/fetchMock'
 
 describe('App error and edge-case flows', () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('App error and edge-case flows', () => {
     const wrapper = mount(App)
     await settle()
 
-    await wrapper.findAll('button').find((b) => b.text() === 'Sign Up')!.trigger('click')
+    await findButtonByText(wrapper, 'Sign Up').trigger('click')
     await wrapper.find('#signup-username').setValue('marinus')
     await wrapper.find('#signup-password').setValue('password123')
     await wrapper.find('form').trigger('submit')
@@ -38,17 +38,17 @@ describe('App error and edge-case flows', () => {
     fetchMock.on('/game/session', okJson({ session_id: 's1' }))
     fetchMock.on('/game/flag', okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] }))
     // /auth/register handler that rejects (network failure)
-    globalThis.fetch = vi.fn(async (url: string) => {
+    installFetchMock(async (url) => {
       if (url.includes('/auth/register')) throw new Error('Network')
       if (url.includes('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       return okJson({})
-    }) as unknown as typeof fetch
+    })
 
     const wrapper = mount(App)
     await settle()
 
-    await wrapper.findAll('button').find((b) => b.text() === 'Sign Up')!.trigger('click')
+    await findButtonByText(wrapper, 'Sign Up').trigger('click')
     await wrapper.find('#signup-username').setValue('marinus')
     await wrapper.find('#signup-password').setValue('password123')
     await wrapper.find('form').trigger('submit')
@@ -66,7 +66,7 @@ describe('App error and edge-case flows', () => {
     const wrapper = mount(App)
     await settle()
 
-    await wrapper.findAll('button').find((b) => b.text() === 'Log In')!.trigger('click')
+    await findButtonByText(wrapper, 'Log In').trigger('click')
     await wrapper.find('#login-username').setValue('marinus')
     await wrapper.find('#login-password').setValue('password123')
     await wrapper.find('form').trigger('submit')
@@ -95,7 +95,7 @@ describe('App error and edge-case flows', () => {
 
   it('prevents double-submit on the login form', async () => {
     let loginCalls = 0
-    globalThis.fetch = vi.fn(async (url: string) => {
+    installFetchMock(async (url) => {
       if (url.includes('/auth/login')) {
         loginCalls++
         // Slow login — never resolves so we can spam clicks
@@ -104,12 +104,12 @@ describe('App error and edge-case flows', () => {
       if (url.includes('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       return okJson({})
-    }) as unknown as typeof fetch
+    })
 
     const wrapper = mount(App)
     await settle()
 
-    await wrapper.findAll('button').find((b) => b.text() === 'Log In')!.trigger('click')
+    await findButtonByText(wrapper, 'Log In').trigger('click')
     await wrapper.find('#login-username').setValue('marinus')
     await wrapper.find('#login-password').setValue('password123')
 

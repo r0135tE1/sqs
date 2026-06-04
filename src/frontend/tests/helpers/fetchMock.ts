@@ -1,23 +1,49 @@
 import { vi } from "vitest"
-import { flushPromises } from "@vue/test-utils"
+import { flushPromises, type VueWrapper, type DOMWrapper } from "@vue/test-utils"
 
-/**
- * Minimal Response stand-in for fetch mocks. The unknown→Response cast lives
- * here once so call sites can `return okJson(...)` without per-return casts.
- */
+type FetchHandler = (url: string, opts?: RequestInit) => Promise<Response>
+type RoutedHandler = (url: string, opts?: RequestInit) => Response | null
+
+/** Real `Response` object with a JSON body — no type assertions needed at call sites. */
 export const okJson = (data: unknown): Response =>
-  ({ ok: true, status: 200, json: async () => data } as unknown as Response)
+  new Response(JSON.stringify(data), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  })
 
 export const errJson = (status: number, body: unknown = {}): Response =>
-  ({ ok: false, status, json: async () => body } as unknown as Response)
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  })
 
-type Handler = (url: string, opts?: RequestInit) => Response | null
+/**
+ * Install a fetch mock. The generic preserves the input type so callers can
+ * pass a vi.fn() mock and still reach its `.mock.calls` afterwards.
+ */
+export function installFetchMock<T extends FetchHandler>(handler: T): T {
+  globalThis.fetch = handler
+  return handler
+}
+
+/**
+ * Find a button by its text content. Throws (instead of returning undefined)
+ * so callers don't need non-null assertions.
+ */
+export function findButtonByText(
+  wrapper: VueWrapper | DOMWrapper<Element>,
+  text: string,
+): DOMWrapper<Element> {
+  const btn = wrapper.findAll("button").find((b) => b.text() === text)
+  if (!btn) throw new Error(`Button with text "${text}" not found`)
+  return btn
+}
 
 interface FetchMock {
   /** Match by url substring. */
   on(matcher: string, response: Response): void
   /** Custom predicate — return null to pass the request on to the next handler. */
-  onMatching(predicate: Handler): void
+  onMatching(predicate: RoutedHandler): void
   calls: () => unknown[][]
 }
 
@@ -27,21 +53,22 @@ interface FetchMock {
  * overrides the earlier response — useful for sequencing.
  */
 export function makeFetchMock(): FetchMock {
-  const handlers: Handler[] = []
+  const handlers: RoutedHandler[] = []
 
   const mock = vi.fn(async (url: string, opts?: RequestInit): Promise<Response> => {
-    for (let i = handlers.length - 1; i >= 0; i--) {
-      const result = handlers[i]!(url, opts)
+    for (const handler of [...handlers].reverse()) {
+      const result = handler(url, opts)
       if (result !== null) return result
     }
     return okJson({})
   })
 
-  globalThis.fetch = mock as unknown as typeof fetch
+  installFetchMock(mock)
 
   return {
     on(matcher, response) {
-      handlers.push((url) => (url.includes(matcher) ? response : null))
+      // Clone on each invocation — Response bodies are single-use streams
+      handlers.push((url) => (url.includes(matcher) ? response.clone() : null))
     },
     onMatching(predicate) {
       handlers.push(predicate)

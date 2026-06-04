@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import HighscoresModal from '../../app/components/HighscoresModal.vue'
-import { okJson, errJson } from '../helpers/fetchMock'
+import { okJson, errJson, installFetchMock } from '../helpers/fetchMock'
 
 describe('HighscoresModal', () => {
   beforeEach(() => {
@@ -40,7 +40,7 @@ describe('HighscoresModal', () => {
       ok: true,
       status: 200,
       json: async () => { throw new SyntaxError('invalid JSON') },
-    }) as unknown as typeof fetch
+    })
     const wrapper = mount(HighscoresModal, {
       props: { isOpen: true, token: 'fake-token' },
     })
@@ -117,7 +117,7 @@ describe('HighscoresModal', () => {
 
   it('refetches when isOpen transitions to true', async () => {
     const fetchMock = vi.fn().mockResolvedValue(okJson([]))
-    globalThis.fetch = fetchMock as unknown as typeof fetch
+    installFetchMock(fetchMock)
     const wrapper = mount(HighscoresModal, {
       props: { isOpen: false, token: 'fake-token' },
     })
@@ -130,7 +130,7 @@ describe('HighscoresModal', () => {
 
   it('sends Authorization header with token', async () => {
     const fetchMock = vi.fn().mockResolvedValue(okJson([]))
-    globalThis.fetch = fetchMock as unknown as typeof fetch
+    installFetchMock(fetchMock)
     mount(HighscoresModal, {
       props: { isOpen: true, token: 'my-jwt-token' },
     })

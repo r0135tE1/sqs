@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import GameBoard from '../../app/components/GameBoard.vue'
-import { okJson, errJson } from '../helpers/fetchMock'
+import { okJson, errJson, installFetchMock } from '../helpers/fetchMock'
 
 async function mountAndSettle(props: { token: string | null; username: string | null }) {
   const wrapper = mount(GameBoard, { props })
@@ -22,7 +22,7 @@ describe('GameBoard error/recovery paths', () => {
 
   it('shows the retry banner when loadFlag fails', async () => {
     let flagCalls = 0
-    globalThis.fetch = vi.fn(async (url: string) => {
+    installFetchMock(async (url) => {
       if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) {
         flagCalls++
@@ -30,7 +30,7 @@ describe('GameBoard error/recovery paths', () => {
         return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       }
       return okJson({})
-    }) as typeof fetch
+    })
 
     const wrapper = await mountAndSettle({ token: null, username: null })
 
@@ -40,7 +40,7 @@ describe('GameBoard error/recovery paths', () => {
 
   it('Retry button recovers and loads the flag', async () => {
     let flagCalls = 0
-    globalThis.fetch = vi.fn(async (url: string) => {
+    installFetchMock(async (url) => {
       if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) {
         flagCalls++
@@ -48,7 +48,7 @@ describe('GameBoard error/recovery paths', () => {
         return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       }
       return okJson({})
-    }) as typeof fetch
+    })
 
     const wrapper = await mountAndSettle({ token: null, username: null })
     expect(wrapper.find('.load-error').exists()).toBe(true)
@@ -62,12 +62,12 @@ describe('GameBoard error/recovery paths', () => {
   })
 
   it('discards stale session on 404 from /game/answer', async () => {
-    globalThis.fetch = vi.fn(async (url: string) => {
+    installFetchMock(async (url) => {
       if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       if (url.endsWith('/game/answer')) return errJson(404, { detail: 'Session not found' })
       return okJson({})
-    }) as typeof fetch
+    })
 
     const wrapper = await mountAndSettle({ token: null, username: null })
 
@@ -81,7 +81,7 @@ describe('GameBoard error/recovery paths', () => {
 
   it('saves the score and emits new-highscore when authenticated and new best', async () => {
     let answerCalls = 0
-    globalThis.fetch = vi.fn(async (url: string) => {
+    installFetchMock(async (url) => {
       if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       if (url.includes('/highscores/me')) return okJson({ score: 0 })
@@ -93,7 +93,7 @@ describe('GameBoard error/recovery paths', () => {
       }
       if (url.endsWith('/highscores/')) return okJson({ highscore: 1, is_new_best: true })
       return okJson({})
-    }) as typeof fetch
+    })
 
     const wrapper = await mountAndSettle({ token: 'tok', username: 'marinus' })
 
@@ -108,17 +108,18 @@ describe('GameBoard error/recovery paths', () => {
     await wrapper.findAll('.answer-btn')[0].trigger('click')
     await flushPromises()
 
-    expect(wrapper.emitted('new-highscore')).toBeTruthy()
-    expect(wrapper.emitted('new-highscore')![0]).toEqual([1])
+    const emitted = wrapper.emitted('new-highscore')
+    expect(emitted).toBeDefined()
+    expect(emitted?.[0]).toEqual([1])
   })
 
   it('does not stack toasts when answer endpoint is offline (relies on dedupe)', async () => {
-    globalThis.fetch = vi.fn(async (url: string) => {
+    installFetchMock(async (url) => {
       if (url.endsWith('/game/session')) return okJson({ session_id: 's1' })
       if (url.includes('/game/flag')) return okJson({ question_id: 'q', flag_svg: '<svg></svg>', options: ['A', 'B', 'C', 'D'] })
       if (url.endsWith('/game/answer')) throw new Error('Network')
       return okJson({})
-    }) as typeof fetch
+    })
 
     const wrapper = await mountAndSettle({ token: null, username: null })
 

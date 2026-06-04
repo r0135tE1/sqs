@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import GameBoard from '../../app/components/GameBoard.vue'
-import { okJson } from '../helpers/fetchMock'
+import { okJson, installFetchMock } from '../helpers/fetchMock'
 
 function mockHappyPath() {
   const fetchMock = vi.fn(async (url: string) => {
@@ -20,7 +20,7 @@ function mockHappyPath() {
     if (url.endsWith('/highscores/')) return okJson({ highscore: 7, is_new_best: false })
     return okJson({})
   })
-  globalThis.fetch = fetchMock as unknown as typeof fetch
+  installFetchMock(fetchMock)
   return fetchMock
 }
 
@@ -94,7 +94,7 @@ describe('GameBoard', () => {
       }
       return okJson({})
     })
-    globalThis.fetch = fetchMock as unknown as typeof fetch
+    installFetchMock(fetchMock)
 
     const wrapper = await mountAndSettle({
       token: 'expired-token',
@@ -107,7 +107,7 @@ describe('GameBoard', () => {
     mockHappyPath()
     const wrapper = await mountAndSettle({ token: null, username: null })
 
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.find('.answer-btn').trigger('click')
     await flushPromises()
 
     const buttons = wrapper.findAll('.answer-btn')
@@ -120,7 +120,7 @@ describe('GameBoard', () => {
     mockHappyPath()
     const wrapper = await mountAndSettle({ token: null, username: null })
 
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.find('.answer-btn').trigger('click')
     await flushPromises()
 
     expect(wrapper.find('.result-strip').exists()).toBe(true)
@@ -143,10 +143,10 @@ describe('GameBoard', () => {
       }
       return okJson({})
     })
-    globalThis.fetch = fetchMock as unknown as typeof fetch
+    installFetchMock(fetchMock)
 
     const wrapper = await mountAndSettle({ token: null, username: null })
-    await wrapper.findAll('.answer-btn')[0]!.trigger('click')
+    await wrapper.find('.answer-btn').trigger('click')
     await flushPromises()
 
     expect(wrapper.find('.result-strip.wrong').exists()).toBe(true)
@@ -168,7 +168,7 @@ describe('GameBoard', () => {
       }
       return okJson({})
     })
-    globalThis.fetch = fetchMock as unknown as typeof fetch
+    installFetchMock(fetchMock)
 
     const wrapper = await mountAndSettle({ token: null, username: null })
     // Click "France" (wrong); "Germany" is correct.
