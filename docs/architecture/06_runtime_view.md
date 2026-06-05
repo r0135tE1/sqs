@@ -7,6 +7,7 @@
 On application startup, the Backend fetches all country data and flag images from the public API and stores them exclusively in-memory (`FlagCache`). The cache is loaded once at startup and serves all flag requests for the lifetime of the process.
 
 The player starts a game by creating a session. The Frontend then requests the next flag. The Backend picks a random unseen country from the in-memory `FlagCache` and returns the flag SVG inline along with four answer options and a `question_id`. The correct answer is stored server-side and never sent to the client.
+
 ## Guess Country - Correct Guess
 
 We assume that the flags are already cached in the backend.

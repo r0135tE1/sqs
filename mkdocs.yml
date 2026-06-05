@@ -4,7 +4,6 @@ theme:
 
 nav:
   - Home: index.md
-  - Install: install.md
   - Usage: usage.md
   - Test concept: test-concept.md
   - Architecture:

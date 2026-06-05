@@ -8,12 +8,12 @@ Registered users can sign up and log in to benefit from persistent score trackin
 
 ## Quality Goals
 
-| Priority | Quality Goal | Motivation |
-| ---------- | ------------- | ------------ |
-| 1 | **Testability & Verifiability** | The system must be testable across all levels (Unit, Integration, e2e, Load, and Penetration tests) |
-| 1 | **Resilience** | The backend is dependent on an external API (`restcountries.com`). The application needs to handle downtime of external API and still be useable |
-| 1 | **Deployability** | The system must be runnable without a complex setup process. Project setup and usage should be able with a minimal amount of steps |
-| 1 | **Security** | The system must contain secured endpoints requiring authorization |
+| Quality Goal | Motivation |
+| ------------- | ------------ |
+| **Testability & Verifiability** | The system must be testable across all levels (Unit, Integration, e2e, Load, and Penetration tests) |
+| **Resilience** | The backend is dependent on an external API (`restcountries.com`). The application needs to handle downtime of external API and still be useable |
+| **Deployability** | The system must be runnable without a complex setup process. Project setup and usage should be able with a minimal amount of steps |
+| **Security** | The system must contain secured endpoints requiring authorization |
 
 ## Stakeholders
 
