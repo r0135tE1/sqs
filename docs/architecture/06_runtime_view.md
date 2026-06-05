@@ -22,7 +22,7 @@ The Player guesses a country. The Frontend submits the answer to the Backend. Th
 
 The Player guesses a country. The Frontend submits the answer to the Backend. The Backend validates the answer server-side, resets the session score to 0, and returns it to the Frontend. The correct answer is shown to the Player. The score is only persisted to the database when the user explicitly saves it via `POST /highscores/` with their `session_id`.
 
-## Sign Up
+## Sign Up and Login
 
 ![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
 
