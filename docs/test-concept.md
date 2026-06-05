@@ -2,306 +2,146 @@
 
 ## 1. Goals
 
-This document describes the test strategy for the **Python/FastAPI backend** of "Fun with Flags". It maps each test level to the concrete quality goals from `docs/architecture/01_introduction_and_goals.md`:
+This document describes the test strategy for the "Fun with Flags" application. It maps each test level to the concrete quality goals from `docs/architecture/01_introduction_and_goals.md`:
 
 | Quality Goal | How tests address it |
-|---|---|
-| **Testability & Verifiability** | Complete test pyramid, ≥80% line/branch coverage enforced in CI |
-| **Resilience** | Unit tests for `FlagCache` failure paths; integration test with mocked HTTP error |
-| **Security** | Dedicated auth tests for every JWT edge-case on protected endpoints |
+| --- | --- |
+| **Testability & Verifiability** | Complete test pyramid, ≥80% line/branch coverage enforced via the SonarQube quality gate in CI |
+| **Resilience** | Unit tests for `FlagCache` failure paths; integration tests with mocked HTTP errors |
+| **Security** | Dedicated auth and input-validation tests for JWT and injection edge-cases on protected endpoints |
+| **Maintainability** | Architecture tests (`pytestarch`) enforce the layering rules so the structure cannot erode |
 
 ---
 
-## 2. Tools & Dependencies
+## 2. Test Pyramid
 
-| Tool | Purpose | added to `requirements.txt` section |
-|---|---|---|
-| `pytest` + `pytest-asyncio` | Async-capable test runner | `dev` |
-| `httpx` | Async `TestClient` for FastAPI (already in prod deps) | — |
-| `pytest-cov` | Coverage collection and enforcement | `dev` |
-| `respx` | Mock `httpx` calls to `restcountries.com` | `dev` |
-| `pytest-postgresql` / `testcontainers` | Real PostgreSQL in integration/e2e tests | `dev` |
-| **SonarQube** | Static code analysis — coverage reporting, code smells, security hotspots | CI server |
+The suite follows the classic test pyramid, with an additional architecture layer that runs alongside it.
 
-```
-# dev-requirements.txt (example)
-pytest>=8.0
-pytest-asyncio>=0.23
-pytest-cov>=5.0
-respx>=0.21
-testcontainers[postgres]>=4.0
-```
+**Unit tests** form the base and make up the majority of tests. They cover pure logic with all external dependencies mocked or replaced.
 
-> SonarQube is not a pip package. It runs as a service in CI (e.g. via the `sonarqube` Docker image or SonarCloud). The CI step invokes `sonar-scanner` after `pytest-cov` generates an XML coverage report.
+**Integration tests** sit in the middle. They wire together the full HTTP stack (router → service → repository) against a real PostgreSQL instance spun up via `testcontainers`, verifying status codes, persistence, and end-to-end authentication.
 
----
+**End-to-end tests** sit at the top and are deliberately few. They run against the complete Docker Compose stack and cover the most critical user flows. *(Planned — not yet implemented.)*
 
-## 3. Test Pyramid
+**Architecture tests** run as a separate `pytestarch` suite and enforce the dependency direction between layers (see 2.3).
 
-```
-         /\
-        /  \   E2E (Docker Compose)
-       /----\
-      /      \  Integration (routers + real DB)
-     /--------\
-    /          \  Unit (services, pure logic)
-   /____________\
-```
-
-### 3.1 Unit Tests
+### 2.1 Unit Tests
 
 **Scope:** Pure functions and classes with no real I/O. External dependencies are mocked or replaced.
 
-**Location:** `tests/unit/`
+**Location:** `tests/unit/` — see the individual files for the concrete cases.
 
-#### `tests/unit/test_auth_service.py`
+- **`test_auth_service.py`** — Password hashing round-trips (correct password verifies, wrong one is rejected) and the full JWT lifecycle
+- **`test_flag_cache.py`** — Random flag selection: the returned question has the correct shape, always contains the correct answer among exactly four options, respects the exclude set (already-seen flags), and degrades gracefully to `None` on an empty / fully-excluded cache.
+- **`test_dependencies.py`** — The `get_current_user` FastAPI dependency returns the username for a valid token and raises `HTTP 401` for invalid or expired ones.
+- **`test_game_session.py`** — Session lifecycle (unique IDs, initial state, lookup), scoring (increment on correct, reset on wrong, personal-best preserved), the "seen flags" deduplication, single-use questions, and cleanup of expired sessions.
 
-| Test case | What is verified |
-|---|---|
-| `test_hash_and_verify_password` | `hash_password` + `verify_password` round-trip succeeds |
-| `test_wrong_password_rejected` | `verify_password` returns `False` for wrong password |
-| `test_create_token_contains_sub` | Decoded payload includes correct `sub` (username) |
-| `test_create_token_expiry` | Decoded `exp` is approximately `now + jwt_expire_minutes` |
-| `test_decode_valid_token` | `decode_token` returns correct username |
-| `test_decode_expired_token` | `decode_token` returns `None` for an expired token |
-| `test_decode_tampered_token` | `decode_token` returns `None` if signature is wrong |
-| `test_decode_garbage_string` | `decode_token` returns `None` for arbitrary garbage |
+> **Mock strategy:** `FlagCache` state is set directly on the instance — no HTTP call needed.
 
-#### `tests/unit/test_flag_cache.py`
+### 2.2 Integration Tests
 
-| Test case | What is verified |
-|---|---|
-| `test_random_flag_empty_cache` | Returns `None` when `_countries` is empty |
-| `test_random_flag_returns_correct_shape` | Returns dict with `country_code`, `country_name`, `flag_url`, `options` |
-| `test_options_contain_correct_answer` | `country_name` is always in `options` |
-| `test_options_length` | `options` has exactly 4 entries when ≥4 countries exist, fewer otherwise |
-| `test_exclude_filters_correctly` | Excluded country codes never appear as the chosen flag |
-| `test_all_excluded_returns_none` | Returns `None` when all country codes are in the exclude set |
-| `test_count_reflects_loaded_data` | `count()` returns the number of loaded countries |
-
-> **Mock strategy:** `_countries` is set directly on the `FlagCache` instance — no HTTP call needed.
-
-#### `tests/unit/test_dependencies.py`
-
-| Test case | What is verified |
-|---|---|
-| `test_get_current_user_valid_token` | Returns username for a valid token |
-| `test_get_current_user_invalid_token` | Raises `HTTP 401` for an invalid token |
-| `test_get_current_user_expired_token` | Raises `HTTP 401` for an expired token |
-
----
-
-### 3.2 Integration Tests
-
-**Scope:** Full HTTP request → router → service → database round-trips. Uses a real PostgreSQL instance (via `testcontainers`) and a patched `flag_cache` where needed.
+**Scope:** Full HTTP request → router → service → database round-trips against a real PostgreSQL instance (via `testcontainers`), with the flag cache seeded deterministically.
 
 **Location:** `tests/integration/`
 
-**Shared fixtures (`conftest.py`):**
-- `async_client` — `httpx.AsyncClient` wrapping the FastAPI `app`, overrides `get_db` dependency with a test session connected to the container DB.
-- `test_db` — creates / tears down the schema (runs Alembic migrations) before the test session.
-- `seeded_flag_cache` — replaces the global `flag_cache._countries` with a fixed list of 10 fake countries so tests are deterministic.
+**Shared fixtures:**
 
-#### `tests/integration/test_health.py`
+- `pg_container` / `db_async_url` (`tests/integration/conftest.py`) — start a session-scoped PostgreSQL container and expose its async (`asyncpg`) URL.
+- `async_client` — an `httpx.AsyncClient` wrapping the FastAPI `app` with the `get_db` dependency overridden to use the container database.
+- `seeded_flag_cache` (root `tests/conftest.py`) — replaces the global flag cache with a fixed set of 10 fake countries (and SVGs) so tests are deterministic. The root conftest also sets a test `JWT_SECRET`.
 
-| Test case | HTTP | Expected |
-|---|---|---|
-| `test_health_ok` | `GET /health` | `200`, body contains `flag_count` |
+Coverage by file:
 
-#### `tests/integration/test_auth.py`
+- **`test_health.py`** — `GET /health` returns `200` and reports the loaded flag count.
+- **`test_auth.py`** — Registration (success, duplicate username → `409`) and login (success, wrong password and unknown user → `401`).
+- **`test_game.py`** — The guest game flow: create session, fetch flags (valid inline SVG, exactly four options, correct answer never leaked), submit answers (correct/wrong scoring, single-use questions), score streak/reset behaviour, and that seen flags are not repeated until exhausted (`404`).
+- **`test_highscores.py`** — Saving and reading scores on the JWT-protected endpoints: personal-best logic, ordering, per-user isolation, and that every endpoint rejects missing/invalid tokens.
+- **`test_flag_cache_load.py`** *(Resilience)* — `FlagCache.load()` against mocked HTTP responses: a 200 populates the cache, while HTTP errors, non-200 status, and malformed JSON leave it empty without crashing. Directly exercises the **Resilience** goal.
+- **`test_security.py`** *(Security)* — Input validation (SQL injection, XSS, oversized username, weak/blank password → `422`), auth bypass (missing, forged, expired, wrong-secret, garbage tokens → `401`), and score manipulation (an arbitrary `score` in the body is ignored/rejected; the score is always read server-side).
 
-| Test case | HTTP | Expected |
-|---|---|---|
-| `test_register_success` | `POST /auth/register` | `201`, `{"message": ...}` |
-| `test_register_duplicate_username` | `POST /auth/register` (same name twice) | `409` |
-| `test_login_success` | `POST /auth/login` | `200`, body contains `access_token` |
-| `test_login_wrong_password` | `POST /auth/login` | `401` |
-| `test_login_unknown_user` | `POST /auth/login` | `401` |
+### 2.3 Architecture Tests
 
-#### `tests/integration/test_flags.py`
+**Scope:** Structural rules rather than behaviour. Using `pytestarch`, these tests assert the allowed dependency direction between layers so the architecture cannot silently erode.
 
-| Test case | HTTP | Expected |
-|---|---|---|
-| `test_random_flag_ok` | `GET /flags/random` | `200`, valid `FlagResponse` shape |
-| `test_random_flag_exclude_all` | `GET /flags/random?exclude=...` (all codes) | `404` |
-| `test_random_flag_empty_cache` | `GET /flags/random` with empty cache | `404` |
-| `test_random_flag_options_count` | Response `options` has 4 entries | shape check |
+**Location:** `app/tests/test_architecture.py` (run as a dedicated CI job: `pytest app/tests -v`).
 
-#### `tests/integration/test_highscores.py`
+The rules enforce, among others: services must not import routers, the database, or dependencies; models must not import services, routers, or the database; the database layer must not import routers; routers must not import the database directly; and `config` must not import other app modules. This keeps the dependency flow pointing inward (routers → services → database) and supports the **Maintainability** goal.
 
-| Test case | HTTP | Expected |
-|---|---|---|
-| `test_get_highscores_authenticated` | `GET /highscores/` (valid JWT) | `200`, list |
-| `test_get_highscores_no_token` | `GET /highscores/` (no header) | `403` |
-| `test_get_highscores_invalid_token` | `GET /highscores/` (bad token) | `401` |
-| `test_save_score_authenticated` | `POST /highscores/` (valid JWT) | `201` |
-| `test_save_score_no_token` | `POST /highscores/` (no header) | `403` |
-| `test_highscores_ordered_by_score_desc` | Save two scores, check order | order check |
+### 2.4 End-to-End Tests *(planned)*
 
-#### `tests/integration/test_flag_cache_load.py` (Resilience)
+**Scope:** Full happy-path flows against the running Docker Compose stack, driven by `httpx` against `http://localhost:8000`. These are not part of the standard `pytest` suite and are not implemented yet — the intended flows are:
 
-| Test case | What is verified |
-|---|---|
-| `test_load_success` | `FlagCache.load()` with mocked HTTP 200 populates `_countries` |
-| `test_load_http_error` | `FlagCache.load()` with mocked `httpx.HTTPError` leaves cache empty (no crash) |
-| `test_load_bad_json` | `FlagCache.load()` with malformed response leaves cache empty (no crash) |
-| `test_load_non_200_status` | `FlagCache.load()` with HTTP 500 response leaves cache empty |
+1. **Guest game flow:** create session → fetch flag + answer repeatedly → `404` once all flags are seen.
+2. **Registered user flow:** register → login → play → save highscore → score appears in the top 10.
+3. **Token expiry flow:** login → use an expired token → protected endpoint returns `401`.
 
-> These directly test the **Resilience** quality goal: the service must not crash even when `restcountries.com` is down.
+### 2.5 Security / Penetration Testing
+
+Security tests are implemented as automated pytest integration tests (`tests/integration/test_security.py`, see 2.2) and run in CI, covering input validation, auth bypass, and score manipulation.
 
 ---
 
-### 3.3 End-to-End Tests
+## 3. Test Environment & Tooling
 
-**Scope:** Full happy-path flows against the running Docker Compose stack. Run separately (not in the standard `pytest` suite), triggered manually or in a dedicated CI job.
+### 3.1 Tools
 
-**Location:** `tests/e2e/`
+| Tool | Purpose |
+| --- | --- |
+| `pytest` + `pytest-asyncio` | Async-capable test runner |
+| `httpx` | Async client for driving the FastAPI app in tests |
+| `pytest-cov` | Coverage collection (XML report for SonarQube) |
+| `respx` | Mock `httpx` calls to `restcountries.com` |
+| `testcontainers[postgres]` | Real PostgreSQL instance for integration tests |
+| `pytestarch` | Architecture / layering rules as tests |
 
-**Tooling:** `httpx` calling `http://localhost:8000` (the running container).
+All dependencies are pinned (with hashes) in `src/backend/requirements.lock`. CI installs them via `pip install --require-hashes -r requirements.lock`, so the test environment is fully reproducible.
 
-#### Covered flows
+### 3.2 Static Analysis & Coverage — SonarQube
 
-1. **Guest game flow:** `GET /flags/random` 5× with growing `exclude` list → verify no repeat → final call with all excluded returns `404`.
-2. **Registered user flow:** `POST /auth/register` → `POST /auth/login` → `POST /highscores/` → `GET /highscores/` → score appears in top 10.
-3. **Token expiry flow:** Login → force-create an expired token → `GET /highscores/` returns `401`.
+SonarQube is the single static-analysis tool for this project. It is not a pip package — it runs as a service in CI and consumes the coverage report produced by `pytest-cov`. It covers:
 
----
-
-### 3.4 Security / Penetration Tests
-
-#### Dynamic (DAST) — manual or scheduled CI job
-
-Use **OWASP ZAP** in headless mode (`zap-baseline.py`) against the running Docker Compose stack.
-
-Key scenarios to probe manually or via ZAP:
-- Send forged / expired / missing JWT to every protected endpoint → expect `401`/`403`, not `500`.
-- Send oversized payloads (`score: 99999999`) to `POST /highscores/` → verify no crash.
-- Attempt SQL injection strings in `username` field of registration → DB constraint or validation must reject, not crash.
-
----
-
-## 4. Coverage Requirement
-
-The quality goal demands **≥80% code coverage**.
-
-```bash
-pytest --cov=app --cov-report=xml --cov-fail-under=80
-```
-
-The XML report (`coverage.xml`) is forwarded to SonarQube via `sonar-scanner` so that coverage is tracked and visualised there centrally.
-
-Coverage is measured over the `app/` package (all routers, services, models, dependencies). `alembic/` and `main.py` bootstrap code are excluded from the measurement.
-
-Expected coverage breakdown per module:
-
-| Module | Expected coverage |
-|---|---|
-| `services/auth.py` | ~100% |
-| `services/flag_cache.py` | ~95% |
-| `dependencies.py` | ~100% |
-| `routers/flags.py` | ~100% |
-| `routers/auth.py` | ~95% |
-| `routers/highscores.py` | ~95% |
-| `config.py` / `database/` | ~70% (mostly config, hard to test exhaustively) |
-
----
-
-## 5. Static Code Analysis — SonarQube
-
-SonarQube is the single static analysis tool for this project. It covers:
-
-- **Code smells** — maintainability issues, duplicated blocks, overly complex functions
+- **Code smells** — maintainability issues, duplication, overly complex functions
 - **Bugs** — likely runtime errors detected statically
 - **Security hotspots** — e.g. hardcoded credentials, weak crypto usage
-- **Coverage gate** — enforces ≥80% coverage based on the `coverage.xml` report
+- **Coverage gate** — enforces the ≥80% target based on the merged coverage report
 
-### CI integration
+Coverage is measured over the `app/` package (routers, services, models, dependencies); test files, `alembic/`, and `main.py` bootstrap code are excluded. Each test job produces a coverage report locally, e.g.:
 
-```yaml
-# excerpt from .github/workflows/backend.yml
-- name: Run tests and collect coverage
-  run: pytest --cov=app --cov-report=xml --cov-fail-under=80
-
-- name: SonarQube Scan
-  uses: SonarSource/sonarqube-scan-action@v3
-  env:
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+```bash
+pytest --cov=app --cov-report=xml
 ```
 
-### `sonar-project.properties`
+The 80% threshold is **not** enforced by `pytest` itself — it is the SonarQube quality gate that blocks the pipeline when coverage drops below target or when new bugs / security hotspots are introduced.
 
-```properties
-sonar.projectKey=fun-with-flags-backend
-sonar.sources=app
-sonar.tests=tests
-sonar.python.coverage.reportPaths=coverage.xml
-sonar.qualitygate.wait=true
-```
+### 3.3 CI Integration
 
-`sonar.qualitygate.wait=true` causes the CI step to fail if the SonarQube Quality Gate is not passed, which enforces the *"no open issues"* requirement.
+The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs separate jobs for **unit**, **integration**, and **architecture** tests, plus a **frontend type-check** (`npm run type-check`; the frontend currently has no unit/integration tests). The unit and integration jobs each upload their `coverage.xml` as an artifact; the **SonarQube** job downloads both, merges them, and runs the scan. SonarQube configuration lives in `sonar-project.properties`.
 
 ---
 
-## 6. Test Directory Layout
+## 4. Test Directory Layout
 
-```
+```text
 src/backend/
 ├── tests/
-│   ├── conftest.py              # shared fixtures (async_client, test_db, seeded_flag_cache)
+│   ├── conftest.py              # sets test JWT_SECRET; seeded_flag_cache fixture
 │   ├── unit/
 │   │   ├── test_auth_service.py
 │   │   ├── test_flag_cache.py
+│   │   ├── test_game_session.py
 │   │   └── test_dependencies.py
-│   ├── integration/
-│   │   ├── test_health.py
-│   │   ├── test_auth.py
-│   │   ├── test_flags.py
-│   │   ├── test_highscores.py
-│   │   └── test_flag_cache_load.py
-│   └── e2e/
-│       └── test_full_flows.py
+│   └── integration/
+│       ├── conftest.py          # PostgreSQL container + async_client fixtures
+│       ├── test_health.py
+│       ├── test_auth.py
+│       ├── test_game.py
+│       ├── test_highscores.py
+│       ├── test_flag_cache_load.py
+│       └── test_security.py
+├── app/
+│   └── tests/
+│       └── test_architecture.py # architecture / layering rules (pytestarch)
 ├── sonar-project.properties
 ├── pytest.ini                   # asyncio_mode = auto, testpaths = tests
-└── dev-requirements.txt
+└── requirements.lock            # pinned, hash-verified dependencies
 ```
-
----
-
-## 7. CI Pipeline (GitHub Actions)
-
-```yaml
-# .github/workflows/backend.yml (sketch)
-jobs:
-  quality:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env: { POSTGRES_PASSWORD: test }
-        ports: ["5432:5432"]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-      - run: pip install -r src/backend/dev-requirements.txt
-      - run: pytest --cov=app --cov-report=xml --cov-fail-under=80   # unit + integration + coverage
-      - uses: SonarSource/sonarqube-scan-action@v3                    # static analysis + quality gate
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-```
-
-E2E tests run in a separate job that first does `docker compose up -d` and waits for the healthcheck.
-
----
-
-## 8. Summary: Requirement Traceability
-
-| Quality requirement | Addressed by |
-|---|---|
-| ≥80% test coverage | `pytest-cov --cov-fail-under=80` + SonarQube Quality Gate |
-| Complete test pyramid | Unit → Integration → E2E → Pentest all documented and planned |
-| No open static analysis issues | SonarQube Quality Gate blocks CI on any bug/hotspot finding |
-| Resilience (restcountries.com down) | `test_flag_cache_load.py` — mocked HTTP errors leave cache empty without crash |
-| Security — JWT on protected endpoints | `test_highscores.py` — no token / bad token / expired token all return 4xx |

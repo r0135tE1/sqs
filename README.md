@@ -83,18 +83,18 @@ pyenv global 3.12.0
 **4. Create and activate a virtual environment**
 ```bash
 cd src/backend
-python -m venv venv
+python -m venv .venv
 
 # macOS/Linux
-source venv/bin/activate
+source .venv/bin/activate
 
 # Windows
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 **5. Install dependencies**
 ```bash
-pip install -r requirements.txt
+pip install --only-binary :all: --require-hashes -r requirements.lock
 ```
 
 ### Running the tests

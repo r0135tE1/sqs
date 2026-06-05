@@ -4,10 +4,9 @@
 
 ![Runtime View Start](chapter5-7Pics/runtime_view/runtime-fetch-flag.svg)
 
-The player starts the game or has guessed a country correctly by its flag. The Frontend
-requests a new flag image from the Backend. All flags are queried from the Persistence component and are cached in the Backend. The Backend forwards flag name and image to the Frontend displaying the flag to the Player.
+On application startup, the Backend fetches all country data and flag images from the public API and stores them exclusively in-memory (`FlagCache`). The cache is loaded once at startup and serves all flag requests for the lifetime of the process.
 
-Once The application starts, it requests all flags from the pulic API and stores them in the Persistence component. This is done every hour to ensure that the information is up to date.
+The player starts a game by creating a session. The Frontend then requests the next flag. The Backend picks a random unseen country from the in-memory `FlagCache` and returns the flag SVG inline along with four answer options and a `question_id`. The correct answer is stored server-side and never sent to the client.
 
 ## Guess Country - Correct Guess
 
@@ -15,25 +14,20 @@ We assume that the flags are already cached in the backend.
 
 ![Runtime View Guess - Correct](chapter5-7Pics/runtime_view/runtime-correct-guess.svg)
 
-The Player guesses a country. The Frontend validates the guess and adjusts the highscore. Afterwards a new flag is requested to start a new round.
+The Player guesses a country. The Frontend submits the answer to the Backend. The Backend validates the answer server-side, increments the session score by 1, and returns it to the Frontend. The Frontend then requests a new flag to start the next round.
 
 ## Guess Country - Incorrect Guess
 
 ![Runtime View Guess - Incorrect](chapter5-7Pics/runtime_view/runtime-incorrect-guess.svg)
 
-The Player guesses a country. The Frontend evaluates the guess to be incorrect. The current highscore is forwarded to the Backend to be persisted.
-The highscore is then shown to the Player.
+The Player guesses a country. The Frontend submits the answer to the Backend. The Backend validates the answer server-side, resets the session score to 0, and returns it to the Frontend. The correct answer is shown to the Player. The score is only persisted to the database when the user explicitly saves it via `POST /highscores/` with their `session_id`.
 
-## Sign Up
+## Sign Up and Login
 
 ![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
 
-The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The backend checks if the user already exists. If no user exists, a new one will be created (Persistence) and the Player will be notified.
+The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The Backend checks if the user already exists. If no user exists, a new one will be created (Persistence) and the Player will be notified.
 
-If the user already exists, the Player will be notified respectively and no new user will stored in the Persistence component.
+If the user already exists, the Player will be notified respectively and no new user will be stored in the Persistence component.
 
-## Login
-
-![Runtime View Login](chapter5-7Pics/runtime_view/runtime-login.svg)
-
-The Player enters login data. The Frontend forwards the data to the Backend. The Backend queries the Persistence Component for the credentials. The backend validates the data provided by the Player and the data in the Persistence component. If the data matches, a token is returned which authenticates the Player.
+After a successful sign up, the Frontend automatically triggers a login with the same credentials. The Backend validates the credentials, creates a JWT token and returns it to the Frontend. From this point on, the Player is authenticated and the token is used for all protected requests (e.g. saving a highscore).
