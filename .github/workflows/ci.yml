@@ -126,9 +126,11 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Install Playwright browsers
         working-directory: src/frontend
-        # --no: never fetch from the registry, only run the lockfile-pinned
-        # @playwright/test binary already installed via `npm ci --ignore-scripts`.
-        run: npx --no --package=@playwright/test playwright install --with-deps chromium
+        # --ignore-scripts / --package / --no are npx flags (before the command):
+        # pin the exact package, never fetch from the registry, and never run
+        # lifecycle scripts. The lockfile-pinned @playwright/test binary is already
+        # installed via `npm ci --ignore-scripts`.
+        run: npx --no --ignore-scripts --package=@playwright/test playwright install --with-deps chromium
       - name: Create .env for docker compose
         run: |
           cat > .env <<EOF
@@ -165,9 +167,11 @@ jobs:
           exit 1
       - name: Run Playwright tests
         working-directory: src/frontend
-        # --no: never fetch from the registry, only run the lockfile-pinned
-        # @playwright/test binary already installed via `npm ci --ignore-scripts`.
-        run: npx --no --package=@playwright/test playwright test
+        # --ignore-scripts / --package / --no are npx flags (before the command):
+        # pin the exact package, never fetch from the registry, and never run
+        # lifecycle scripts. The lockfile-pinned @playwright/test binary is already
+        # installed via `npm ci --ignore-scripts`.
+        run: npx --no --ignore-scripts --package=@playwright/test playwright test
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
