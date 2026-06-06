@@ -105,3 +105,5 @@ pip install --only-binary :all: --require-hashes -r requirements.lock
 cd src
 python -m pytest backend/app/tests/test_architecture.py -v
 ```
+
+
