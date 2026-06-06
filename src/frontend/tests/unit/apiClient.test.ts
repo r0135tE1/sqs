@@ -11,7 +11,7 @@ describe("apiFetch", () => {
       ok: true,
       status: 200,
       json: async () => ({ hello: "world" }),
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     const data = await apiFetch<{ hello: string }>("/test")
     expect(data).toEqual({ hello: "world" })
@@ -22,7 +22,7 @@ describe("apiFetch", () => {
       ok: true,
       status: 204,
       json: async () => { throw new Error("no body") },
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     const data = await apiFetch("/test")
     expect(data).toBeUndefined()
@@ -34,10 +34,11 @@ describe("apiFetch", () => {
       status: 200,
       json: async () => ({}),
     })
-    globalThis.fetch = fetchMock as unknown as typeof fetch
+    globalThis.fetch = fetchMock as typeof fetch
 
     await apiFetch("/test", { token: "my-jwt" })
-    const headers = (fetchMock.mock.calls[0]?.[1] as RequestInit).headers as Record<string, string>
+    const init = vi.mocked(globalThis.fetch).mock.calls[0]?.[1]
+    const headers = init?.headers as Record<string, string>
     expect(headers.Authorization).toBe("Bearer my-jwt")
   })
 
@@ -47,16 +48,16 @@ describe("apiFetch", () => {
       status: 200,
       json: async () => ({}),
     })
-    globalThis.fetch = fetchMock as unknown as typeof fetch
+    globalThis.fetch = fetchMock as typeof fetch
 
     await apiFetch("/test", { method: "POST", json: { a: 1 } })
-    const opts = fetchMock.mock.calls[0]?.[1] as RequestInit
-    expect(opts.body).toBe(JSON.stringify({ a: 1 }))
-    expect((opts.headers as Record<string, string>)["Content-Type"]).toBe("application/json")
+    const init = vi.mocked(globalThis.fetch).mock.calls[0]?.[1]
+    expect(init?.body).toBe(JSON.stringify({ a: 1 }))
+    expect((init?.headers as Record<string, string>)["Content-Type"]).toBe("application/json")
   })
 
   it("throws NetworkError when fetch itself rejects", async () => {
-    globalThis.fetch = vi.fn().mockRejectedValue(new Error("ECONNREFUSED")) as unknown as typeof fetch
+    globalThis.fetch = vi.fn().mockRejectedValue(new Error("ECONNREFUSED")) as typeof fetch
 
     await expect(apiFetch("/test")).rejects.toBeInstanceOf(NetworkError)
   })
@@ -66,7 +67,7 @@ describe("apiFetch", () => {
       ok: false,
       status: 409,
       json: async () => ({ detail: "Username already taken" }),
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     try {
       await apiFetch("/test")
@@ -83,7 +84,7 @@ describe("apiFetch", () => {
       ok: false,
       status: 500,
       json: async () => { throw new Error("not json") },
-    }) as unknown as typeof fetch
+    }) as typeof fetch
 
     try {
       await apiFetch("/test")
