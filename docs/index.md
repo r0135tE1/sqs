@@ -1,6 +1,6 @@
 # Fun With Flags
 
-Welcome to the documentation for **Fun With Flags** — a flag-guessing game.
+Welcome to the documentation for "Fun With Flags" — a flag-guessing game.
 
 ## What is Fun With Flags?
 
