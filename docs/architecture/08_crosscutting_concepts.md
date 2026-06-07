@@ -10,9 +10,13 @@ The backend returns standardized HTTP status codes and JSON error responses:
 
 | Scenario | HTTP Status |
 |----------|-------------|
-| Unauthenticated access to protected endpoint | 401 Unauthorized |
-| Resource not found | 404 Not Found |
-| API unreachable | 502 Bad Gateway |
+| Invalid answer submission (unknown `question_id`) | 400 Bad Request |
+| Unauthenticated access to protected endpoint / invalid login credentials | 401 Unauthorized |
+| Resource not found (session, user, highscore, or no unseen flags left) | 404 Not Found |
+| Username already taken on registration | 409 Conflict |
+| Request body fails validation (e.g. blank/weak password) | 422 Unprocessable Entity |
+
+Note: when the external API was unreachable at startup, the flag cache stays empty and `GET /game/flag` returns `404 Not Found` (no flag available) rather than a gateway error — see *Prefetch & Caching* below.
 
 ## External API Integration
 
@@ -24,9 +28,9 @@ All sensitive configuration (DB credentials, JWT secret, API URLs) is stored in 
 
 ## Prefetch & Caching
 
-On application startup the Backend fetches all country metadata and flag SVG images from the public API and stores them exclusively in-memory (`FlagCache`). Flag data is never written to the database. The cache is loaded once at startup and serves all flag requests for the lifetime of the process. There is no periodic refresh of flag data. A separate background task removes expired game sessions every hour, but does not reload flags.
+On application startup the backend fetches all country metadata and flag SVG images from the public API and stores them exclusively in-memory (`FlagCache`). Flag data is never written to the database. The cache is loaded once at startup and serves all flag requests for the lifetime of the process. There is no periodic refresh of flag data. A separate background task removes expired game sessions every hour, but does not reload flags.
 
-If the external API is unreachable at startup, the cache remains empty and the Backend degrades gracefully — no crash occurs. If the backend has no cached data and the external API is unreachable at the same time, the Player is notified that the service is currently unavailable.
+If the external API is unreachable at startup, the cache remains empty and the backend degrades gracefully — no crash occurs. If the backend has no cached data and the external API is unreachable at the same time, the player is notified that the service is currently unavailable.
 
 ## Dependency Inversion
 
