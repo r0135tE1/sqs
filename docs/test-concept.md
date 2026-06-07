@@ -21,7 +21,7 @@ The suite follows the classic test pyramid, with an additional architecture laye
 
 **Integration tests** sit in the middle. They wire together the full HTTP stack (router → service → repository) against a real PostgreSQL instance spun up via `testcontainers`, verifying status codes, persistence, and end-to-end authentication.
 
-**End-to-end tests** sit at the top and are deliberately few. They run against the complete Docker Compose stack and cover the most critical user flows. *(Planned — not yet implemented.)*
+**End-to-end tests** sit at the top and are deliberately few. They drive a real browser (Playwright) against the complete Docker Compose stack and cover the most critical user flows (see 2.4).
 
 **Architecture tests** run as a separate `pytestarch` suite and enforce the dependency direction between layers (see 2.3).
 
@@ -36,7 +36,7 @@ The suite follows the classic test pyramid, with an additional architecture laye
 - **`test_dependencies.py`** — The `get_current_user` FastAPI dependency returns the username for a valid token and raises `HTTP 401` for invalid or expired ones.
 - **`test_game_session.py`** — Session lifecycle (unique IDs, initial state, lookup), scoring (increment on correct, reset on wrong, personal-best preserved), the "seen flags" deduplication, single-use questions, and cleanup of expired sessions.
 
-> **Mock strategy:** `FlagCache` state is set directly on the instance — no HTTP call needed.
+> **Mock strategy:** `FlagCache` state is set directly on the instance.
 
 ### 2.2 Integration Tests
 
@@ -54,7 +54,7 @@ Coverage by file:
 
 - **`test_health.py`** — `GET /health` returns `200` and reports the loaded flag count.
 - **`test_auth.py`** — Registration (success, duplicate username → `409`) and login (success, wrong password and unknown user → `401`).
-- **`test_game.py`** — The guest game flow: create session, fetch flags (valid inline SVG, exactly four options, correct answer never leaked), submit answers (correct/wrong scoring, single-use questions), score streak/reset behaviour, and that seen flags are not repeated until exhausted (`404`).
+- **`test_game.py`** — The guest game flow: create session, fetch flags (valid inline SVG, exactly four options), submit answers (correct/wrong scoring, single-use questions), score streak/reset behaviour, and that seen flags are not repeated until exhausted (`404`).
 - **`test_highscores.py`** — Saving and reading scores on the JWT-protected endpoints: personal-best logic, ordering, per-user isolation, and that every endpoint rejects missing/invalid tokens.
 - **`test_flag_cache_load.py`** *(Resilience)* — `FlagCache.load()` against mocked HTTP responses: a 200 populates the cache, while HTTP errors, non-200 status, and malformed JSON leave it empty without crashing. Directly exercises the **Resilience** goal.
 - **`test_security.py`** *(Security)* — Input validation (SQL injection, XSS, oversized username, weak/blank password → `422`), auth bypass (missing, forged, expired, wrong-secret, garbage tokens → `401`), and score manipulation (an arbitrary `score` in the body is ignored/rejected; the score is always read server-side).
@@ -63,21 +63,25 @@ Coverage by file:
 
 **Scope:** Structural rules rather than behaviour. Using `pytestarch`, these tests assert the allowed dependency direction between layers so the architecture cannot silently erode.
 
-**Location:** `app/tests/test_architecture.py` (run as a dedicated CI job: `pytest app/tests -v`).
+**Location:** `app/tests/test_architecture.py`.
 
 The rules enforce, among others: services must not import routers, the database, or dependencies; models must not import services, routers, or the database; the database layer must not import routers; routers must not import the database directly; and `config` must not import other app modules. This keeps the dependency flow pointing inward (routers → services → database) and supports the **Maintainability** goal.
 
-### 2.4 End-to-End Tests *(planned)*
+### 2.4 End-to-End Tests
 
-**Scope:** Full happy-path flows against the running Docker Compose stack, driven by `httpx` against `http://localhost:8000`. These are not part of the standard `pytest` suite and are not implemented yet — the intended flows are:
+**Scope:** Full user flows exercised through a real browser (Playwright/Chromium) against the running Docker Compose stack — frontend served at `http://localhost`, talking to the live backend and PostgreSQL. These run as a dedicated CI job rather than as part of the `pytest` suite.
 
-1. **Guest game flow:** create session → fetch flag + answer repeatedly → `404` once all flags are seen.
-2. **Registered user flow:** register → login → play → save highscore → score appears in the top 10.
-3. **Token expiry flow:** login → use an expired token → protected endpoint returns `401`.
+**Location:** `src/frontend/tests/e2e/` (config in `src/frontend/playwright.config.ts`, run via `npm run test:e2e`). Each test resets `localStorage`/`sessionStorage` before running, and registers users with unique names so runs are repeatable without DB cleanup.
+
+Coverage by file:
+
+- **`smoke.spec.ts`** — The single most important E2E test: load the app → a flag image renders → exactly four answer buttons with non-empty labels appear → clicking an answer shows a correct/wrong result strip and a Next/Try Again button. Proves the whole stack (frontend bundle, `/game/flag`, `/game/answer`, DB) is wired up end-to-end.
+- **`game.spec.ts`** — Guest game flow (flag + four options, correct/wrong feedback), the "log in to track your high score" invite for anonymous users, signup (auto-login), login with a wrong password surfacing an error, the "Save your high score!" prompt shown to an anonymous user who loses with a score, and the highscores leaderboard modal for a logged-in user.
+- **`auth.spec.ts`** — The auth round-trip that is genuinely irreplaceable by integration tests: register → auto-login → a JWT is persisted in `localStorage` → the session survives a page reload → the backend still accepts the token on a fresh protected request (Highscores) → logout clears the persisted state. Mocks would give false confidence here, so this exercises the real token lifecycle across the browser/backend boundary.
 
 ### 2.5 Security / Penetration Testing
 
-Security tests are implemented as automated pytest integration tests (`tests/integration/test_security.py`, see 2.2) and run in CI, covering input validation, auth bypass, and score manipulation.
+Security tests are implemented as automated pytest integration tests (`tests/integration/test_security.py`, see 2.2) covering input validation, auth bypass, and score manipulation.
 
 ---
 
@@ -93,12 +97,13 @@ Security tests are implemented as automated pytest integration tests (`tests/int
 | `respx` | Mock `httpx` calls to `restcountries.com` |
 | `testcontainers[postgres]` | Real PostgreSQL instance for integration tests |
 | `pytestarch` | Architecture / layering rules as tests |
+| `@playwright/test` | Browser-driven end-to-end tests against the Docker Compose stack |
 
 All dependencies are pinned (with hashes) in `src/backend/requirements.lock`. CI installs them via `pip install --require-hashes -r requirements.lock`, so the test environment is fully reproducible.
 
 ### 3.2 Static Analysis & Coverage — SonarQube
 
-SonarQube is the single static-analysis tool for this project. It is not a pip package — it runs as a service in CI and consumes the coverage report produced by `pytest-cov`. It covers:
+SonarQube is the single static-analysis tool for this project. It runs as a service in CI and consumes the coverage report produced by `pytest-cov`. It covers:
 
 - **Code smells** — maintainability issues, duplication, overly complex functions
 - **Bugs** — likely runtime errors detected statically
@@ -115,7 +120,7 @@ The 80% threshold is **not** enforced by `pytest` itself — it is the SonarQube
 
 ### 3.3 CI Integration
 
-The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs separate jobs for **unit**, **integration**, and **architecture** tests, plus a **frontend type-check** (`npm run type-check`; the frontend currently has no unit/integration tests). The unit and integration jobs each upload their `coverage.xml` as an artifact; the **SonarQube** job downloads both, merges them, and runs the scan. SonarQube configuration lives in `sonar-project.properties`.
+The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs separate jobs for **unit**, **integration**, and **architecture** tests, a **frontend type-check** (`npm run type-check`), and a **frontend E2E** job that builds and starts the full Docker Compose stack, waits for the backend (`/health`) and frontend to become healthy, then runs the Playwright suite (the report is uploaded as an artifact). The unit and integration jobs each upload their `coverage.xml` as an artifact; the **SonarQube** job downloads both, merges them, and runs the scan. SonarQube configuration lives in `sonar-project.properties`.
 
 ---
 
@@ -144,4 +149,12 @@ src/backend/
 ├── sonar-project.properties
 ├── pytest.ini                   # asyncio_mode = auto, testpaths = tests
 └── requirements.lock            # pinned, hash-verified dependencies
+
+src/frontend/
+├── tests/
+│   └── e2e/                     # Playwright end-to-end tests (full stack)
+│       ├── smoke.spec.ts
+│       ├── game.spec.ts
+│       └── auth.spec.ts
+└── playwright.config.ts         # baseURL http://localhost; starts docker compose
 ```
