@@ -19,7 +19,7 @@ The system is decomposed into 3 distinct layers:
 
 1. **Frontend:** Handles user interaction and renders the UI. Calls Backend API
 2. **Backend:** Contains the business logic, handles authentication, and acts as a gateway to the external service
-3. **Persistence Layer:** Securely stores player credentials, highscores and flag information
+3. **Persistence Layer:** Securely stores player credentials and highscores.
 
 ## Decisions to Achieve Quality Goals
 
