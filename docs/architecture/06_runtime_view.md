@@ -26,7 +26,7 @@ The Player guesses a country. The Frontend submits the answer to the Backend. Th
 
 ![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
 
-The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The Backend checks if the user already exists. If no user exists, a new one will be created (Persistence) and the Player will be notified.
+The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The Backend checks if the user already exists. If no user exists, a new one will be created and the Player will be notified.
 
 If the user already exists, the Player will be notified respectively and no new user will be stored in the Persistence component.
 
