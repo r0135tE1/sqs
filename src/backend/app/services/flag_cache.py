@@ -1,12 +1,14 @@
 import asyncio
 import logging
-import random
+import secrets
 
 import httpx
 
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+
+_rng = secrets.SystemRandom()
 
 _SVG_CONCURRENCY = 20
 
@@ -88,13 +90,13 @@ class FlagCache:
         if not candidates:
             return None
 
-        entry = random.choice(candidates)
+        entry = _rng.choice(candidates)
 
         wrong_pool = [c for c in self._countries if c["code"] != entry["code"]]
-        wrong_choices = random.sample(wrong_pool, min(3, len(wrong_pool)))
+        wrong_choices = _rng.sample(wrong_pool, min(3, len(wrong_pool)))
 
         options = [entry["name"]] + [c["name"] for c in wrong_choices]
-        random.shuffle(options)
+        _rng.shuffle(options)
 
         return {
             "country_code": entry["code"],
