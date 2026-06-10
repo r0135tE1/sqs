@@ -1,28 +1,25 @@
 <template>
-  <div v-if="isOpen" class="modal-root">
-    <div class="modal-backdrop" @click="$emit('close')" />
-    <div
-      ref="dialogRef"
-      class="modal"
-      :style="{ maxWidth }"
-      role="dialog"
-      aria-modal="true"
-      :aria-labelledby="title ? titleId : undefined"
-      tabindex="-1"
-      @keydown.esc="$emit('close')"
-      @keydown.tab="trapFocus"
-    >
+  <dialog
+    v-if="isOpen"
+    ref="dialogRef"
+    class="modal"
+    :aria-labelledby="title ? titleId : undefined"
+    @click="onBackdropClick"
+    @cancel.prevent="$emit('close')"
+    @close="$emit('close')"
+  >
+    <div class="modal-content" :style="{ maxWidth }">
       <div v-if="title" class="modal-header">
         <div :id="titleId" class="modal-title">{{ title }}</div>
         <button @click="$emit('close')" class="close-btn" type="button" aria-label="Close">×</button>
       </div>
       <slot />
     </div>
-  </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue"
+import { nextTick, onMounted, ref, useId, watch } from "vue"
 
 const props = withDefaults(defineProps<{
   isOpen: boolean
@@ -30,75 +27,51 @@ const props = withDefaults(defineProps<{
   maxWidth?: string
 }>(), { maxWidth: "28rem" })
 
-defineEmits(["close"])
+const emit = defineEmits(["close"])
 
-let modalCount = 0
-const titleId = `modal-title-${++modalCount}`
+const titleId = useId()
+const dialogRef = ref<HTMLDialogElement | null>(null)
 
-const dialogRef = ref<HTMLElement | null>(null)
-let previouslyFocused: HTMLElement | null = null
+// Open as a native modal so the browser handles focus trapping, the top layer,
+// and the ::backdrop. Guarded with ?. so it degrades gracefully under jsdom,
+// which does not implement HTMLDialogElement.showModal().
+async function openAsModal() {
+  await nextTick()
+  dialogRef.value?.showModal?.()
+}
 
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+onMounted(() => { if (props.isOpen) openAsModal() })
+watch(() => props.isOpen, (open) => { if (open) openAsModal() })
 
-// Move focus into the dialog when it opens and restore it to the trigger on close,
-// so keyboard and screen-reader users aren't stranded outside the modal.
-watch(() => props.isOpen, async (open) => {
-  if (open) {
-    previouslyFocused = document.activeElement as HTMLElement | null
-    await nextTick()
-    dialogRef.value?.focus()
-  } else {
-    previouslyFocused?.focus?.()
-    previouslyFocused = null
-  }
-})
-
-// Keep Tab/Shift+Tab cycling within the dialog (focus trap).
-function trapFocus(e: KeyboardEvent) {
-  const focusables = dialogRef.value?.querySelectorAll<HTMLElement>(FOCUSABLE)
-  if (!focusables || focusables.length === 0) {
-    e.preventDefault()
-    return
-  }
-  const first = focusables[0]
-  const last = focusables[focusables.length - 1]
-  const active = document.activeElement
-  if (e.shiftKey && (active === first || active === dialogRef.value)) {
-    e.preventDefault()
-    last?.focus()
-  } else if (!e.shiftKey && active === last) {
-    e.preventDefault()
-    first?.focus()
-  }
+// A click whose target is the dialog itself (the ::backdrop), not its content, closes it.
+function onBackdropClick(e: MouseEvent) {
+  if (e.target === dialogRef.value) emit("close")
 }
 </script>
 
 <style scoped>
-.modal-root {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  padding: 2rem 1rem;
-}
-
-.modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 40;
-}
-
 .modal {
-  position: relative;
+  border: none;
+  padding: 0;
+  background: transparent;
+  width: 100%;
+  max-width: 100vw;
+  max-height: calc(100vh - 4rem);
+  overflow: visible;
+  color: inherit;
+}
+
+.modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  width: 100%;
+  margin: 0 auto;
   background-color: var(--surface);
   border: 1px solid var(--border-subtle);
   border-radius: 1rem;
   padding: 2rem;
-  width: 100%;
-  z-index: 50;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);

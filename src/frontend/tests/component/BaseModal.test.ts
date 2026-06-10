@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import BaseModal from '../../app/components/BaseModal.vue'
 
 describe('BaseModal', () => {
@@ -27,11 +27,21 @@ describe('BaseModal', () => {
     expect(wrapper.find('.close-btn').exists()).toBe(false)
   })
 
-  it('emits close when backdrop is clicked', async () => {
+  it('emits close when the backdrop (dialog itself) is clicked', async () => {
     const wrapper = mount(BaseModal, { props: { isOpen: true, title: 'X' } })
-    await wrapper.find('.modal-backdrop').trigger('click')
+    // A click whose target is the <dialog> element (its ::backdrop), not the content.
+    await wrapper.find('.modal').trigger('click')
     expect(wrapper.emitted('close')).toBeTruthy()
     expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+
+  it('does not emit close when the content is clicked', async () => {
+    const wrapper = mount(BaseModal, {
+      props: { isOpen: true },
+      slots: { default: '<p class="inside">hi</p>' },
+    })
+    await wrapper.find('.inside').trigger('click')
+    expect(wrapper.emitted('close')).toBeFalsy()
   })
 
   it('emits close when close button is clicked', async () => {
@@ -50,12 +60,14 @@ describe('BaseModal', () => {
   })
 
   // ── Accessibility ─────────────────────────────────────────────
+  // Modality, focus trapping, and Escape are provided natively by the <dialog>
+  // element (via showModal); those are browser behaviours not exercisable under
+  // jsdom, so the tests below cover the markup and event wiring we own.
 
-  it('exposes dialog ARIA attributes and labels the title', () => {
+  it('renders a native <dialog> element labelled by its title', () => {
     const wrapper = mount(BaseModal, { props: { isOpen: true, title: 'Hello' } })
     const dialog = wrapper.find('.modal')
-    expect(dialog.attributes('role')).toBe('dialog')
-    expect(dialog.attributes('aria-modal')).toBe('true')
+    expect((dialog.element as HTMLElement).tagName).toBe('DIALOG')
     const labelledby = dialog.attributes('aria-labelledby')
     expect(labelledby).toBeTruthy()
     expect(wrapper.find('.modal-title').attributes('id')).toBe(labelledby)
@@ -66,43 +78,15 @@ describe('BaseModal', () => {
     expect(wrapper.find('.modal').attributes('aria-labelledby')).toBeUndefined()
   })
 
-  it('emits close when Escape is pressed', async () => {
+  it('emits close on the native cancel event (Escape)', async () => {
     const wrapper = mount(BaseModal, { props: { isOpen: true, title: 'X' } })
-    await wrapper.find('.modal').trigger('keydown', { key: 'Escape' })
+    await wrapper.find('.modal').trigger('cancel')
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 
-  it('moves focus into the dialog when it opens', async () => {
-    const wrapper = mount(BaseModal, {
-      props: { isOpen: false, title: 'X' },
-      attachTo: document.body,
-    })
-    await wrapper.setProps({ isOpen: true })
-    await flushPromises()
-    expect(document.activeElement).toBe(wrapper.find('.modal').element)
-    wrapper.unmount()
-  })
-
-  it('traps Tab focus within the dialog', async () => {
-    const wrapper = mount(BaseModal, {
-      props: { isOpen: true, title: 'X' },
-      slots: { default: '<button class="last-btn">Last</button>' },
-      attachTo: document.body,
-    })
-
-    const closeBtn = wrapper.find('.close-btn').element as HTMLButtonElement
-    const lastBtn = wrapper.find('.last-btn').element as HTMLButtonElement
-
-    // Tab from the last focusable wraps back to the first (close button).
-    lastBtn.focus()
-    await wrapper.find('.modal').trigger('keydown', { key: 'Tab' })
-    expect(document.activeElement).toBe(closeBtn)
-
-    // Shift+Tab from the first focusable wraps to the last.
-    closeBtn.focus()
-    await wrapper.find('.modal').trigger('keydown', { key: 'Tab', shiftKey: true })
-    expect(document.activeElement).toBe(lastBtn)
-
-    wrapper.unmount()
+  it('emits close on the native close event', async () => {
+    const wrapper = mount(BaseModal, { props: { isOpen: true, title: 'X' } })
+    await wrapper.find('.modal').trigger('close')
+    expect(wrapper.emitted('close')).toBeTruthy()
   })
 })

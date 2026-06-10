@@ -3,7 +3,9 @@ import { mount } from '@vue/test-utils'
 import SaveScorePrompt from '../../app/components/SaveScorePrompt.vue'
 
 function findButtonByText(wrapper: ReturnType<typeof mount>, text: string) {
-  return wrapper.findAll('button').find((b) => b.text() === text)!
+  const button = wrapper.findAll('button').find((b) => b.text() === text)
+  if (!button) throw new Error(`Button "${text}" not found`)
+  return button
 }
 
 describe('SaveScorePrompt', () => {
@@ -37,7 +39,7 @@ describe('SaveScorePrompt', () => {
 
   it('emits dismiss when the backdrop is clicked', async () => {
     const wrapper = mount(SaveScorePrompt, { props: { isOpen: true } })
-    await wrapper.find('.modal-backdrop').trigger('click')
+    await wrapper.find('.modal').trigger('click')
     expect(wrapper.emitted('dismiss')).toBeTruthy()
   })
 })
