@@ -139,7 +139,6 @@ All network access in the Vitest layers is mocked (`tests/helpers/fetchMock.ts`)
 | `respx` | Mock `httpx` calls to `restcountries.com` |
 | `testcontainers[postgres]` | Real PostgreSQL instance for integration tests |
 | `pytestarch` | Architecture / layering rules as tests |
-| `@playwright/test` | Browser-driven end-to-end tests against the Docker Compose stack |
 
 All backend dependencies are pinned (with hashes) in `src/backend/requirements.lock`. CI installs them via `pip install --require-hashes -r requirements.lock`, so the test environment is fully reproducible.
 
