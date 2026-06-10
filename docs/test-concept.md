@@ -36,7 +36,7 @@ End-to-end coverage of the full stack lives in the frontend Playwright suite (se
 - **`test_dependencies.py`** — The `get_current_user` FastAPI dependency returns the username for a valid token and raises `HTTP 401` for invalid or expired ones.
 - **`test_game_session.py`** — Session lifecycle (unique IDs, initial state, lookup), scoring (increment on correct, reset on wrong, personal-best preserved), the "seen flags" deduplication, single-use questions, and cleanup of expired sessions.
 
-> **Mock strategy:** `FlagCache` state is set directly on the instance — no HTTP call needed.
+> **Mock strategy:** `FlagCache` state is set directly on the instance.
 
 ### 2.2 Integration Tests
 
@@ -54,7 +54,7 @@ Coverage by file:
 
 - **`test_health.py`** — `GET /health` returns `200` and reports the loaded flag count.
 - **`test_auth.py`** — Registration (success, duplicate username → `409`) and login (success, wrong password and unknown user → `401`).
-- **`test_game.py`** — The guest game flow: create session, fetch flags (valid inline SVG, exactly four options, correct answer never leaked), submit answers (correct/wrong scoring, single-use questions), score streak/reset behaviour, and that seen flags are not repeated until exhausted (`404`).
+- **`test_game.py`** — The guest game flow: create session, fetch flags (valid inline SVG, exactly four options), submit answers (correct/wrong scoring, single-use questions), score streak/reset behaviour, and that seen flags are not repeated until exhausted (`404`).
 - **`test_highscores.py`** — Saving and reading scores on the JWT-protected endpoints: personal-best logic, ordering, per-user isolation, and that every endpoint rejects missing/invalid tokens.
 - **`test_flag_cache_load.py`** *(Resilience)* — `FlagCache.load()` against mocked HTTP responses: a 200 populates the cache, while HTTP errors, non-200 status, and malformed JSON leave it empty without crashing. Directly exercises the **Resilience** goal.
 - **`test_security.py`** *(Security)* — Input validation (SQL injection, XSS, oversized username, weak/blank password → `422`), auth bypass (missing, forged, expired, wrong-secret, garbage tokens → `401`), and score manipulation (an arbitrary `score` in the body is ignored/rejected; the score is always read server-side).
@@ -63,7 +63,7 @@ Coverage by file:
 
 **Scope:** Structural rules rather than behaviour. Using `pytestarch`, these tests assert the allowed dependency direction between layers so the architecture cannot silently erode.
 
-**Location:** `app/tests/test_architecture.py` (run as a dedicated CI job: `pytest app/tests -v`).
+**Location:** `app/tests/test_architecture.py`.
 
 The rules enforce, among others: services must not import routers, the database, or dependencies; models must not import services, routers, or the database; the database layer must not import routers; routers must not import the database directly; and `config` must not import other app modules. This keeps the dependency flow pointing inward (routers → services → database) and supports the **Maintainability** goal.
 
@@ -139,6 +139,7 @@ All network access in the Vitest layers is mocked (`tests/helpers/fetchMock.ts`)
 | `respx` | Mock `httpx` calls to `restcountries.com` |
 | `testcontainers[postgres]` | Real PostgreSQL instance for integration tests |
 | `pytestarch` | Architecture / layering rules as tests |
+| `@playwright/test` | Browser-driven end-to-end tests against the Docker Compose stack |
 
 All backend dependencies are pinned (with hashes) in `src/backend/requirements.lock`. CI installs them via `pip install --require-hashes -r requirements.lock`, so the test environment is fully reproducible.
 

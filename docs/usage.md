@@ -14,12 +14,13 @@ is installed and running on your machine.
 
 ### Starting the application
 
-First, generate the `.env` file. The setup script creates it for you and fills in
-a randomly generated JWT secret:
+After repository checkout, execute the setup script.
 
 ```bash
 ./setup.sh
 ```
+
+This will create an `.env` file in the project directory with the necessary configuration. It includes a randomly generated JWT secret.
 
 Next, build the images and start all containers:
 
@@ -82,5 +83,3 @@ the containers.
 | ------------------- | -------------------------------- | --------------------------------------------------- |
 | `RESTCOUNTRIES_URL` | `https://restcountries.com/v3.1` | Base URL of the external country/flag API           |
 | `LOG_LEVEL`         | `INFO`                           | Backend log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`) |
-
-
