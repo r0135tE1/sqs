@@ -4,7 +4,7 @@
 
 "Fun with Flags" is a web-based application for testing and improving knowledge of national flags from around the world. The game presents the player with a country's flag, which they must match to the correct country name. Consecutive correct answers increase the player's score.
 
-Registered users can sign up and log in to benefit from persistent score tracking and access to the global Top 10 leaderboard, which displays the highest-scoring players on the platform. Guest players can play the game without an account but do not have access to the leaderboard.
+Registered users can log in to benefit from persistent score tracking and access to the global Top 10 leaderboard, which displays the highest-scoring players on the platform. Guest players can play the game without an account but do not have access to the leaderboard.
 
 ## Quality Goals
 

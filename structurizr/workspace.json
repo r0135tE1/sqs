@@ -3,54 +3,54 @@
   "description" : "C4-Modell der Fun With Flags Architektur",
   "documentation" : { },
   "id" : 1,
-  "lastModifiedDate" : "2026-06-04T19:54:17Z",
+  "lastModifiedDate" : "2026-06-10T10:27:14Z",
   "model" : {
     "deploymentNodes" : [ {
       "containerInstances" : [ {
         "containerId" : "4",
         "environment" : "Production",
-        "id" : "74",
+        "id" : "84",
         "instanceId" : 1,
         "properties" : {
           "structurizr.dsl.identifier" : "frontendInstance"
         },
         "relationships" : [ {
           "description" : "API calls",
-          "destinationId" : "75",
-          "id" : "76",
-          "linkedRelationshipId" : "29",
-          "sourceId" : "74",
+          "destinationId" : "85",
+          "id" : "86",
+          "linkedRelationshipId" : "35",
+          "sourceId" : "84",
           "technology" : "REST / HTTP"
         } ],
         "tags" : "Container Instance"
       }, {
-        "containerId" : "10",
+        "containerId" : "16",
         "environment" : "Production",
-        "id" : "75",
+        "id" : "85",
         "instanceId" : 1,
         "properties" : {
           "structurizr.dsl.identifier" : "backendInstance"
         },
         "relationships" : [ {
           "description" : "reads from / writes to",
-          "destinationId" : "77",
-          "id" : "78",
-          "linkedRelationshipId" : "30",
-          "sourceId" : "75",
+          "destinationId" : "87",
+          "id" : "88",
+          "linkedRelationshipId" : "36",
+          "sourceId" : "85",
           "technology" : "SQL"
         }, {
           "description" : "requests flag data",
-          "destinationId" : "80",
-          "id" : "81",
-          "sourceId" : "75",
+          "destinationId" : "90",
+          "id" : "91",
+          "sourceId" : "85",
           "tags" : "Relationship",
           "technology" : "REST / HTTP"
         } ],
         "tags" : "Container Instance"
       }, {
-        "containerId" : "25",
+        "containerId" : "31",
         "environment" : "Production",
-        "id" : "77",
+        "id" : "87",
         "instanceId" : 1,
         "properties" : {
           "structurizr.dsl.identifier" : "persistenceInstance"
@@ -58,19 +58,19 @@
         "tags" : "Container Instance"
       } ],
       "environment" : "Production",
-      "id" : "73",
+      "id" : "83",
       "instances" : "1",
       "name" : "Container",
       "properties" : {
-        "structurizr.dsl.identifier" : "9675e8fd-59d1-428b-bbf7-b35866371628"
+        "structurizr.dsl.identifier" : "42127f2f-ca49-45c8-8502-2d7885784f2e"
       },
       "tags" : "Element,Deployment Node"
     }, {
       "environment" : "Production",
-      "id" : "79",
+      "id" : "89",
       "infrastructureNodes" : [ {
         "environment" : "Production",
-        "id" : "80",
+        "id" : "90",
         "name" : "Public API",
         "properties" : {
           "structurizr.dsl.identifier" : "publicApiNode"
@@ -80,7 +80,7 @@
       "instances" : "1",
       "name" : "External",
       "properties" : {
-        "structurizr.dsl.identifier" : "8c185c1d-358e-4e39-9b3b-dafe6eb16694"
+        "structurizr.dsl.identifier" : "d889a3a4-8972-40ee-857a-07a23a26abb0"
       },
       "tags" : "Element,Deployment Node"
     } ],
@@ -94,13 +94,13 @@
       "relationships" : [ {
         "description" : "sign up & login, play the game, view highscores",
         "destinationId" : "3",
-        "id" : "26",
+        "id" : "32",
         "sourceId" : "1",
         "tags" : "Relationship"
       }, {
         "description" : "interacts with",
         "destinationId" : "4",
-        "id" : "28",
+        "id" : "34",
         "sourceId" : "1",
         "tags" : "Relationship",
         "technology" : "Internet / HTTP"
@@ -119,7 +119,7 @@
     }, {
       "containers" : [ {
         "components" : [ {
-          "description" : "Application shell. Manages global authentication state, persists the JWT token in localStorage, and orchestrates modal visibility.",
+          "description" : "Application shell. Manages global authentication state, persists the JWT token in localStorage, orchestrates modal visibility, and renders auth failures as inline form messages.",
           "documentation" : { },
           "id" : "5",
           "name" : "App",
@@ -127,54 +127,51 @@
             "structurizr.dsl.identifier" : "appShell"
           },
           "relationships" : [ {
-            "description" : "Renders and passes JWT token as prop",
+            "description" : "Wraps the UI to catch and surface render errors",
+            "destinationId" : "12",
+            "id" : "38",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Renders; passes JWT token as prop; reacts to open-login / open-signup / session-expired / new-highscore events",
             "destinationId" : "6",
-            "id" : "32",
+            "id" : "39",
             "sourceId" : "5",
             "tags" : "Relationship"
           }, {
             "description" : "Renders; receives submit event with credentials",
             "destinationId" : "7",
-            "id" : "33",
-            "sourceId" : "5",
-            "tags" : "Relationship"
-          }, {
-            "description" : "Renders; receives submit event with credentials",
-            "destinationId" : "8",
-            "id" : "34",
+            "id" : "40",
             "sourceId" : "5",
             "tags" : "Relationship"
           }, {
             "description" : "Renders; passes JWT token as prop",
-            "destinationId" : "9",
-            "id" : "35",
+            "destinationId" : "8",
+            "id" : "41",
             "sourceId" : "5",
             "tags" : "Relationship"
           }, {
-            "description" : "POST /auth/register – register new user",
-            "destinationId" : "10",
-            "id" : "36",
+            "description" : "Renders the active toast notifications",
+            "destinationId" : "11",
+            "id" : "42",
             "sourceId" : "5",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
+            "tags" : "Relationship"
           }, {
-            "description" : "POST /auth/login – obtain JWT token",
-            "destinationId" : "10",
-            "id" : "37",
+            "description" : "Registers and logs in the user via; shows auth failures as inline form messages",
+            "destinationId" : "14",
+            "id" : "43",
             "sourceId" : "5",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
+            "tags" : "Relationship"
           }, {
-            "description" : "POST /auth/register, POST /auth/login",
-            "destinationId" : "12",
+            "description" : "Shows authentication feedback via",
+            "destinationId" : "15",
             "id" : "44",
             "sourceId" : "5",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
+            "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
-          "description" : "Core game component. Creates a game session, fetches flags by session ID, submits answers to the backend, receives server-side score updates, and persists the session score to the backend.",
+          "description" : "Presentational game view. Renders the flag, answer buttons, score / highscore, result strips, and loading / error states; forwards user interactions and delegates the full game lifecycle to the useGame composable.",
           "documentation" : { },
           "id" : "6",
           "name" : "GameBoard",
@@ -182,97 +179,175 @@
             "structurizr.dsl.identifier" : "gameBoard"
           },
           "relationships" : [ {
-            "description" : "POST /game/session – create session",
-            "destinationId" : "10",
-            "id" : "38",
-            "sourceId" : "6",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
-          }, {
-            "description" : "GET /game/flag – fetch next flag",
-            "destinationId" : "10",
-            "id" : "39",
-            "sourceId" : "6",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
-          }, {
-            "description" : "POST /game/answer – submit answer",
-            "destinationId" : "10",
-            "id" : "40",
-            "sourceId" : "6",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
-          }, {
-            "description" : "POST /highscores/ – save session score (Bearer token)",
-            "destinationId" : "10",
-            "id" : "41",
-            "sourceId" : "6",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
-          }, {
-            "description" : "POST /game/session, GET /game/flag, POST /game/answer",
+            "description" : "Delegates the full game lifecycle to",
             "destinationId" : "13",
+            "id" : "45",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Renders; forwards signup / login events to the app",
+            "destinationId" : "9",
             "id" : "46",
             "sourceId" : "6",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
-          }, {
-            "description" : "POST /highscores/",
-            "destinationId" : "14",
-            "id" : "48",
-            "sourceId" : "6",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
+            "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
-          "description" : "Presentational modal with a username/password form.",
+          "description" : "Combined login / sign-up modal. Toggles between modes and applies client-side validation (username format, password length/complexity) in sign-up mode before emitting credentials.",
           "documentation" : { },
           "id" : "7",
-          "name" : "LoginModal",
+          "name" : "AuthModal",
           "properties" : {
-            "structurizr.dsl.identifier" : "loginModal"
+            "structurizr.dsl.identifier" : "authModal"
           },
-          "tags" : "Element,Component"
-        }, {
-          "description" : "Presentational modal with a registration form. Applies client-side validation (username format, password length/complexity) before emitting credentials",
-          "documentation" : { },
-          "id" : "8",
-          "name" : "SignUpModal",
-          "properties" : {
-            "structurizr.dsl.identifier" : "signUpModal"
-          },
+          "relationships" : [ {
+            "description" : "Built on the reusable modal shell",
+            "destinationId" : "10",
+            "id" : "50",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          } ],
           "tags" : "Element,Component"
         }, {
           "description" : "Fetches and displays the top-10 leaderboard from the backend when opened. Requires a valid JWT token.",
           "documentation" : { },
-          "id" : "9",
+          "id" : "8",
           "name" : "HighscoresModal",
           "properties" : {
             "structurizr.dsl.identifier" : "highscoresModal"
           },
           "relationships" : [ {
-            "description" : "GET /highscores/ – fetch top-10 leaderboard (Bearer token)",
-            "destinationId" : "10",
-            "id" : "42",
-            "sourceId" : "9",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
-          }, {
-            "description" : "GET /highscores/me – fetch own highscore (Bearer token)",
-            "destinationId" : "10",
-            "id" : "43",
-            "sourceId" : "9",
-            "tags" : "Relationship",
-            "technology" : "JSON / REST"
-          }, {
-            "description" : "GET /highscores/, GET /highscores/me",
+            "description" : "Fetches the leaderboard and the player's own score via; renders loading / error / empty states",
             "destinationId" : "14",
-            "id" : "50",
+            "id" : "51",
+            "sourceId" : "8",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Built on the reusable modal shell",
+            "destinationId" : "10",
+            "id" : "52",
+            "sourceId" : "8",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Presentational prompt shown to anonymous players after a wrong answer, inviting them to sign up or log in to save their score. Emits navigation events; holds no auth logic.",
+          "documentation" : { },
+          "id" : "9",
+          "name" : "SaveScorePrompt",
+          "properties" : {
+            "structurizr.dsl.identifier" : "saveScorePrompt"
+          },
+          "relationships" : [ {
+            "description" : "Built on the reusable modal shell",
+            "destinationId" : "10",
+            "id" : "49",
             "sourceId" : "9",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Reusable, accessible modal shell (role=dialog, focus trap, Escape to close): backdrop, optional header, and a content slot. Used by the other modals.",
+          "documentation" : { },
+          "id" : "10",
+          "name" : "BaseModal",
+          "properties" : {
+            "structurizr.dsl.identifier" : "baseModal"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Renders the active toast notifications.",
+          "documentation" : { },
+          "id" : "11",
+          "name" : "NotificationStack",
+          "properties" : {
+            "structurizr.dsl.identifier" : "notificationStack"
+          },
+          "relationships" : [ {
+            "description" : "Reads the active notifications from",
+            "destinationId" : "15",
+            "id" : "53",
+            "sourceId" : "11",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Catches render errors in the component tree and shows a fallback UI with a retry action.",
+          "documentation" : { },
+          "id" : "12",
+          "name" : "ErrorBoundary",
+          "properties" : {
+            "structurizr.dsl.identifier" : "errorBoundary"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Composable owning the game lifecycle: session creation, flag loading, answer checking, scoring, personal-best, and save-score logic. Surfaces API failures as toasts and keeps GameBoard purely presentational.",
+          "documentation" : { },
+          "id" : "13",
+          "name" : "useGame",
+          "properties" : {
+            "structurizr.dsl.identifier" : "useGame"
+          },
+          "relationships" : [ {
+            "description" : "Creates session, fetches flags, submits answers, and saves the score via",
+            "destinationId" : "14",
+            "id" : "47",
+            "sourceId" : "13",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Surfaces API failures as error / warning toasts via",
+            "destinationId" : "15",
+            "id" : "48",
+            "sourceId" : "13",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Central fetch wrapper (apiFetch). Builds requests, attaches the Bearer token, encodes/parses JSON, and raises typed ApiError / NetworkError failures (mapped to user messages by a shared helper).",
+          "documentation" : { },
+          "id" : "14",
+          "name" : "API Client",
+          "properties" : {
+            "structurizr.dsl.identifier" : "apiClient"
+          },
+          "relationships" : [ {
+            "description" : "REST API calls (auth, game, highscores)",
+            "destinationId" : "16",
+            "id" : "54",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "JSON / REST"
+          }, {
+            "description" : "POST /auth/register, POST /auth/login",
+            "destinationId" : "18",
+            "id" : "55",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "JSON / REST"
+          }, {
+            "description" : "POST /game/session, GET /game/flag, POST /game/answer",
+            "destinationId" : "19",
+            "id" : "57",
+            "sourceId" : "14",
+            "tags" : "Relationship",
+            "technology" : "JSON / REST"
+          }, {
+            "description" : "GET /highscores/, GET /highscores/me, POST /highscores/ (Bearer)",
+            "destinationId" : "20",
+            "id" : "59",
+            "sourceId" : "14",
             "tags" : "Relationship",
             "technology" : "JSON / REST"
           } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Composable holding the shared notification state: add, auto-dismiss, manual dismiss, and dedupe by type+message.",
+          "documentation" : { },
+          "id" : "15",
+          "name" : "useNotifications",
+          "properties" : {
+            "structurizr.dsl.identifier" : "useNotifications"
+          },
           "tags" : "Element,Component"
         } ],
         "description" : "provides UI for player - requests flags from backend - forwards player and game data",
@@ -284,157 +359,158 @@
         },
         "relationships" : [ {
           "description" : "API calls",
-          "destinationId" : "10",
-          "id" : "29",
+          "destinationId" : "16",
+          "id" : "35",
           "sourceId" : "4",
           "tags" : "Relationship",
           "technology" : "REST / HTTP"
         }, {
           "description" : "POST /auth/register, POST /auth/login",
-          "destinationId" : "12",
-          "id" : "45",
-          "linkedRelationshipId" : "44",
+          "destinationId" : "18",
+          "id" : "56",
+          "linkedRelationshipId" : "55",
           "sourceId" : "4",
           "technology" : "JSON / REST"
         }, {
           "description" : "POST /game/session, GET /game/flag, POST /game/answer",
-          "destinationId" : "13",
-          "id" : "47",
-          "linkedRelationshipId" : "46",
+          "destinationId" : "19",
+          "id" : "58",
+          "linkedRelationshipId" : "57",
           "sourceId" : "4",
           "technology" : "JSON / REST"
         }, {
-          "description" : "POST /highscores/",
-          "destinationId" : "14",
-          "id" : "49",
-          "linkedRelationshipId" : "48",
+          "description" : "GET /highscores/, GET /highscores/me, POST /highscores/ (Bearer)",
+          "destinationId" : "20",
+          "id" : "60",
+          "linkedRelationshipId" : "59",
           "sourceId" : "4",
           "technology" : "JSON / REST"
         } ],
-        "tags" : "Element,Container"
+        "tags" : "Element,Container",
+        "technology" : "Vue 3 / TypeScript"
       }, {
         "components" : [ {
           "description" : "Initialises the app, registers routers, configures CORS, and triggers FlagCache preload at startup.",
           "documentation" : { },
-          "id" : "11",
+          "id" : "17",
           "name" : "Application Bootstrap",
           "properties" : {
             "structurizr.dsl.identifier" : "appBootstrap"
           },
           "relationships" : [ {
             "description" : "Registers router",
-            "destinationId" : "12",
-            "id" : "51",
-            "sourceId" : "11",
+            "destinationId" : "18",
+            "id" : "61",
+            "sourceId" : "17",
             "tags" : "Relationship"
           }, {
             "description" : "Registers router",
-            "destinationId" : "13",
-            "id" : "52",
-            "sourceId" : "11",
+            "destinationId" : "19",
+            "id" : "62",
+            "sourceId" : "17",
             "tags" : "Relationship"
           }, {
             "description" : "Registers router",
-            "destinationId" : "14",
-            "id" : "53",
-            "sourceId" : "11",
+            "destinationId" : "20",
+            "id" : "63",
+            "sourceId" : "17",
             "tags" : "Relationship"
           }, {
             "description" : "Calls load() on startup",
-            "destinationId" : "16",
-            "id" : "54",
-            "sourceId" : "11",
+            "destinationId" : "22",
+            "id" : "64",
+            "sourceId" : "17",
             "tags" : "Relationship"
           }, {
             "description" : "Runs cleanup task every hour",
-            "destinationId" : "17",
-            "id" : "55",
-            "sourceId" : "11",
+            "destinationId" : "23",
+            "id" : "65",
+            "sourceId" : "17",
             "tags" : "Relationship"
           }, {
             "description" : "Reads configuration from",
-            "destinationId" : "24",
-            "id" : "72",
-            "sourceId" : "11",
+            "destinationId" : "30",
+            "id" : "82",
+            "sourceId" : "17",
             "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
           "description" : "Handles user registration and login.",
           "documentation" : { },
-          "id" : "12",
+          "id" : "18",
           "name" : "Auth Router",
           "properties" : {
             "structurizr.dsl.identifier" : "authRouter"
           },
           "relationships" : [ {
             "description" : "Creates JWT token via",
-            "destinationId" : "15",
-            "id" : "56",
-            "sourceId" : "12",
+            "destinationId" : "21",
+            "id" : "66",
+            "sourceId" : "18",
             "tags" : "Relationship"
           }, {
             "description" : "Delegates registration and authentication to",
-            "destinationId" : "22",
-            "id" : "57",
-            "sourceId" : "12",
+            "destinationId" : "28",
+            "id" : "67",
+            "sourceId" : "18",
             "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
           "description" : "Manages game sessions: creates sessions, serves flags, and validates answers.",
           "documentation" : { },
-          "id" : "13",
+          "id" : "19",
           "name" : "Game Router",
           "properties" : {
             "structurizr.dsl.identifier" : "gameRouter"
           },
           "relationships" : [ {
             "description" : "Retrieves random unseen flag from",
-            "destinationId" : "16",
-            "id" : "58",
-            "sourceId" : "13",
+            "destinationId" : "22",
+            "id" : "68",
+            "sourceId" : "19",
             "tags" : "Relationship"
           }, {
             "description" : "Creates sessions, stores questions, validates answers via",
-            "destinationId" : "17",
-            "id" : "59",
-            "sourceId" : "13",
+            "destinationId" : "23",
+            "id" : "69",
+            "sourceId" : "19",
             "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
           "description" : "Protected endpoints for leaderboard and score persistence. Requires valid JWT.",
           "documentation" : { },
-          "id" : "14",
+          "id" : "20",
           "name" : "Highscores Router",
           "properties" : {
             "structurizr.dsl.identifier" : "highscoresRouter"
           },
           "relationships" : [ {
             "description" : "Validates Bearer token via",
-            "destinationId" : "18",
-            "id" : "60",
-            "sourceId" : "14",
+            "destinationId" : "24",
+            "id" : "70",
+            "sourceId" : "20",
             "tags" : "Relationship"
           }, {
             "description" : "Delegates highscore operations to",
-            "destinationId" : "23",
-            "id" : "61",
-            "sourceId" : "14",
+            "destinationId" : "29",
+            "id" : "71",
+            "sourceId" : "20",
             "tags" : "Relationship"
           }, {
             "description" : "Reads best score for a session via",
-            "destinationId" : "17",
-            "id" : "62",
-            "sourceId" : "14",
+            "destinationId" : "23",
+            "id" : "72",
+            "sourceId" : "20",
             "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
           "description" : "Password hashing/verification and JWT creation/decoding.",
           "documentation" : { },
-          "id" : "15",
+          "id" : "21",
           "name" : "Auth Service",
           "properties" : {
             "structurizr.dsl.identifier" : "authService"
@@ -443,7 +519,7 @@
         }, {
           "description" : "Loads country metadata and SVG images from the Public API at startup. Serves random unseen flags per session.",
           "documentation" : { },
-          "id" : "16",
+          "id" : "22",
           "name" : "Flag Cache",
           "properties" : {
             "structurizr.dsl.identifier" : "flagCache"
@@ -451,8 +527,8 @@
           "relationships" : [ {
             "description" : "Fetches all countries and SVG images on startup from",
             "destinationId" : "2",
-            "id" : "64",
-            "sourceId" : "16",
+            "id" : "74",
+            "sourceId" : "22",
             "tags" : "Relationship",
             "technology" : "REST / HTTP"
           } ],
@@ -460,7 +536,7 @@
         }, {
           "description" : "In-memory store for active game sessions. Tracks flags, scores, and open questions. Cleans up inactive sessions.",
           "documentation" : { },
-          "id" : "17",
+          "id" : "23",
           "name" : "Game Session Store",
           "properties" : {
             "structurizr.dsl.identifier" : "gameSessionStore"
@@ -469,32 +545,32 @@
         }, {
           "description" : "Validates the Bearer token and returns the authenticated username.",
           "documentation" : { },
-          "id" : "18",
+          "id" : "24",
           "name" : "Auth Dependency",
           "properties" : {
             "structurizr.dsl.identifier" : "authDependency"
           },
           "relationships" : [ {
             "description" : "Decodes JWT via",
-            "destinationId" : "15",
-            "id" : "63",
-            "sourceId" : "18",
+            "destinationId" : "21",
+            "id" : "73",
+            "sourceId" : "24",
             "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
           "description" : "SQLAlchemy engine, session factory, and ORM models (User, Highscore).",
           "documentation" : { },
-          "id" : "19",
+          "id" : "25",
           "name" : "Database Layer",
           "properties" : {
             "structurizr.dsl.identifier" : "databaseLayer"
           },
           "relationships" : [ {
             "description" : "Persists and queries data in",
-            "destinationId" : "25",
-            "id" : "65",
-            "sourceId" : "19",
+            "destinationId" : "31",
+            "id" : "75",
+            "sourceId" : "25",
             "tags" : "Relationship",
             "technology" : "SQL / asyncpg"
           } ],
@@ -502,16 +578,16 @@
         }, {
           "description" : "DB queries for User records: lookup and creation.",
           "documentation" : { },
-          "id" : "20",
+          "id" : "26",
           "name" : "User Repository",
           "properties" : {
             "structurizr.dsl.identifier" : "userRepository"
           },
           "relationships" : [ {
             "description" : "Executes queries via",
-            "destinationId" : "19",
-            "id" : "68",
-            "sourceId" : "20",
+            "destinationId" : "25",
+            "id" : "78",
+            "sourceId" : "26",
             "tags" : "Relationship",
             "technology" : "SQLAlchemy async"
           } ],
@@ -519,16 +595,16 @@
         }, {
           "description" : "DB queries for Highscore records: top-10, upsert, and lookup by user.",
           "documentation" : { },
-          "id" : "21",
+          "id" : "27",
           "name" : "Highscore Repository",
           "properties" : {
             "structurizr.dsl.identifier" : "highscoreRepository"
           },
           "relationships" : [ {
             "description" : "Executes queries via",
-            "destinationId" : "19",
-            "id" : "71",
-            "sourceId" : "21",
+            "destinationId" : "25",
+            "id" : "81",
+            "sourceId" : "27",
             "tags" : "Relationship",
             "technology" : "SQLAlchemy async"
           } ],
@@ -536,51 +612,51 @@
         }, {
           "description" : "Registration and authentication logic.",
           "documentation" : { },
-          "id" : "22",
+          "id" : "28",
           "name" : "User Service",
           "properties" : {
             "structurizr.dsl.identifier" : "userService"
           },
           "relationships" : [ {
             "description" : "Hashes and verifies passwords via",
-            "destinationId" : "15",
-            "id" : "66",
-            "sourceId" : "22",
+            "destinationId" : "21",
+            "id" : "76",
+            "sourceId" : "28",
             "tags" : "Relationship"
           }, {
             "description" : "Reads/writes User records via",
-            "destinationId" : "20",
-            "id" : "67",
-            "sourceId" : "22",
+            "destinationId" : "26",
+            "id" : "77",
+            "sourceId" : "28",
             "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
           "description" : "Highscore business logic: leaderboard retrieval, user score lookup, and score persistence.",
           "documentation" : { },
-          "id" : "23",
+          "id" : "29",
           "name" : "Highscore Service",
           "properties" : {
             "structurizr.dsl.identifier" : "highscoreService"
           },
           "relationships" : [ {
             "description" : "Looks up user by username via",
-            "destinationId" : "20",
-            "id" : "69",
-            "sourceId" : "23",
+            "destinationId" : "26",
+            "id" : "79",
+            "sourceId" : "29",
             "tags" : "Relationship"
           }, {
             "description" : "Reads/writes Highscore records via",
-            "destinationId" : "21",
-            "id" : "70",
-            "sourceId" : "23",
+            "destinationId" : "27",
+            "id" : "80",
+            "sourceId" : "29",
             "tags" : "Relationship"
           } ],
           "tags" : "Element,Component"
         }, {
           "description" : "Pydantic Settings for database URL, JWT secret, CORS origins, and API URL.",
           "documentation" : { },
-          "id" : "24",
+          "id" : "30",
           "name" : "Config",
           "properties" : {
             "structurizr.dsl.identifier" : "appConfig"
@@ -589,23 +665,23 @@
         } ],
         "description" : "handles API requests - handles game logic - manages persistence",
         "documentation" : { },
-        "id" : "10",
+        "id" : "16",
         "name" : "Backend",
         "properties" : {
           "structurizr.dsl.identifier" : "backend"
         },
         "relationships" : [ {
           "description" : "reads from / writes to",
-          "destinationId" : "25",
-          "id" : "30",
-          "sourceId" : "10",
+          "destinationId" : "31",
+          "id" : "36",
+          "sourceId" : "16",
           "tags" : "Relationship",
           "technology" : "SQL"
         }, {
           "description" : "requests flag data",
           "destinationId" : "2",
-          "id" : "31",
-          "sourceId" : "10",
+          "id" : "37",
+          "sourceId" : "16",
           "tags" : "Relationship",
           "technology" : "REST / HTTP"
         } ],
@@ -614,7 +690,7 @@
       }, {
         "description" : "Saves player credentials and highscores.",
         "documentation" : { },
-        "id" : "25",
+        "id" : "31",
         "name" : "Persistence",
         "properties" : {
           "structurizr.dsl.identifier" : "persistence"
@@ -631,7 +707,7 @@
       "relationships" : [ {
         "description" : "fetch flags",
         "destinationId" : "2",
-        "id" : "27",
+        "id" : "33",
         "sourceId" : "3",
         "tags" : "Relationship"
       } ],
@@ -640,8 +716,8 @@
   },
   "name" : "Fun With Flags",
   "properties" : {
-    "structurizr.inspection.error" : "35",
-    "structurizr.dsl" : "d29ya3NwYWNlICJGdW4gV2l0aCBGbGFncyIgIkM0LU1vZGVsbCBkZXIgRnVuIFdpdGggRmxhZ3MgQXJjaGl0ZWt0dXIiIHsKCiAgICBtb2RlbCB7CiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIFBlcnNvbmVuIC8gQWt0ZXVyZQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyID0gcGVyc29uICJQbGF5ZXIiICJBIHVzZXIgd2hvIHBsYXlzIHRoZSBmbGFnIGd1ZXNzaW5nIGdhbWUgaW4gYSB3ZWIgYnJvd3Nlci4iCgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBFeHRlcm5lIFN5c3RlbWUKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHB1YmxpY0FwaSA9IHNvZnR3YXJlU3lzdGVtICJQdWJsaWMgQVBJIiAiZXh0ZXJuYWwgUHVibGljIEFQSSDigJMgcHJvdmlkZXMgZmxhZyBkYXRhIiB7CiAgICAgICAgICAgIHRhZ3MgIkV4dGVybmFsIgogICAgICAgIH0KCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIFNvZnR3YXJlIFN5c3RlbQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZnVuV2l0aEZsYWdzID0gc29mdHdhcmVTeXN0ZW0gIkZ1biBXaXRoIEZsYWdzIiAid2ViIGFwcGxpY2F0aW9uIGZvciBhIGZsYWcgcXVpeiBnYW1lIiB7CgogICAgICAgICAgICBmcm9udGVuZCA9IGNvbnRhaW5lciAiRnJvbnRlbmQiICJwcm92aWRlcyBVSSBmb3IgcGxheWVyIC0gcmVxdWVzdHMgZmxhZ3MgZnJvbSBiYWNrZW5kIC0gZm9yd2FyZHMgcGxheWVyIGFuZCBnYW1lIGRhdGEiIHsKCiAgICAgICAgICAgICAgICBhcHBTaGVsbCA9IGNvbXBvbmVudCAiQXBwIiAiQXBwbGljYXRpb24gc2hlbGwuIE1hbmFnZXMgZ2xvYmFsIGF1dGhlbnRpY2F0aW9uIHN0YXRlLCBwZXJzaXN0cyB0aGUgSldUIHRva2VuIGluIGxvY2FsU3RvcmFnZSwgYW5kIG9yY2hlc3RyYXRlcyBtb2RhbCB2aXNpYmlsaXR5LiIKCiAgICAgICAgICAgICAgICBnYW1lQm9hcmQgPSBjb21wb25lbnQgIkdhbWVCb2FyZCIgIkNvcmUgZ2FtZSBjb21wb25lbnQuIENyZWF0ZXMgYSBnYW1lIHNlc3Npb24sIGZldGNoZXMgZmxhZ3MgYnkgc2Vzc2lvbiBJRCwgc3VibWl0cyBhbnN3ZXJzIHRvIHRoZSBiYWNrZW5kLCByZWNlaXZlcyBzZXJ2ZXItc2lkZSBzY29yZSB1cGRhdGVzLCBhbmQgcGVyc2lzdHMgdGhlIHNlc3Npb24gc2NvcmUgdG8gdGhlIGJhY2tlbmQuIgoKICAgICAgICAgICAgICAgIGxvZ2luTW9kYWwgPSBjb21wb25lbnQgIkxvZ2luTW9kYWwiICJQcmVzZW50YXRpb25hbCBtb2RhbCB3aXRoIGEgdXNlcm5hbWUvcGFzc3dvcmQgZm9ybS4iIAoKICAgICAgICAgICAgICAgIHNpZ25VcE1vZGFsID0gY29tcG9uZW50ICJTaWduVXBNb2RhbCIgIlByZXNlbnRhdGlvbmFsIG1vZGFsIHdpdGggYSByZWdpc3RyYXRpb24gZm9ybS4gQXBwbGllcyBjbGllbnQtc2lkZSB2YWxpZGF0aW9uICh1c2VybmFtZSBmb3JtYXQsIHBhc3N3b3JkIGxlbmd0aC9jb21wbGV4aXR5KSBiZWZvcmUgZW1pdHRpbmcgY3JlZGVudGlhbHMiCgogICAgICAgICAgICAgICAgaGlnaHNjb3Jlc01vZGFsID0gY29tcG9uZW50ICJIaWdoc2NvcmVzTW9kYWwiICJGZXRjaGVzIGFuZCBkaXNwbGF5cyB0aGUgdG9wLTEwIGxlYWRlcmJvYXJkIGZyb20gdGhlIGJhY2tlbmQgd2hlbiBvcGVuZWQuIFJlcXVpcmVzIGEgdmFsaWQgSldUIHRva2VuLiIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgYmFja2VuZCA9IGNvbnRhaW5lciAiQmFja2VuZCIgImhhbmRsZXMgQVBJIHJlcXVlc3RzIC0gaGFuZGxlcyBnYW1lIGxvZ2ljIC0gbWFuYWdlcyBwZXJzaXN0ZW5jZSIgIlB5dGhvbiAvIEZhc3RBUEkiICJBUEkiIHsKCiAgICAgICAgICAgICAgICBhcHBCb290c3RyYXAgPSBjb21wb25lbnQgIkFwcGxpY2F0aW9uIEJvb3RzdHJhcCIgIkluaXRpYWxpc2VzIHRoZSBhcHAsIHJlZ2lzdGVycyByb3V0ZXJzLCBjb25maWd1cmVzIENPUlMsIGFuZCB0cmlnZ2VycyBGbGFnQ2FjaGUgcHJlbG9hZCBhdCBzdGFydHVwLiIKCiAgICAgICAgICAgICAgICBhdXRoUm91dGVyID0gY29tcG9uZW50ICJBdXRoIFJvdXRlciIgIkhhbmRsZXMgdXNlciByZWdpc3RyYXRpb24gYW5kIGxvZ2luLiIKCiAgICAgICAgICAgICAgICBnYW1lUm91dGVyID0gY29tcG9uZW50ICJHYW1lIFJvdXRlciIgIk1hbmFnZXMgZ2FtZSBzZXNzaW9uczogY3JlYXRlcyBzZXNzaW9ucywgc2VydmVzIGZsYWdzLCBhbmQgdmFsaWRhdGVzIGFuc3dlcnMuIgoKICAgICAgICAgICAgICAgIGhpZ2hzY29yZXNSb3V0ZXIgPSBjb21wb25lbnQgIkhpZ2hzY29yZXMgUm91dGVyIiAiUHJvdGVjdGVkIGVuZHBvaW50cyBmb3IgbGVhZGVyYm9hcmQgYW5kIHNjb3JlIHBlcnNpc3RlbmNlLiBSZXF1aXJlcyB2YWxpZCBKV1QuIgoKICAgICAgICAgICAgICAgIGF1dGhTZXJ2aWNlID0gY29tcG9uZW50ICJBdXRoIFNlcnZpY2UiICJQYXNzd29yZCBoYXNoaW5nL3ZlcmlmaWNhdGlvbiBhbmQgSldUIGNyZWF0aW9uL2RlY29kaW5nLiIKCiAgICAgICAgICAgICAgICBmbGFnQ2FjaGUgPSBjb21wb25lbnQgIkZsYWcgQ2FjaGUiICJMb2FkcyBjb3VudHJ5IG1ldGFkYXRhIGFuZCBTVkcgaW1hZ2VzIGZyb20gdGhlIFB1YmxpYyBBUEkgYXQgc3RhcnR1cC4gU2VydmVzIHJhbmRvbSB1bnNlZW4gZmxhZ3MgcGVyIHNlc3Npb24uIgoKICAgICAgICAgICAgICAgIGdhbWVTZXNzaW9uU3RvcmUgPSBjb21wb25lbnQgIkdhbWUgU2Vzc2lvbiBTdG9yZSIgIkluLW1lbW9yeSBzdG9yZSBmb3IgYWN0aXZlIGdhbWUgc2Vzc2lvbnMuIFRyYWNrcyBmbGFncywgc2NvcmVzLCBhbmQgb3BlbiBxdWVzdGlvbnMuIENsZWFucyB1cCBpbmFjdGl2ZSBzZXNzaW9ucy4iCgogICAgICAgICAgICAgICAgYXV0aERlcGVuZGVuY3kgPSBjb21wb25lbnQgIkF1dGggRGVwZW5kZW5jeSIgIlZhbGlkYXRlcyB0aGUgQmVhcmVyIHRva2VuIGFuZCByZXR1cm5zIHRoZSBhdXRoZW50aWNhdGVkIHVzZXJuYW1lLiIKCiAgICAgICAgICAgICAgICBkYXRhYmFzZUxheWVyID0gY29tcG9uZW50ICJEYXRhYmFzZSBMYXllciIgIlNRTEFsY2hlbXkgZW5naW5lLCBzZXNzaW9uIGZhY3RvcnksIGFuZCBPUk0gbW9kZWxzIChVc2VyLCBIaWdoc2NvcmUpLiIKCiAgICAgICAgICAgICAgICB1c2VyUmVwb3NpdG9yeSA9IGNvbXBvbmVudCAiVXNlciBSZXBvc2l0b3J5IiAiREIgcXVlcmllcyBmb3IgVXNlciByZWNvcmRzOiBsb29rdXAgYW5kIGNyZWF0aW9uLiIKCiAgICAgICAgICAgICAgICBoaWdoc2NvcmVSZXBvc2l0b3J5ID0gY29tcG9uZW50ICJIaWdoc2NvcmUgUmVwb3NpdG9yeSIgIkRCIHF1ZXJpZXMgZm9yIEhpZ2hzY29yZSByZWNvcmRzOiB0b3AtMTAsIHVwc2VydCwgYW5kIGxvb2t1cCBieSB1c2VyLiIKCiAgICAgICAgICAgICAgICB1c2VyU2VydmljZSA9IGNvbXBvbmVudCAiVXNlciBTZXJ2aWNlIiAiUmVnaXN0cmF0aW9uIGFuZCBhdXRoZW50aWNhdGlvbiBsb2dpYy4iCgogICAgICAgICAgICAgICAgaGlnaHNjb3JlU2VydmljZSA9IGNvbXBvbmVudCAiSGlnaHNjb3JlIFNlcnZpY2UiICJIaWdoc2NvcmUgYnVzaW5lc3MgbG9naWM6IGxlYWRlcmJvYXJkIHJldHJpZXZhbCwgdXNlciBzY29yZSBsb29rdXAsIGFuZCBzY29yZSBwZXJzaXN0ZW5jZS4iCgogICAgICAgICAgICAgICAgYXBwQ29uZmlnID0gY29tcG9uZW50ICJDb25maWciICJQeWRhbnRpYyBTZXR0aW5ncyBmb3IgZGF0YWJhc2UgVVJMLCBKV1Qgc2VjcmV0LCBDT1JTIG9yaWdpbnMsIGFuZCBBUEkgVVJMLiIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgcGVyc2lzdGVuY2UgPSBjb250YWluZXIgIlBlcnNpc3RlbmNlIiAiU2F2ZXMgcGxheWVyIGNyZWRlbnRpYWxzIGFuZCBoaWdoc2NvcmVzLiIgewogICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBCZXppZWh1bmdlbiDigJMgU3lzdGVtIENvbnRleHQKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHBsYXllciAgICAgICAtPiBmdW5XaXRoRmxhZ3MgInNpZ24gdXAgJiBsb2dpbiwgcGxheSB0aGUgZ2FtZSwgdmlldyBoaWdoc2NvcmVzIgogICAgICAgIGZ1bldpdGhGbGFncyAtPiBwdWJsaWNBcGkgICAgImZldGNoIGZsYWdzIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgQmV6aWVodW5nZW4g4oCTIENvbnRhaW5lcgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyICAgLT4gZnJvbnRlbmQgICAgImludGVyYWN0cyB3aXRoIiAiSW50ZXJuZXQgLyBIVFRQIgogICAgICAgIGZyb250ZW5kIC0+IGJhY2tlbmQgICAgICJBUEkgY2FsbHMiICJSRVNUIC8gSFRUUCIKICAgICAgICBiYWNrZW5kICAtPiBwZXJzaXN0ZW5jZSAicmVhZHMgZnJvbSAvIHdyaXRlcyB0byIgIlNRTCIKICAgICAgICBiYWNrZW5kICAtPiBwdWJsaWNBcGkgICAicmVxdWVzdHMgZmxhZyBkYXRhIiAiUkVTVCAvIEhUVFAiCgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBCZXppZWh1bmdlbiDigJMgS29tcG9uZW50ZW4gRnJvbnRlbmQKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGFwcFNoZWxsIC0+IGdhbWVCb2FyZCAgICAgICAgIlJlbmRlcnMgYW5kIHBhc3NlcyBKV1QgdG9rZW4gYXMgcHJvcCIKICAgICAgICBhcHBTaGVsbCAtPiBsb2dpbk1vZGFsICAgICAgICJSZW5kZXJzOyByZWNlaXZlcyBzdWJtaXQgZXZlbnQgd2l0aCBjcmVkZW50aWFscyIKICAgICAgICBhcHBTaGVsbCAtPiBzaWduVXBNb2RhbCAgICAgICJSZW5kZXJzOyByZWNlaXZlcyBzdWJtaXQgZXZlbnQgd2l0aCBjcmVkZW50aWFscyIKICAgICAgICBhcHBTaGVsbCAtPiBoaWdoc2NvcmVzTW9kYWwgICJSZW5kZXJzOyBwYXNzZXMgSldUIHRva2VuIGFzIHByb3AiCgogICAgICAgIGFwcFNoZWxsICAgICAgIC0+IGJhY2tlbmQgIlBPU1QgL2F1dGgvcmVnaXN0ZXIg4oCTIHJlZ2lzdGVyIG5ldyB1c2VyIiAiSlNPTiAvIFJFU1QiCiAgICAgICAgYXBwU2hlbGwgICAgICAgLT4gYmFja2VuZCAiUE9TVCAvYXV0aC9sb2dpbiDigJMgb2J0YWluIEpXVCB0b2tlbiIgIkpTT04gLyBSRVNUIgogICAgICAgIGdhbWVCb2FyZCAgICAgIC0+IGJhY2tlbmQgIlBPU1QgL2dhbWUvc2Vzc2lvbiDigJMgY3JlYXRlIHNlc3Npb24iICJKU09OIC8gUkVTVCIKICAgICAgICBnYW1lQm9hcmQgICAgICAtPiBiYWNrZW5kICJHRVQgL2dhbWUvZmxhZyDigJMgZmV0Y2ggbmV4dCBmbGFnIiAiSlNPTiAvIFJFU1QiCiAgICAgICAgZ2FtZUJvYXJkICAgICAgLT4gYmFja2VuZCAiUE9TVCAvZ2FtZS9hbnN3ZXIg4oCTIHN1Ym1pdCBhbnN3ZXIiICJKU09OIC8gUkVTVCIKICAgICAgICBnYW1lQm9hcmQgICAgICAtPiBiYWNrZW5kICJQT1NUIC9oaWdoc2NvcmVzLyDigJMgc2F2ZSBzZXNzaW9uIHNjb3JlIChCZWFyZXIgdG9rZW4pIiAiSlNPTiAvIFJFU1QiCiAgICAgICAgaGlnaHNjb3Jlc01vZGFsIC0+IGJhY2tlbmQgIkdFVCAvaGlnaHNjb3Jlcy8g4oCTIGZldGNoIHRvcC0xMCBsZWFkZXJib2FyZCAoQmVhcmVyIHRva2VuKSIgIkpTT04gLyBSRVNUIgogICAgICAgIGhpZ2hzY29yZXNNb2RhbCAtPiBiYWNrZW5kICJHRVQgL2hpZ2hzY29yZXMvbWUg4oCTIGZldGNoIG93biBoaWdoc2NvcmUgKEJlYXJlciB0b2tlbikiICJKU09OIC8gUkVTVCIKCiAgICAgICAgYXBwU2hlbGwgICAgICAgIC0+IGF1dGhSb3V0ZXIgICAgICAgIlBPU1QgL2F1dGgvcmVnaXN0ZXIsIFBPU1QgL2F1dGgvbG9naW4iICJKU09OIC8gUkVTVCIKICAgICAgICBnYW1lQm9hcmQgICAgICAgLT4gZ2FtZVJvdXRlciAgICAgICAiUE9TVCAvZ2FtZS9zZXNzaW9uLCBHRVQgL2dhbWUvZmxhZywgUE9TVCAvZ2FtZS9hbnN3ZXIiICJKU09OIC8gUkVTVCIKICAgICAgICBnYW1lQm9hcmQgICAgICAgLT4gaGlnaHNjb3Jlc1JvdXRlciAiUE9TVCAvaGlnaHNjb3Jlcy8iICJKU09OIC8gUkVTVCIKICAgICAgICBoaWdoc2NvcmVzTW9kYWwgLT4gaGlnaHNjb3Jlc1JvdXRlciAiR0VUIC9oaWdoc2NvcmVzLywgR0VUIC9oaWdoc2NvcmVzL21lIiAiSlNPTiAvIFJFU1QiCgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBCZXppZWh1bmdlbiDigJMgS29tcG9uZW50ZW4gQmFja2VuZAogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgYXBwQm9vdHN0cmFwIC0+IGF1dGhSb3V0ZXIgICAgICAgICJSZWdpc3RlcnMgcm91dGVyIiAiIgogICAgICAgIGFwcEJvb3RzdHJhcCAtPiBnYW1lUm91dGVyICAgICAgICAiUmVnaXN0ZXJzIHJvdXRlciIgIiIKICAgICAgICBhcHBCb290c3RyYXAgLT4gaGlnaHNjb3Jlc1JvdXRlciAgIlJlZ2lzdGVycyByb3V0ZXIiICIiCiAgICAgICAgYXBwQm9vdHN0cmFwIC0+IGZsYWdDYWNoZSAgICAgICAgICJDYWxscyBsb2FkKCkgb24gc3RhcnR1cCIgIiIKICAgICAgICBhcHBCb290c3RyYXAgLT4gZ2FtZVNlc3Npb25TdG9yZSAgIlJ1bnMgY2xlYW51cCB0YXNrIGV2ZXJ5IGhvdXIiICIiCgogICAgICAgIGF1dGhSb3V0ZXIgICAgICAgLT4gYXV0aFNlcnZpY2UgICAgICAiQ3JlYXRlcyBKV1QgdG9rZW4gdmlhIiAiIgogICAgICAgIGF1dGhSb3V0ZXIgICAgICAgLT4gdXNlclNlcnZpY2UgICAgICAiRGVsZWdhdGVzIHJlZ2lzdHJhdGlvbiBhbmQgYXV0aGVudGljYXRpb24gdG8iICIiCiAgICAgICAgZ2FtZVJvdXRlciAgICAgICAtPiBmbGFnQ2FjaGUgICAgICAgICJSZXRyaWV2ZXMgcmFuZG9tIHVuc2VlbiBmbGFnIGZyb20iICIiCiAgICAgICAgZ2FtZVJvdXRlciAgICAgICAtPiBnYW1lU2Vzc2lvblN0b3JlICJDcmVhdGVzIHNlc3Npb25zLCBzdG9yZXMgcXVlc3Rpb25zLCB2YWxpZGF0ZXMgYW5zd2VycyB2aWEiICIiCiAgICAgICAgaGlnaHNjb3Jlc1JvdXRlciAtPiBhdXRoRGVwZW5kZW5jeSAgICJWYWxpZGF0ZXMgQmVhcmVyIHRva2VuIHZpYSIgIiIKICAgICAgICBoaWdoc2NvcmVzUm91dGVyIC0+IGhpZ2hzY29yZVNlcnZpY2UgIkRlbGVnYXRlcyBoaWdoc2NvcmUgb3BlcmF0aW9ucyB0byIgIiIKICAgICAgICBoaWdoc2NvcmVzUm91dGVyIC0+IGdhbWVTZXNzaW9uU3RvcmUgIlJlYWRzIGJlc3Qgc2NvcmUgZm9yIGEgc2Vzc2lvbiB2aWEiICIiCiAgICAgICAgYXV0aERlcGVuZGVuY3kgICAtPiBhdXRoU2VydmljZSAgICAgICJEZWNvZGVzIEpXVCB2aWEiICIiCiAgICAgICAgZmxhZ0NhY2hlICAgICAgICAtPiBwdWJsaWNBcGkgICAgICAgICJGZXRjaGVzIGFsbCBjb3VudHJpZXMgYW5kIFNWRyBpbWFnZXMgb24gc3RhcnR1cCBmcm9tIiAiUkVTVCAvIEhUVFAiCiAgICAgICAgZGF0YWJhc2VMYXllciAgICAtPiBwZXJzaXN0ZW5jZSAgICAgICJQZXJzaXN0cyBhbmQgcXVlcmllcyBkYXRhIGluIiAiU1FMIC8gYXN5bmNwZyIKICAgICAgICB1c2VyU2VydmljZSAgICAgIC0+IGF1dGhTZXJ2aWNlICAgICAgIkhhc2hlcyBhbmQgdmVyaWZpZXMgcGFzc3dvcmRzIHZpYSIgIiIKICAgICAgICB1c2VyU2VydmljZSAgICAgIC0+IHVzZXJSZXBvc2l0b3J5ICAgIlJlYWRzL3dyaXRlcyBVc2VyIHJlY29yZHMgdmlhIiAiIgogICAgICAgIHVzZXJSZXBvc2l0b3J5ICAgLT4gZGF0YWJhc2VMYXllciAgICAiRXhlY3V0ZXMgcXVlcmllcyB2aWEiICJTUUxBbGNoZW15IGFzeW5jIgogICAgICAgIGhpZ2hzY29yZVNlcnZpY2UgLT4gdXNlclJlcG9zaXRvcnkgICAiTG9va3MgdXAgdXNlciBieSB1c2VybmFtZSB2aWEiICIiCiAgICAgICAgaGlnaHNjb3JlU2VydmljZSAtPiBoaWdoc2NvcmVSZXBvc2l0b3J5ICJSZWFkcy93cml0ZXMgSGlnaHNjb3JlIHJlY29yZHMgdmlhIiAiIgogICAgICAgIGhpZ2hzY29yZVJlcG9zaXRvcnkgLT4gZGF0YWJhc2VMYXllciAiRXhlY3V0ZXMgcXVlcmllcyB2aWEiICJTUUxBbGNoZW15IGFzeW5jIgogICAgICAgIGFwcEJvb3RzdHJhcCAgICAgLT4gYXBwQ29uZmlnICAgICAgICAiUmVhZHMgY29uZmlndXJhdGlvbiBmcm9tIiAiIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgRGVwbG95bWVudAogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZGVwbG95bWVudEVudmlyb25tZW50ICJQcm9kdWN0aW9uIiB7CiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGZyb250ZW5kSW5zdGFuY2UgICAgPSBjb250YWluZXJJbnN0YW5jZSBmcm9udGVuZAogICAgICAgICAgICAgICAgYmFja2VuZEluc3RhbmNlICAgICA9IGNvbnRhaW5lckluc3RhbmNlIGJhY2tlbmQKICAgICAgICAgICAgICAgIHBlcnNpc3RlbmNlSW5zdGFuY2UgPSBjb250YWluZXJJbnN0YW5jZSBwZXJzaXN0ZW5jZQogICAgICAgICAgICB9CiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJFeHRlcm5hbCIgewogICAgICAgICAgICAgICAgcHVibGljQXBpTm9kZSA9IGluZnJhc3RydWN0dXJlTm9kZSAiUHVibGljIEFQSSIgewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkV4dGVybmFsIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIGJhY2tlbmRJbnN0YW5jZSAtPiBwdWJsaWNBcGlOb2RlICJyZXF1ZXN0cyBmbGFnIGRhdGEiICJSRVNUIC8gSFRUUCIKICAgICAgICB9CiAgICB9CgogICAgdmlld3MgewogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyAxLiBTeXN0ZW0gQ29udGV4dCAoS2FwaXRlbCAzIGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgc3lzdGVtQ29udGV4dCBmdW5XaXRoRmxhZ3MgIlN5c3RlbUNvbnRleHQiIHsKICAgICAgICAgICAgdGl0bGUgIlN5c3RlbSBDb250ZXh0IOKAkyBGdW4gV2l0aCBGbGFncyIKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyAyLiBUZWNobmljYWwgQ29udGV4dCAoS2FwaXRlbCAzIGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgY29udGFpbmVyIGZ1bldpdGhGbGFncyAiU3lzdGVtQ29udGV4dC1UZWNobmljYWwiIHsKICAgICAgICAgICAgdGl0bGUgIlRlY2huaWNhbCBDb250ZXh0IOKAkyBGdW4gV2l0aCBGbGFncyIKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyAzLiBLb21wb25lbnRlbiDigJMgRnJvbnRlbmQKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGNvbXBvbmVudCBmcm9udGVuZCAiQ29tcG9uZW50c19Gcm9udGVuZCIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgYXV0b2xheW91dCB0YgogICAgICAgICAgICB0aXRsZSAiQ29tcG9uZW50IERpYWdyYW0g4oCTIEZyb250ZW5kIChWdWUgMykiCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgNC4gS29tcG9uZW50ZW4g4oCTIEJhY2tlbmQKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGNvbXBvbmVudCBiYWNrZW5kICJDb21wb25lbnRzX0JhY2tlbmQiIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgdGIKICAgICAgICAgICAgdGl0bGUgIkNvbXBvbmVudCBEaWFncmFtIOKAkyBCYWNrZW5kIChGYXN0QVBJKSIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyA1LiBEZXBsb3ltZW50IChLYXBpdGVsIDcgYXJjNDIpCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBkZXBsb3ltZW50IGZ1bldpdGhGbGFncyAiUHJvZHVjdGlvbiIgIkRlcGxveW1lbnRWaWV3IiB7CiAgICAgICAgICAgIHRpdGxlICJEZXBsb3ltZW50IOKAkyBGdW4gV2l0aCBGbGFncyIKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBTdHlsZXMKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHN0eWxlcyB7CiAgICAgICAgICAgIGVsZW1lbnQgIlBlcnNvbiIgewogICAgICAgICAgICAgICAgc2hhcGUgUGVyc29uCiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICMwODQyN2IKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJTb2Z0d2FyZSBTeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzExNjhiZAogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkNvbnRhaW5lciIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjNDM4ZGQ1CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQnJvd3NlciIgewogICAgICAgICAgICAgICAgc2hhcGUgV2ViQnJvd3NlcgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjNDM4ZGQ1CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHNoYXBlIEN5bGluZGVyCiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM0MzhkZDUKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJBUEkiIHsKICAgICAgICAgICAgICAgIHNoYXBlIEhleGFnb24KICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzQzOGRkNQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkNvbXBvbmVudCIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjODViYmYwCiAgICAgICAgICAgICAgICBjb2xvciAjMDAwMDAwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRXh0ZXJuYWwiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IyZjJiYgogICAgICAgICAgICAgICAgY29sb3IgIzFlMWUxZQogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkluZnJhc3RydWN0dXJlIE5vZGUiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IyZjJiYgogICAgICAgICAgICAgICAgY29sb3IgIzFlMWUxZQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQp9",
+    "structurizr.inspection.error" : "46",
+    "structurizr.dsl" : "d29ya3NwYWNlICJGdW4gV2l0aCBGbGFncyIgIkM0LU1vZGVsbCBkZXIgRnVuIFdpdGggRmxhZ3MgQXJjaGl0ZWt0dXIiIHsKCiAgICBtb2RlbCB7CiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIFBlcnNvbmVuIC8gQWt0ZXVyZQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyID0gcGVyc29uICJQbGF5ZXIiICJBIHVzZXIgd2hvIHBsYXlzIHRoZSBmbGFnIGd1ZXNzaW5nIGdhbWUgaW4gYSB3ZWIgYnJvd3Nlci4iCgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBFeHRlcm5lIFN5c3RlbWUKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHB1YmxpY0FwaSA9IHNvZnR3YXJlU3lzdGVtICJQdWJsaWMgQVBJIiAiZXh0ZXJuYWwgUHVibGljIEFQSSDigJMgcHJvdmlkZXMgZmxhZyBkYXRhIiB7CiAgICAgICAgICAgIHRhZ3MgIkV4dGVybmFsIgogICAgICAgIH0KCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICAjIFNvZnR3YXJlIFN5c3RlbQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZnVuV2l0aEZsYWdzID0gc29mdHdhcmVTeXN0ZW0gIkZ1biBXaXRoIEZsYWdzIiAid2ViIGFwcGxpY2F0aW9uIGZvciBhIGZsYWcgcXVpeiBnYW1lIiB7CgogICAgICAgICAgICBmcm9udGVuZCA9IGNvbnRhaW5lciAiRnJvbnRlbmQiICJwcm92aWRlcyBVSSBmb3IgcGxheWVyIC0gcmVxdWVzdHMgZmxhZ3MgZnJvbSBiYWNrZW5kIC0gZm9yd2FyZHMgcGxheWVyIGFuZCBnYW1lIGRhdGEiICJWdWUgMyAvIFR5cGVTY3JpcHQiIHsKCiAgICAgICAgICAgICAgICBhcHBTaGVsbCA9IGNvbXBvbmVudCAiQXBwIiAiQXBwbGljYXRpb24gc2hlbGwuIE1hbmFnZXMgZ2xvYmFsIGF1dGhlbnRpY2F0aW9uIHN0YXRlLCBwZXJzaXN0cyB0aGUgSldUIHRva2VuIGluIGxvY2FsU3RvcmFnZSwgb3JjaGVzdHJhdGVzIG1vZGFsIHZpc2liaWxpdHksIGFuZCByZW5kZXJzIGF1dGggZmFpbHVyZXMgYXMgaW5saW5lIGZvcm0gbWVzc2FnZXMuIgoKICAgICAgICAgICAgICAgIGdhbWVCb2FyZCA9IGNvbXBvbmVudCAiR2FtZUJvYXJkIiAiUHJlc2VudGF0aW9uYWwgZ2FtZSB2aWV3LiBSZW5kZXJzIHRoZSBmbGFnLCBhbnN3ZXIgYnV0dG9ucywgc2NvcmUgLyBoaWdoc2NvcmUsIHJlc3VsdCBzdHJpcHMsIGFuZCBsb2FkaW5nIC8gZXJyb3Igc3RhdGVzOyBmb3J3YXJkcyB1c2VyIGludGVyYWN0aW9ucyBhbmQgZGVsZWdhdGVzIHRoZSBmdWxsIGdhbWUgbGlmZWN5Y2xlIHRvIHRoZSB1c2VHYW1lIGNvbXBvc2FibGUuIgoKICAgICAgICAgICAgICAgIGF1dGhNb2RhbCA9IGNvbXBvbmVudCAiQXV0aE1vZGFsIiAiQ29tYmluZWQgbG9naW4gLyBzaWduLXVwIG1vZGFsLiBUb2dnbGVzIGJldHdlZW4gbW9kZXMgYW5kIGFwcGxpZXMgY2xpZW50LXNpZGUgdmFsaWRhdGlvbiAodXNlcm5hbWUgZm9ybWF0LCBwYXNzd29yZCBsZW5ndGgvY29tcGxleGl0eSkgaW4gc2lnbi11cCBtb2RlIGJlZm9yZSBlbWl0dGluZyBjcmVkZW50aWFscy4iCgogICAgICAgICAgICAgICAgaGlnaHNjb3Jlc01vZGFsID0gY29tcG9uZW50ICJIaWdoc2NvcmVzTW9kYWwiICJGZXRjaGVzIGFuZCBkaXNwbGF5cyB0aGUgdG9wLTEwIGxlYWRlcmJvYXJkIGZyb20gdGhlIGJhY2tlbmQgd2hlbiBvcGVuZWQuIFJlcXVpcmVzIGEgdmFsaWQgSldUIHRva2VuLiIKCiAgICAgICAgICAgICAgICBzYXZlU2NvcmVQcm9tcHQgPSBjb21wb25lbnQgIlNhdmVTY29yZVByb21wdCIgIlByZXNlbnRhdGlvbmFsIHByb21wdCBzaG93biB0byBhbm9ueW1vdXMgcGxheWVycyBhZnRlciBhIHdyb25nIGFuc3dlciwgaW52aXRpbmcgdGhlbSB0byBzaWduIHVwIG9yIGxvZyBpbiB0byBzYXZlIHRoZWlyIHNjb3JlLiBFbWl0cyBuYXZpZ2F0aW9uIGV2ZW50czsgaG9sZHMgbm8gYXV0aCBsb2dpYy4iCgogICAgICAgICAgICAgICAgYmFzZU1vZGFsID0gY29tcG9uZW50ICJCYXNlTW9kYWwiICJSZXVzYWJsZSwgYWNjZXNzaWJsZSBtb2RhbCBzaGVsbCAocm9sZT1kaWFsb2csIGZvY3VzIHRyYXAsIEVzY2FwZSB0byBjbG9zZSk6IGJhY2tkcm9wLCBvcHRpb25hbCBoZWFkZXIsIGFuZCBhIGNvbnRlbnQgc2xvdC4gVXNlZCBieSB0aGUgb3RoZXIgbW9kYWxzLiIKCiAgICAgICAgICAgICAgICBub3RpZmljYXRpb25TdGFjayA9IGNvbXBvbmVudCAiTm90aWZpY2F0aW9uU3RhY2siICJSZW5kZXJzIHRoZSBhY3RpdmUgdG9hc3Qgbm90aWZpY2F0aW9ucy4iCgogICAgICAgICAgICAgICAgZXJyb3JCb3VuZGFyeSA9IGNvbXBvbmVudCAiRXJyb3JCb3VuZGFyeSIgIkNhdGNoZXMgcmVuZGVyIGVycm9ycyBpbiB0aGUgY29tcG9uZW50IHRyZWUgYW5kIHNob3dzIGEgZmFsbGJhY2sgVUkgd2l0aCBhIHJldHJ5IGFjdGlvbi4iCgogICAgICAgICAgICAgICAgdXNlR2FtZSA9IGNvbXBvbmVudCAidXNlR2FtZSIgIkNvbXBvc2FibGUgb3duaW5nIHRoZSBnYW1lIGxpZmVjeWNsZTogc2Vzc2lvbiBjcmVhdGlvbiwgZmxhZyBsb2FkaW5nLCBhbnN3ZXIgY2hlY2tpbmcsIHNjb3JpbmcsIHBlcnNvbmFsLWJlc3QsIGFuZCBzYXZlLXNjb3JlIGxvZ2ljLiBTdXJmYWNlcyBBUEkgZmFpbHVyZXMgYXMgdG9hc3RzIGFuZCBrZWVwcyBHYW1lQm9hcmQgcHVyZWx5IHByZXNlbnRhdGlvbmFsLiIKCiAgICAgICAgICAgICAgICBhcGlDbGllbnQgPSBjb21wb25lbnQgIkFQSSBDbGllbnQiICJDZW50cmFsIGZldGNoIHdyYXBwZXIgKGFwaUZldGNoKS4gQnVpbGRzIHJlcXVlc3RzLCBhdHRhY2hlcyB0aGUgQmVhcmVyIHRva2VuLCBlbmNvZGVzL3BhcnNlcyBKU09OLCBhbmQgcmFpc2VzIHR5cGVkIEFwaUVycm9yIC8gTmV0d29ya0Vycm9yIGZhaWx1cmVzIChtYXBwZWQgdG8gdXNlciBtZXNzYWdlcyBieSBhIHNoYXJlZCBoZWxwZXIpLiIKCiAgICAgICAgICAgICAgICB1c2VOb3RpZmljYXRpb25zID0gY29tcG9uZW50ICJ1c2VOb3RpZmljYXRpb25zIiAiQ29tcG9zYWJsZSBob2xkaW5nIHRoZSBzaGFyZWQgbm90aWZpY2F0aW9uIHN0YXRlOiBhZGQsIGF1dG8tZGlzbWlzcywgbWFudWFsIGRpc21pc3MsIGFuZCBkZWR1cGUgYnkgdHlwZSttZXNzYWdlLiIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgYmFja2VuZCA9IGNvbnRhaW5lciAiQmFja2VuZCIgImhhbmRsZXMgQVBJIHJlcXVlc3RzIC0gaGFuZGxlcyBnYW1lIGxvZ2ljIC0gbWFuYWdlcyBwZXJzaXN0ZW5jZSIgIlB5dGhvbiAvIEZhc3RBUEkiICJBUEkiIHsKCiAgICAgICAgICAgICAgICBhcHBCb290c3RyYXAgPSBjb21wb25lbnQgIkFwcGxpY2F0aW9uIEJvb3RzdHJhcCIgIkluaXRpYWxpc2VzIHRoZSBhcHAsIHJlZ2lzdGVycyByb3V0ZXJzLCBjb25maWd1cmVzIENPUlMsIGFuZCB0cmlnZ2VycyBGbGFnQ2FjaGUgcHJlbG9hZCBhdCBzdGFydHVwLiIKCiAgICAgICAgICAgICAgICBhdXRoUm91dGVyID0gY29tcG9uZW50ICJBdXRoIFJvdXRlciIgIkhhbmRsZXMgdXNlciByZWdpc3RyYXRpb24gYW5kIGxvZ2luLiIKCiAgICAgICAgICAgICAgICBnYW1lUm91dGVyID0gY29tcG9uZW50ICJHYW1lIFJvdXRlciIgIk1hbmFnZXMgZ2FtZSBzZXNzaW9uczogY3JlYXRlcyBzZXNzaW9ucywgc2VydmVzIGZsYWdzLCBhbmQgdmFsaWRhdGVzIGFuc3dlcnMuIgoKICAgICAgICAgICAgICAgIGhpZ2hzY29yZXNSb3V0ZXIgPSBjb21wb25lbnQgIkhpZ2hzY29yZXMgUm91dGVyIiAiUHJvdGVjdGVkIGVuZHBvaW50cyBmb3IgbGVhZGVyYm9hcmQgYW5kIHNjb3JlIHBlcnNpc3RlbmNlLiBSZXF1aXJlcyB2YWxpZCBKV1QuIgoKICAgICAgICAgICAgICAgIGF1dGhTZXJ2aWNlID0gY29tcG9uZW50ICJBdXRoIFNlcnZpY2UiICJQYXNzd29yZCBoYXNoaW5nL3ZlcmlmaWNhdGlvbiBhbmQgSldUIGNyZWF0aW9uL2RlY29kaW5nLiIKCiAgICAgICAgICAgICAgICBmbGFnQ2FjaGUgPSBjb21wb25lbnQgIkZsYWcgQ2FjaGUiICJMb2FkcyBjb3VudHJ5IG1ldGFkYXRhIGFuZCBTVkcgaW1hZ2VzIGZyb20gdGhlIFB1YmxpYyBBUEkgYXQgc3RhcnR1cC4gU2VydmVzIHJhbmRvbSB1bnNlZW4gZmxhZ3MgcGVyIHNlc3Npb24uIgoKICAgICAgICAgICAgICAgIGdhbWVTZXNzaW9uU3RvcmUgPSBjb21wb25lbnQgIkdhbWUgU2Vzc2lvbiBTdG9yZSIgIkluLW1lbW9yeSBzdG9yZSBmb3IgYWN0aXZlIGdhbWUgc2Vzc2lvbnMuIFRyYWNrcyBmbGFncywgc2NvcmVzLCBhbmQgb3BlbiBxdWVzdGlvbnMuIENsZWFucyB1cCBpbmFjdGl2ZSBzZXNzaW9ucy4iCgogICAgICAgICAgICAgICAgYXV0aERlcGVuZGVuY3kgPSBjb21wb25lbnQgIkF1dGggRGVwZW5kZW5jeSIgIlZhbGlkYXRlcyB0aGUgQmVhcmVyIHRva2VuIGFuZCByZXR1cm5zIHRoZSBhdXRoZW50aWNhdGVkIHVzZXJuYW1lLiIKCiAgICAgICAgICAgICAgICBkYXRhYmFzZUxheWVyID0gY29tcG9uZW50ICJEYXRhYmFzZSBMYXllciIgIlNRTEFsY2hlbXkgZW5naW5lLCBzZXNzaW9uIGZhY3RvcnksIGFuZCBPUk0gbW9kZWxzIChVc2VyLCBIaWdoc2NvcmUpLiIKCiAgICAgICAgICAgICAgICB1c2VyUmVwb3NpdG9yeSA9IGNvbXBvbmVudCAiVXNlciBSZXBvc2l0b3J5IiAiREIgcXVlcmllcyBmb3IgVXNlciByZWNvcmRzOiBsb29rdXAgYW5kIGNyZWF0aW9uLiIKCiAgICAgICAgICAgICAgICBoaWdoc2NvcmVSZXBvc2l0b3J5ID0gY29tcG9uZW50ICJIaWdoc2NvcmUgUmVwb3NpdG9yeSIgIkRCIHF1ZXJpZXMgZm9yIEhpZ2hzY29yZSByZWNvcmRzOiB0b3AtMTAsIHVwc2VydCwgYW5kIGxvb2t1cCBieSB1c2VyLiIKCiAgICAgICAgICAgICAgICB1c2VyU2VydmljZSA9IGNvbXBvbmVudCAiVXNlciBTZXJ2aWNlIiAiUmVnaXN0cmF0aW9uIGFuZCBhdXRoZW50aWNhdGlvbiBsb2dpYy4iCgogICAgICAgICAgICAgICAgaGlnaHNjb3JlU2VydmljZSA9IGNvbXBvbmVudCAiSGlnaHNjb3JlIFNlcnZpY2UiICJIaWdoc2NvcmUgYnVzaW5lc3MgbG9naWM6IGxlYWRlcmJvYXJkIHJldHJpZXZhbCwgdXNlciBzY29yZSBsb29rdXAsIGFuZCBzY29yZSBwZXJzaXN0ZW5jZS4iCgogICAgICAgICAgICAgICAgYXBwQ29uZmlnID0gY29tcG9uZW50ICJDb25maWciICJQeWRhbnRpYyBTZXR0aW5ncyBmb3IgZGF0YWJhc2UgVVJMLCBKV1Qgc2VjcmV0LCBDT1JTIG9yaWdpbnMsIGFuZCBBUEkgVVJMLiIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgcGVyc2lzdGVuY2UgPSBjb250YWluZXIgIlBlcnNpc3RlbmNlIiAiU2F2ZXMgcGxheWVyIGNyZWRlbnRpYWxzIGFuZCBoaWdoc2NvcmVzLiIgewogICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBCZXppZWh1bmdlbiDigJMgU3lzdGVtIENvbnRleHQKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHBsYXllciAgICAgICAtPiBmdW5XaXRoRmxhZ3MgInNpZ24gdXAgJiBsb2dpbiwgcGxheSB0aGUgZ2FtZSwgdmlldyBoaWdoc2NvcmVzIgogICAgICAgIGZ1bldpdGhGbGFncyAtPiBwdWJsaWNBcGkgICAgImZldGNoIGZsYWdzIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgQmV6aWVodW5nZW4g4oCTIENvbnRhaW5lcgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgcGxheWVyICAgLT4gZnJvbnRlbmQgICAgImludGVyYWN0cyB3aXRoIiAiSW50ZXJuZXQgLyBIVFRQIgogICAgICAgIGZyb250ZW5kIC0+IGJhY2tlbmQgICAgICJBUEkgY2FsbHMiICJSRVNUIC8gSFRUUCIKICAgICAgICBiYWNrZW5kICAtPiBwZXJzaXN0ZW5jZSAicmVhZHMgZnJvbSAvIHdyaXRlcyB0byIgIlNRTCIKICAgICAgICBiYWNrZW5kICAtPiBwdWJsaWNBcGkgICAicmVxdWVzdHMgZmxhZyBkYXRhIiAiUkVTVCAvIEhUVFAiCgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBCZXppZWh1bmdlbiDigJMgS29tcG9uZW50ZW4gRnJvbnRlbmQKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgQXBwIHNoZWxsIHdpcmluZyAocmVuZGVyICsgZXZlbnRzKQogICAgICAgIGFwcFNoZWxsIC0+IGVycm9yQm91bmRhcnkgICAgICJXcmFwcyB0aGUgVUkgdG8gY2F0Y2ggYW5kIHN1cmZhY2UgcmVuZGVyIGVycm9ycyIKICAgICAgICBhcHBTaGVsbCAtPiBnYW1lQm9hcmQgICAgICAgICAiUmVuZGVyczsgcGFzc2VzIEpXVCB0b2tlbiBhcyBwcm9wOyByZWFjdHMgdG8gb3Blbi1sb2dpbiAvIG9wZW4tc2lnbnVwIC8gc2Vzc2lvbi1leHBpcmVkIC8gbmV3LWhpZ2hzY29yZSBldmVudHMiCiAgICAgICAgYXBwU2hlbGwgLT4gYXV0aE1vZGFsICAgICAgICAgIlJlbmRlcnM7IHJlY2VpdmVzIHN1Ym1pdCBldmVudCB3aXRoIGNyZWRlbnRpYWxzIgogICAgICAgIGFwcFNoZWxsIC0+IGhpZ2hzY29yZXNNb2RhbCAgICJSZW5kZXJzOyBwYXNzZXMgSldUIHRva2VuIGFzIHByb3AiCiAgICAgICAgYXBwU2hlbGwgLT4gbm90aWZpY2F0aW9uU3RhY2sgIlJlbmRlcnMgdGhlIGFjdGl2ZSB0b2FzdCBub3RpZmljYXRpb25zIgogICAgICAgIGFwcFNoZWxsIC0+IGFwaUNsaWVudCAgICAgICAgICJSZWdpc3RlcnMgYW5kIGxvZ3MgaW4gdGhlIHVzZXIgdmlhOyBzaG93cyBhdXRoIGZhaWx1cmVzIGFzIGlubGluZSBmb3JtIG1lc3NhZ2VzIgogICAgICAgIGFwcFNoZWxsIC0+IHVzZU5vdGlmaWNhdGlvbnMgICJTaG93cyBhdXRoZW50aWNhdGlvbiBmZWVkYmFjayB2aWEiCgogICAgICAgICMgR2FtZUJvYXJkIGRlbGVnYXRlcyBhbGwgZ2FtZSBsb2dpYyB0byB0aGUgdXNlR2FtZSBjb21wb3NhYmxlCiAgICAgICAgZ2FtZUJvYXJkIC0+IHVzZUdhbWUgICAgICAgICAgIkRlbGVnYXRlcyB0aGUgZnVsbCBnYW1lIGxpZmVjeWNsZSB0byIKICAgICAgICBnYW1lQm9hcmQgLT4gc2F2ZVNjb3JlUHJvbXB0ICAiUmVuZGVyczsgZm9yd2FyZHMgc2lnbnVwIC8gbG9naW4gZXZlbnRzIHRvIHRoZSBhcHAiCgogICAgICAgIHVzZUdhbWUgICAtPiBhcGlDbGllbnQgICAgICAgICJDcmVhdGVzIHNlc3Npb24sIGZldGNoZXMgZmxhZ3MsIHN1Ym1pdHMgYW5zd2VycywgYW5kIHNhdmVzIHRoZSBzY29yZSB2aWEiCiAgICAgICAgdXNlR2FtZSAgIC0+IHVzZU5vdGlmaWNhdGlvbnMgIlN1cmZhY2VzIEFQSSBmYWlsdXJlcyBhcyBlcnJvciAvIHdhcm5pbmcgdG9hc3RzIHZpYSIKCiAgICAgICAgc2F2ZVNjb3JlUHJvbXB0IC0+IGJhc2VNb2RhbCAgIkJ1aWx0IG9uIHRoZSByZXVzYWJsZSBtb2RhbCBzaGVsbCIKICAgICAgICBhdXRoTW9kYWwgICAgICAgLT4gYmFzZU1vZGFsICAiQnVpbHQgb24gdGhlIHJldXNhYmxlIG1vZGFsIHNoZWxsIgoKICAgICAgICBoaWdoc2NvcmVzTW9kYWwgLT4gYXBpQ2xpZW50ICAiRmV0Y2hlcyB0aGUgbGVhZGVyYm9hcmQgYW5kIHRoZSBwbGF5ZXIncyBvd24gc2NvcmUgdmlhOyByZW5kZXJzIGxvYWRpbmcgLyBlcnJvciAvIGVtcHR5IHN0YXRlcyIKICAgICAgICBoaWdoc2NvcmVzTW9kYWwgLT4gYmFzZU1vZGFsICAiQnVpbHQgb24gdGhlIHJldXNhYmxlIG1vZGFsIHNoZWxsIgoKICAgICAgICBub3RpZmljYXRpb25TdGFjayAtPiB1c2VOb3RpZmljYXRpb25zICJSZWFkcyB0aGUgYWN0aXZlIG5vdGlmaWNhdGlvbnMgZnJvbSIKCiAgICAgICAgIyBGcm9udGVuZCDihpIgQmFja2VuZDogYWxsIEhUVFAgZ29lcyB0aHJvdWdoIHRoZSBBUEkgQ2xpZW50CiAgICAgICAgYXBpQ2xpZW50IC0+IGJhY2tlbmQgICAgICAgICAgIlJFU1QgQVBJIGNhbGxzIChhdXRoLCBnYW1lLCBoaWdoc2NvcmVzKSIgIkpTT04gLyBSRVNUIgoKICAgICAgICBhcGlDbGllbnQgLT4gYXV0aFJvdXRlciAgICAgICAiUE9TVCAvYXV0aC9yZWdpc3RlciwgUE9TVCAvYXV0aC9sb2dpbiIgIkpTT04gLyBSRVNUIgogICAgICAgIGFwaUNsaWVudCAtPiBnYW1lUm91dGVyICAgICAgICJQT1NUIC9nYW1lL3Nlc3Npb24sIEdFVCAvZ2FtZS9mbGFnLCBQT1NUIC9nYW1lL2Fuc3dlciIgIkpTT04gLyBSRVNUIgogICAgICAgIGFwaUNsaWVudCAtPiBoaWdoc2NvcmVzUm91dGVyICJHRVQgL2hpZ2hzY29yZXMvLCBHRVQgL2hpZ2hzY29yZXMvbWUsIFBPU1QgL2hpZ2hzY29yZXMvIChCZWFyZXIpIiAiSlNPTiAvIFJFU1QiCgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBCZXppZWh1bmdlbiDigJMgS29tcG9uZW50ZW4gQmFja2VuZAogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgYXBwQm9vdHN0cmFwIC0+IGF1dGhSb3V0ZXIgICAgICAgICJSZWdpc3RlcnMgcm91dGVyIiAiIgogICAgICAgIGFwcEJvb3RzdHJhcCAtPiBnYW1lUm91dGVyICAgICAgICAiUmVnaXN0ZXJzIHJvdXRlciIgIiIKICAgICAgICBhcHBCb290c3RyYXAgLT4gaGlnaHNjb3Jlc1JvdXRlciAgIlJlZ2lzdGVycyByb3V0ZXIiICIiCiAgICAgICAgYXBwQm9vdHN0cmFwIC0+IGZsYWdDYWNoZSAgICAgICAgICJDYWxscyBsb2FkKCkgb24gc3RhcnR1cCIgIiIKICAgICAgICBhcHBCb290c3RyYXAgLT4gZ2FtZVNlc3Npb25TdG9yZSAgIlJ1bnMgY2xlYW51cCB0YXNrIGV2ZXJ5IGhvdXIiICIiCgogICAgICAgIGF1dGhSb3V0ZXIgICAgICAgLT4gYXV0aFNlcnZpY2UgICAgICAiQ3JlYXRlcyBKV1QgdG9rZW4gdmlhIiAiIgogICAgICAgIGF1dGhSb3V0ZXIgICAgICAgLT4gdXNlclNlcnZpY2UgICAgICAiRGVsZWdhdGVzIHJlZ2lzdHJhdGlvbiBhbmQgYXV0aGVudGljYXRpb24gdG8iICIiCiAgICAgICAgZ2FtZVJvdXRlciAgICAgICAtPiBmbGFnQ2FjaGUgICAgICAgICJSZXRyaWV2ZXMgcmFuZG9tIHVuc2VlbiBmbGFnIGZyb20iICIiCiAgICAgICAgZ2FtZVJvdXRlciAgICAgICAtPiBnYW1lU2Vzc2lvblN0b3JlICJDcmVhdGVzIHNlc3Npb25zLCBzdG9yZXMgcXVlc3Rpb25zLCB2YWxpZGF0ZXMgYW5zd2VycyB2aWEiICIiCiAgICAgICAgaGlnaHNjb3Jlc1JvdXRlciAtPiBhdXRoRGVwZW5kZW5jeSAgICJWYWxpZGF0ZXMgQmVhcmVyIHRva2VuIHZpYSIgIiIKICAgICAgICBoaWdoc2NvcmVzUm91dGVyIC0+IGhpZ2hzY29yZVNlcnZpY2UgIkRlbGVnYXRlcyBoaWdoc2NvcmUgb3BlcmF0aW9ucyB0byIgIiIKICAgICAgICBoaWdoc2NvcmVzUm91dGVyIC0+IGdhbWVTZXNzaW9uU3RvcmUgIlJlYWRzIGJlc3Qgc2NvcmUgZm9yIGEgc2Vzc2lvbiB2aWEiICIiCiAgICAgICAgYXV0aERlcGVuZGVuY3kgICAtPiBhdXRoU2VydmljZSAgICAgICJEZWNvZGVzIEpXVCB2aWEiICIiCiAgICAgICAgZmxhZ0NhY2hlICAgICAgICAtPiBwdWJsaWNBcGkgICAgICAgICJGZXRjaGVzIGFsbCBjb3VudHJpZXMgYW5kIFNWRyBpbWFnZXMgb24gc3RhcnR1cCBmcm9tIiAiUkVTVCAvIEhUVFAiCiAgICAgICAgZGF0YWJhc2VMYXllciAgICAtPiBwZXJzaXN0ZW5jZSAgICAgICJQZXJzaXN0cyBhbmQgcXVlcmllcyBkYXRhIGluIiAiU1FMIC8gYXN5bmNwZyIKICAgICAgICB1c2VyU2VydmljZSAgICAgIC0+IGF1dGhTZXJ2aWNlICAgICAgIkhhc2hlcyBhbmQgdmVyaWZpZXMgcGFzc3dvcmRzIHZpYSIgIiIKICAgICAgICB1c2VyU2VydmljZSAgICAgIC0+IHVzZXJSZXBvc2l0b3J5ICAgIlJlYWRzL3dyaXRlcyBVc2VyIHJlY29yZHMgdmlhIiAiIgogICAgICAgIHVzZXJSZXBvc2l0b3J5ICAgLT4gZGF0YWJhc2VMYXllciAgICAiRXhlY3V0ZXMgcXVlcmllcyB2aWEiICJTUUxBbGNoZW15IGFzeW5jIgogICAgICAgIGhpZ2hzY29yZVNlcnZpY2UgLT4gdXNlclJlcG9zaXRvcnkgICAiTG9va3MgdXAgdXNlciBieSB1c2VybmFtZSB2aWEiICIiCiAgICAgICAgaGlnaHNjb3JlU2VydmljZSAtPiBoaWdoc2NvcmVSZXBvc2l0b3J5ICJSZWFkcy93cml0ZXMgSGlnaHNjb3JlIHJlY29yZHMgdmlhIiAiIgogICAgICAgIGhpZ2hzY29yZVJlcG9zaXRvcnkgLT4gZGF0YWJhc2VMYXllciAiRXhlY3V0ZXMgcXVlcmllcyB2aWEiICJTUUxBbGNoZW15IGFzeW5jIgogICAgICAgIGFwcEJvb3RzdHJhcCAgICAgLT4gYXBwQ29uZmlnICAgICAgICAiUmVhZHMgY29uZmlndXJhdGlvbiBmcm9tIiAiIgoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgRGVwbG95bWVudAogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgZGVwbG95bWVudEVudmlyb25tZW50ICJQcm9kdWN0aW9uIiB7CiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGZyb250ZW5kSW5zdGFuY2UgICAgPSBjb250YWluZXJJbnN0YW5jZSBmcm9udGVuZAogICAgICAgICAgICAgICAgYmFja2VuZEluc3RhbmNlICAgICA9IGNvbnRhaW5lckluc3RhbmNlIGJhY2tlbmQKICAgICAgICAgICAgICAgIHBlcnNpc3RlbmNlSW5zdGFuY2UgPSBjb250YWluZXJJbnN0YW5jZSBwZXJzaXN0ZW5jZQogICAgICAgICAgICB9CiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJFeHRlcm5hbCIgewogICAgICAgICAgICAgICAgcHVibGljQXBpTm9kZSA9IGluZnJhc3RydWN0dXJlTm9kZSAiUHVibGljIEFQSSIgewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkV4dGVybmFsIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIGJhY2tlbmRJbnN0YW5jZSAtPiBwdWJsaWNBcGlOb2RlICJyZXF1ZXN0cyBmbGFnIGRhdGEiICJSRVNUIC8gSFRUUCIKICAgICAgICB9CiAgICB9CgogICAgdmlld3MgewogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyAxLiBTeXN0ZW0gQ29udGV4dCAoS2FwaXRlbCAzIGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgc3lzdGVtQ29udGV4dCBmdW5XaXRoRmxhZ3MgIlN5c3RlbUNvbnRleHQiIHsKICAgICAgICAgICAgdGl0bGUgIlN5c3RlbSBDb250ZXh0IOKAkyBGdW4gV2l0aCBGbGFncyIKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyAyLiBUZWNobmljYWwgQ29udGV4dCAoS2FwaXRlbCAzIGFyYzQyKQogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgY29udGFpbmVyIGZ1bldpdGhGbGFncyAiU3lzdGVtQ29udGV4dC1UZWNobmljYWwiIHsKICAgICAgICAgICAgdGl0bGUgIlRlY2huaWNhbCBDb250ZXh0IOKAkyBGdW4gV2l0aCBGbGFncyIKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyAzLiBLb21wb25lbnRlbiDigJMgRnJvbnRlbmQKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGNvbXBvbmVudCBmcm9udGVuZCAiQ29tcG9uZW50c19Gcm9udGVuZCIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgYXV0b2xheW91dCB0YgogICAgICAgICAgICB0aXRsZSAiQ29tcG9uZW50IERpYWdyYW0g4oCTIEZyb250ZW5kIChWdWUgMykiCiAgICAgICAgfQoKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgICMgNC4gS29tcG9uZW50ZW4g4oCTIEJhY2tlbmQKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIGNvbXBvbmVudCBiYWNrZW5kICJDb21wb25lbnRzX0JhY2tlbmQiIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgdGIKICAgICAgICAgICAgdGl0bGUgIkNvbXBvbmVudCBEaWFncmFtIOKAkyBCYWNrZW5kIChGYXN0QVBJKSIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyA1LiBEZXBsb3ltZW50IChLYXBpdGVsIDcgYXJjNDIpCiAgICAgICAgIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgICAgICBkZXBsb3ltZW50IGZ1bldpdGhGbGFncyAiUHJvZHVjdGlvbiIgIkRlcGxveW1lbnRWaWV3IiB7CiAgICAgICAgICAgIHRpdGxlICJEZXBsb3ltZW50IOKAkyBGdW4gV2l0aCBGbGFncyIKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgICMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICAgICAgIyBTdHlsZXMKICAgICAgICAjIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgICAgIHN0eWxlcyB7CiAgICAgICAgICAgIGVsZW1lbnQgIlBlcnNvbiIgewogICAgICAgICAgICAgICAgc2hhcGUgUGVyc29uCiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICMwODQyN2IKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJTb2Z0d2FyZSBTeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzExNjhiZAogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkNvbnRhaW5lciIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjNDM4ZGQ1CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQnJvd3NlciIgewogICAgICAgICAgICAgICAgc2hhcGUgV2ViQnJvd3NlcgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjNDM4ZGQ1CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHNoYXBlIEN5bGluZGVyCiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM0MzhkZDUKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJBUEkiIHsKICAgICAgICAgICAgICAgIHNoYXBlIEhleGFnb24KICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzQzOGRkNQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkNvbXBvbmVudCIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjODViYmYwCiAgICAgICAgICAgICAgICBjb2xvciAjMDAwMDAwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRXh0ZXJuYWwiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IyZjJiYgogICAgICAgICAgICAgICAgY29sb3IgIzFlMWUxZQogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkluZnJhc3RydWN0dXJlIE5vZGUiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgI2IyZjJiYgogICAgICAgICAgICAgICAgY29sb3IgIzFlMWUxZQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQp9",
     "structurizr.inspection.info" : "0",
     "structurizr.inspection.ignore" : "0",
     "structurizr.inspection.warning" : "0"
@@ -680,54 +756,6 @@
         "id" : "10",
         "x" : 0,
         "y" : 0
-      } ],
-      "externalContainerBoundariesVisible" : false,
-      "key" : "Components_Frontend",
-      "name" : "Component View: Fun With Flags - Frontend",
-      "order" : 3,
-      "relationships" : [ {
-        "id" : "32"
-      }, {
-        "id" : "33"
-      }, {
-        "id" : "34"
-      }, {
-        "id" : "35"
-      }, {
-        "id" : "36"
-      }, {
-        "id" : "37"
-      }, {
-        "id" : "38"
-      }, {
-        "id" : "39"
-      }, {
-        "id" : "40"
-      }, {
-        "id" : "41"
-      }, {
-        "id" : "42"
-      }, {
-        "id" : "43"
-      } ],
-      "title" : "Component Diagram – Frontend (Vue 3)"
-    }, {
-      "automaticLayout" : {
-        "edgeSeparation" : 50,
-        "nodeSeparation" : 50,
-        "rankDirection" : "TopBottom",
-        "rankSeparation" : 100,
-        "vertices" : true
-      },
-      "containerId" : "10",
-      "elements" : [ {
-        "id" : "2",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "4",
-        "x" : 0,
-        "y" : 0
       }, {
         "id" : "11",
         "x" : 0,
@@ -750,6 +778,64 @@
         "y" : 0
       }, {
         "id" : "16",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "Components_Frontend",
+      "name" : "Component View: Fun With Flags - Frontend",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "38"
+      }, {
+        "id" : "39"
+      }, {
+        "id" : "40"
+      }, {
+        "id" : "41"
+      }, {
+        "id" : "42"
+      }, {
+        "id" : "43"
+      }, {
+        "id" : "44"
+      }, {
+        "id" : "45"
+      }, {
+        "id" : "46"
+      }, {
+        "id" : "47"
+      }, {
+        "id" : "48"
+      }, {
+        "id" : "49"
+      }, {
+        "id" : "50"
+      }, {
+        "id" : "51"
+      }, {
+        "id" : "52"
+      }, {
+        "id" : "53"
+      }, {
+        "id" : "54"
+      } ],
+      "title" : "Component Diagram – Frontend (Vue 3)"
+    }, {
+      "automaticLayout" : {
+        "edgeSeparation" : 50,
+        "nodeSeparation" : 50,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 100,
+        "vertices" : true
+      },
+      "containerId" : "16",
+      "elements" : [ {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
         "x" : 0,
         "y" : 0
       }, {
@@ -788,35 +874,39 @@
         "id" : "25",
         "x" : 0,
         "y" : 0
+      }, {
+        "id" : "26",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "27",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "28",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "29",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "30",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "31",
+        "x" : 0,
+        "y" : 0
       } ],
       "externalContainerBoundariesVisible" : false,
       "key" : "Components_Backend",
       "name" : "Component View: Fun With Flags - Backend",
       "order" : 4,
       "relationships" : [ {
-        "id" : "45"
-      }, {
-        "id" : "47"
-      }, {
-        "id" : "49"
-      }, {
-        "id" : "51"
-      }, {
-        "id" : "52"
-      }, {
-        "id" : "53"
-      }, {
-        "id" : "54"
-      }, {
-        "id" : "55"
-      }, {
         "id" : "56"
       }, {
-        "id" : "57"
-      }, {
         "id" : "58"
-      }, {
-        "id" : "59"
       }, {
         "id" : "60"
       }, {
@@ -843,6 +933,26 @@
         "id" : "71"
       }, {
         "id" : "72"
+      }, {
+        "id" : "73"
+      }, {
+        "id" : "74"
+      }, {
+        "id" : "75"
+      }, {
+        "id" : "76"
+      }, {
+        "id" : "77"
+      }, {
+        "id" : "78"
+      }, {
+        "id" : "79"
+      }, {
+        "id" : "80"
+      }, {
+        "id" : "81"
+      }, {
+        "id" : "82"
       } ],
       "title" : "Component Diagram – Backend (FastAPI)"
     } ],
@@ -914,11 +1024,11 @@
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "10",
+        "id" : "16",
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "25",
+        "id" : "31",
         "x" : 0,
         "y" : 0
       } ],
@@ -927,13 +1037,13 @@
       "name" : "Container View: Fun With Flags",
       "order" : 2,
       "relationships" : [ {
-        "id" : "28"
+        "id" : "34"
       }, {
-        "id" : "29"
+        "id" : "35"
       }, {
-        "id" : "30"
+        "id" : "36"
       }, {
-        "id" : "31"
+        "id" : "37"
       } ],
       "softwareSystemId" : "3",
       "title" : "Technical Context – Fun With Flags"
@@ -947,27 +1057,27 @@
         "vertices" : true
       },
       "elements" : [ {
-        "id" : "73",
+        "id" : "83",
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "74",
+        "id" : "84",
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "75",
+        "id" : "85",
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "77",
+        "id" : "87",
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "79",
+        "id" : "89",
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "80",
+        "id" : "90",
         "x" : 0,
         "y" : 0
       } ],
@@ -976,11 +1086,11 @@
       "name" : "Deployment View: Fun With Flags - Production",
       "order" : 5,
       "relationships" : [ {
-        "id" : "76"
+        "id" : "86"
       }, {
-        "id" : "78"
+        "id" : "88"
       }, {
-        "id" : "81"
+        "id" : "91"
       } ],
       "softwareSystemId" : "3",
       "title" : "Deployment – Fun With Flags"
@@ -1011,9 +1121,9 @@
       "name" : "System Context View: Fun With Flags",
       "order" : 1,
       "relationships" : [ {
-        "id" : "26"
+        "id" : "32"
       }, {
-        "id" : "27"
+        "id" : "33"
       } ],
       "softwareSystemId" : "3",
       "title" : "System Context – Fun With Flags"

@@ -18,17 +18,29 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         funWithFlags = softwareSystem "Fun With Flags" "web application for a flag quiz game" {
 
-            frontend = container "Frontend" "provides UI for player - requests flags from backend - forwards player and game data" {
+            frontend = container "Frontend" "provides UI for player - requests flags from backend - forwards player and game data" "Vue 3 / TypeScript" {
 
-                appShell = component "App" "Application shell. Manages global authentication state, persists the JWT token in localStorage, and orchestrates modal visibility."
+                appShell = component "App" "Application shell. Manages global authentication state, persists the JWT token in localStorage, orchestrates modal visibility, and renders auth failures as inline form messages."
 
-                gameBoard = component "GameBoard" "Core game component. Creates a game session, fetches flags by session ID, submits answers to the backend, receives server-side score updates, and persists the session score to the backend."
+                gameBoard = component "GameBoard" "Presentational game view. Renders the flag, answer buttons, score / highscore, result strips, and loading / error states; forwards user interactions and delegates the full game lifecycle to the useGame composable."
 
-                loginModal = component "LoginModal" "Presentational modal with a username/password form." 
-
-                signUpModal = component "SignUpModal" "Presentational modal with a registration form. Applies client-side validation (username format, password length/complexity) before emitting credentials"
+                authModal = component "AuthModal" "Combined login / sign-up modal. Toggles between modes and applies client-side validation (username format, password length/complexity) in sign-up mode before emitting credentials."
 
                 highscoresModal = component "HighscoresModal" "Fetches and displays the top-10 leaderboard from the backend when opened. Requires a valid JWT token."
+
+                saveScorePrompt = component "SaveScorePrompt" "Presentational prompt shown to anonymous players after a wrong answer, inviting them to sign up or log in to save their score. Emits navigation events; holds no auth logic."
+
+                baseModal = component "BaseModal" "Reusable, accessible modal shell (role=dialog, focus trap, Escape to close): backdrop, optional header, and a content slot. Used by the other modals."
+
+                notificationStack = component "NotificationStack" "Renders the active toast notifications."
+
+                errorBoundary = component "ErrorBoundary" "Catches render errors in the component tree and shows a fallback UI with a retry action."
+
+                useGame = component "useGame" "Composable owning the game lifecycle: session creation, flag loading, answer checking, scoring, personal-best, and save-score logic. Surfaces API failures as toasts and keeps GameBoard purely presentational."
+
+                apiClient = component "API Client" "Central fetch wrapper (apiFetch). Builds requests, attaches the Bearer token, encodes/parses JSON, and raises typed ApiError / NetworkError failures (mapped to user messages by a shared helper)."
+
+                useNotifications = component "useNotifications" "Composable holding the shared notification state: add, auto-dismiss, manual dismiss, and dedupe by type+message."
             }
 
             backend = container "Backend" "handles API requests - handles game logic - manages persistence" "Python / FastAPI" "API" {
@@ -84,24 +96,36 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         # Beziehungen – Komponenten Frontend
         # ──────────────────────────────────────────
-        appShell -> gameBoard        "Renders and passes JWT token as prop"
-        appShell -> loginModal       "Renders; receives submit event with credentials"
-        appShell -> signUpModal      "Renders; receives submit event with credentials"
-        appShell -> highscoresModal  "Renders; passes JWT token as prop"
+        # App shell wiring (render + events)
+        appShell -> errorBoundary     "Wraps the UI to catch and surface render errors"
+        appShell -> gameBoard         "Renders; passes JWT token as prop; reacts to open-login / open-signup / session-expired / new-highscore events"
+        appShell -> authModal         "Renders; receives submit event with credentials"
+        appShell -> highscoresModal   "Renders; passes JWT token as prop"
+        appShell -> notificationStack "Renders the active toast notifications"
+        appShell -> apiClient         "Registers and logs in the user via; shows auth failures as inline form messages"
+        appShell -> useNotifications  "Shows authentication feedback via"
 
-        appShell       -> backend "POST /auth/register – register new user" "JSON / REST"
-        appShell       -> backend "POST /auth/login – obtain JWT token" "JSON / REST"
-        gameBoard      -> backend "POST /game/session – create session" "JSON / REST"
-        gameBoard      -> backend "GET /game/flag – fetch next flag" "JSON / REST"
-        gameBoard      -> backend "POST /game/answer – submit answer" "JSON / REST"
-        gameBoard      -> backend "POST /highscores/ – save session score (Bearer token)" "JSON / REST"
-        highscoresModal -> backend "GET /highscores/ – fetch top-10 leaderboard (Bearer token)" "JSON / REST"
-        highscoresModal -> backend "GET /highscores/me – fetch own highscore (Bearer token)" "JSON / REST"
+        # GameBoard delegates all game logic to the useGame composable
+        gameBoard -> useGame          "Delegates the full game lifecycle to"
+        gameBoard -> saveScorePrompt  "Renders; forwards signup / login events to the app"
 
-        appShell        -> authRouter       "POST /auth/register, POST /auth/login" "JSON / REST"
-        gameBoard       -> gameRouter       "POST /game/session, GET /game/flag, POST /game/answer" "JSON / REST"
-        gameBoard       -> highscoresRouter "POST /highscores/" "JSON / REST"
-        highscoresModal -> highscoresRouter "GET /highscores/, GET /highscores/me" "JSON / REST"
+        useGame   -> apiClient        "Creates session, fetches flags, submits answers, and saves the score via"
+        useGame   -> useNotifications "Surfaces API failures as error / warning toasts via"
+
+        saveScorePrompt -> baseModal  "Built on the reusable modal shell"
+        authModal       -> baseModal  "Built on the reusable modal shell"
+
+        highscoresModal -> apiClient  "Fetches the leaderboard and the player's own score via; renders loading / error / empty states"
+        highscoresModal -> baseModal  "Built on the reusable modal shell"
+
+        notificationStack -> useNotifications "Reads the active notifications from"
+
+        # Frontend → Backend: all HTTP goes through the API Client
+        apiClient -> backend          "REST API calls (auth, game, highscores)" "JSON / REST"
+
+        apiClient -> authRouter       "POST /auth/register, POST /auth/login" "JSON / REST"
+        apiClient -> gameRouter       "POST /game/session, GET /game/flag, POST /game/answer" "JSON / REST"
+        apiClient -> highscoresRouter "GET /highscores/, GET /highscores/me, POST /highscores/ (Bearer)" "JSON / REST"
 
         # ──────────────────────────────────────────
         # Beziehungen – Komponenten Backend

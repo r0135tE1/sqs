@@ -1,10 +1,20 @@
 <template>
   <div v-if="isOpen" class="modal-root">
     <div class="modal-backdrop" @click="$emit('close')" />
-    <div class="modal" :style="{ maxWidth }">
+    <div
+      ref="dialogRef"
+      class="modal"
+      :style="{ maxWidth }"
+      role="dialog"
+      aria-modal="true"
+      :aria-labelledby="title ? titleId : undefined"
+      tabindex="-1"
+      @keydown.esc="$emit('close')"
+      @keydown.tab="trapFocus"
+    >
       <div v-if="title" class="modal-header">
-        <div class="modal-title">{{ title }}</div>
-        <button @click="$emit('close')" class="close-btn">×</button>
+        <div :id="titleId" class="modal-title">{{ title }}</div>
+        <button @click="$emit('close')" class="close-btn" type="button" aria-label="Close">×</button>
       </div>
       <slot />
     </div>
@@ -12,13 +22,55 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
+import { nextTick, ref, watch } from "vue"
+
+const props = withDefaults(defineProps<{
   isOpen: boolean
   title?: string
   maxWidth?: string
 }>(), { maxWidth: "28rem" })
 
 defineEmits(["close"])
+
+let modalCount = 0
+const titleId = `modal-title-${++modalCount}`
+
+const dialogRef = ref<HTMLElement | null>(null)
+let previouslyFocused: HTMLElement | null = null
+
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+// Move focus into the dialog when it opens and restore it to the trigger on close,
+// so keyboard and screen-reader users aren't stranded outside the modal.
+watch(() => props.isOpen, async (open) => {
+  if (open) {
+    previouslyFocused = document.activeElement as HTMLElement | null
+    await nextTick()
+    dialogRef.value?.focus()
+  } else {
+    previouslyFocused?.focus?.()
+    previouslyFocused = null
+  }
+})
+
+// Keep Tab/Shift+Tab cycling within the dialog (focus trap).
+function trapFocus(e: KeyboardEvent) {
+  const focusables = dialogRef.value?.querySelectorAll<HTMLElement>(FOCUSABLE)
+  if (!focusables || focusables.length === 0) {
+    e.preventDefault()
+    return
+  }
+  const first = focusables[0]
+  const last = focusables[focusables.length - 1]
+  const active = document.activeElement
+  if (e.shiftKey && (active === first || active === dialogRef.value)) {
+    e.preventDefault()
+    last?.focus()
+  } else if (!e.shiftKey && active === last) {
+    e.preventDefault()
+    first?.focus()
+  }
+}
 </script>
 
 <style scoped>

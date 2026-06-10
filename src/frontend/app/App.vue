@@ -48,7 +48,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { apiFetch, ApiError, NetworkError } from "./api/client";
+import { apiFetch } from "./api/client";
+import { messageForError } from "./api/errors";
 import { useNotifications } from "./composables/useNotifications";
 import AuthModal from "./components/AuthModal.vue";
 import HighscoresModal from "./components/HighscoresModal.vue";
@@ -92,20 +93,6 @@ function handleNewHighscore(score: number) {
   notify.highscore(`🎉 New high score: ${score}!`);
 }
 
-/**
- * Errors from auth endpoints belong INLINE in the form (the user is looking
- * right at it). System-level errors (network, 5xx) get a toast on top.
- */
-function describeAuthError(err: unknown, conflictMsg: string, fallbackMsg: string): string {
-  if (err instanceof NetworkError) return "Network error. Please check your connection and try again.";
-  if (err instanceof ApiError) {
-    if (err.status === 409) return conflictMsg;
-    if (err.status === 401) return "Invalid username or password. Please try again.";
-    return err.detail || fallbackMsg;
-  }
-  return fallbackMsg;
-}
-
 async function handleSignUp(formData: { username: string; password: string }) {
   if (signUpSubmitting.value) return;
   signUpSubmitting.value = true;
@@ -115,11 +102,11 @@ async function handleSignUp(formData: { username: string; password: string }) {
     showSignUp.value = false;
     await handleLogin(formData);
   } catch (err) {
-    signUpMessage.value = describeAuthError(
-      err,
-      "Username already taken. Please choose a different username.",
-      "Sign up failed. Please try again.",
-    );
+    // Auth errors belong INLINE in the form (the user is looking right at it).
+    signUpMessage.value = messageForError(err, {
+      conflict: "Username already taken. Please choose a different username.",
+      fallback: "Sign up failed. Please try again.",
+    });
   } finally {
     signUpSubmitting.value = false;
   }
@@ -141,11 +128,10 @@ async function handleLogin(formData: { username: string; password: string }) {
     notify.success("Login successful! Welcome!");
     showLogin.value = false;
   } catch (err) {
-    loginMessage.value = describeAuthError(
-      err,
-      "",
-      "Login failed. Please try again.",
-    );
+    loginMessage.value = messageForError(err, {
+      unauthorized: "Invalid username or password. Please try again.",
+      fallback: "Login failed. Please try again.",
+    });
   } finally {
     loginSubmitting.value = false;
   }
