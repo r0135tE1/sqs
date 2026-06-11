@@ -9,15 +9,15 @@ A flag-guessing game where players are shown a country flag and must pick the co
 | Frontend | Vue 3 + TypeScript, served by nginx |
 | Backend | Python 3.12 + FastAPI |
 | Database | PostgreSQL 16 |
-| External API | [restcountries.com](https://restcountries.com) |
+| External API | [restcountries.com](https://restcountries.com) (v5, API key required) |
 
 ## Running with Docker
 
-> **Requirements:** Docker Desktop
+> **Requirements:** Docker Desktop, a free [restcountries.com](https://restcountries.com) API key
 
 ```bash
-# 1. Generate the .env file with a random JWT secret
-./setup.sh
+# 1. Generate the .env file with a random JWT secret and your API key
+./setup.sh --key=<your-restcountries-api-key>
 
 # 2. Build and start all containers
 docker compose up --build
