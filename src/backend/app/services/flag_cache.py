@@ -24,22 +24,25 @@ class FlagCache:
 
     async def load(self) -> None:
         try:
+            headers = {}
+            if settings.restcountries_api_key:
+                headers["Authorization"] = f"Bearer {settings.restcountries_api_key}"
             async with httpx.AsyncClient(timeout=30.0) as client:
                 response = await client.get(
-                    f"{settings.restcountries_url}/all",
-                    params={"fields": "name,flags,cca2"},
+                    settings.restcountries_url,
+                    headers=headers,
                 )
                 response.raise_for_status()
-                raw = response.json()
+                raw = response.json()["data"]["objects"]
 
             self._countries = [
                 {
-                    "name": c["name"]["common"],
-                    "flag_url": c["flags"].get("svg") or c["flags"].get("png", ""),
-                    "code": c.get("cca2", ""),
+                    "name": c["names"]["common"],
+                    "flag_url": c["flag"].get("url_svg") or c["flag"].get("url_png", ""),
+                    "code": c.get("codes", {}).get("alpha_2", ""),
                 }
                 for c in raw
-                if c.get("flags") and c.get("name", {}).get("common")
+                if c.get("flag") and c.get("names", {}).get("common")
             ]
             logger.info("Flag cache loaded: %d countries", len(self._countries))
         except httpx.HTTPError as exc:
