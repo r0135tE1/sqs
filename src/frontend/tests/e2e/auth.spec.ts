@@ -59,7 +59,7 @@ test('register, auto-login, and persist session across reload', async ({ page })
   await expect(page.getByText('Top Highscores')).toBeVisible()
 
   // Step 7: logout clears state and persists the cleared state
-  await page.getByRole('button', { name: '×', exact: true }).click() // close highscores modal
+  await page.getByRole('button', { name: 'Close', exact: true }).click() // close highscores modal
   await page.getByRole('button', { name: 'Logout' }).click()
 
   await expect(page.getByText('Log in to save your scores')).toBeVisible()

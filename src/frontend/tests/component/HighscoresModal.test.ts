@@ -111,7 +111,7 @@ describe('HighscoresModal', () => {
       props: { isOpen: true, token: 'fake-token' },
     })
     await flushPromises()
-    await wrapper.find('.modal-backdrop').trigger('click')
+    await wrapper.find('.modal').trigger('click')
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 

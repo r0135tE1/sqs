@@ -70,264 +70,54 @@
     </div>
   </div>
 
-  <BaseModal :isOpen="showLoginPrompt" maxWidth="24rem" @close="dismissLoginPrompt">
-    <div class="prompt-title">Save your high score!</div>
-    <p class="prompt-text">You're not logged in. Sign up to track your scores and compete on the leaderboard.</p>
-    <div class="prompt-actions">
-      <button @click="openSignUpFromPrompt" class="btn btn-primary prompt-action">Sign Up</button>
-      <button @click="dismissLoginPrompt" class="btn btn-neutral prompt-action">Continue without saving</button>
-    </div>
-    <p class="prompt-footer">
-      Already have an account?
-      <button @click="openLoginFromPrompt" class="link">Log in</button>
-    </p>
-  </BaseModal>
+  <SaveScorePrompt
+    :isOpen="showLoginPrompt"
+    @signup="openSignUpFromPrompt"
+    @login="openLoginFromPrompt"
+    @dismiss="dismissLoginPrompt"
+  />
 </template>
 
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from "vue";
-import { apiFetch, ApiError, NetworkError } from "../api/client";
-import { useNotifications } from "../composables/useNotifications";
-import BaseModal from "./BaseModal.vue";
-
-const emit = defineEmits<{ 'open-signup': []; 'open-login': []; 'session-expired': []; 'new-highscore': [score: number] }>();
-const notify = useNotifications();
-
-/**
- * Centralized handler: emits 'session-expired' on 401, shows a toast for
- * unexpected system errors, swallows known recoverable cases. Returns whether
- * the caller should treat the error as handled.
- */
-function handleApiError(err: unknown, userMessage: string): void {
-  if (err instanceof ApiError && err.status === 401) {
-    emit('session-expired');
-    return;
-  }
-  if (err instanceof NetworkError) {
-    notify.error("Network error — please check your connection.");
-    return;
-  }
-  notify.error(userMessage);
-  console.error(userMessage, err);
-}
-
-type FlagQuestion = {
-  question_id: string;
-  flag_svg: string;
-  options: string[];
-};
-
-type AnswerResponse = {
-  correct: boolean;
-  score: number;
-  correct_answer: string;
-};
+import { toRef } from "vue";
+import SaveScorePrompt from "./SaveScorePrompt.vue";
+import { useGame } from "../composables/useGame";
 
 const props = defineProps<{
   token?: string | null;
   username?: string | null;
 }>();
 
-const flag = ref<FlagQuestion | null>(null);
-const score = ref(0);
-const sessionId = ref<string | null>(null);
-const correctAnswer = ref("");
-const showOverlay = ref(false);
-const isCorrect = ref(false);
-const selectedOption = ref("");
-const personalBest = ref<number | null>(null);
-const flagVisible = ref(true);
-const showLoginPrompt = ref(false);
-const hasShownLoginPrompt = ref(false);
-const submitting = ref(false);
-const loadFailed = ref(false);
-const reloading = ref(false);
+const emit = defineEmits<{ 'open-signup': []; 'open-login': []; 'session-expired': []; 'new-highscore': [score: number] }>();
 
-const isAuthenticated = computed(() => !!props.token);
-const flagDataUrl = computed(() =>
-  flag.value ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(flag.value.flag_svg)}` : ""
-);
-
-function answerBtnState(option: string) {
-  if (showOverlay.value) {
-    if (option === correctAnswer.value) return "correct";
-    if (option === selectedOption.value) return "wrong";
-    return "dimmed";
-  }
-  return option === selectedOption.value ? "selected" : "";
-}
-
-onMounted(async () => {
-  await createSession();
-  loadFlag();
+const {
+  flag,
+  score,
+  correctAnswer,
+  showOverlay,
+  isCorrect,
+  personalBest,
+  flagVisible,
+  showLoginPrompt,
+  submitting,
+  loadFailed,
+  reloading,
+  isAuthenticated,
+  flagDataUrl,
+  answerBtnState,
+  checkInput,
+  nextFlag,
+  tryReload,
+  openSignUpFromPrompt,
+  openLoginFromPrompt,
+  dismissLoginPrompt,
+} = useGame(toRef(props, "token"), {
+  onSessionExpired: () => emit("session-expired"),
+  onNewHighscore: (newScore) => emit("new-highscore", newScore),
+  onOpenSignup: () => emit("open-signup"),
+  onOpenLogin: () => emit("open-login"),
 });
-
-
-watch(() => props.token, async (val, oldVal) => {
-  if (val && !oldVal) { //login
-    await saveScoreToBackend();
-  } else { //logout
-    personalBest.value = null;
-    score.value = 0;
-    showOverlay.value = false;
-    flag.value = null;
-    hasShownLoginPrompt.value = false;
-    await createSession();
-    loadFlag();
-  }
-});
-
-
-async function createSession() {
-  try {
-    const data = await apiFetch<{ session_id: string }>("/game/session", { method: "POST" });
-    sessionId.value = data.session_id;
-    fetchPersonalBest();
-  } catch (err) {
-    handleApiError(err, "Could not start a new game.");
-  }
-}
-
-function discardSessionState(reason?: string) {
-  if (reason && score.value > 0) notify.warning(reason);
-  sessionId.value = null;
-  score.value = 0;
-  selectedOption.value = "";
-  showOverlay.value = false;
-  hasShownLoginPrompt.value = false;
-}
-
-async function loadFlag() {
-  if (!sessionId.value || reloading.value) return;
-  reloading.value = true;
-  flagVisible.value = false;
-
-  try {
-    const [data] = await Promise.all([
-      apiFetch<FlagQuestion>(`/game/flag?session_id=${sessionId.value}`, { cache: "no-store" }),
-      new Promise((resolve) => setTimeout(resolve, 200)),
-    ]);
-    flag.value = data;
-    loadFailed.value = false;
-  } catch (err) {
-    if (err instanceof ApiError && err.status === 404) {
-      // Session is gone (backend restart, TTL cleanup). Wipe local state so the
-      // next retry creates a fresh session — otherwise we'd re-send the dead id.
-      discardSessionState("Game session expired — starting over.");
-    }
-    flag.value = null;
-    loadFailed.value = true;
-  } finally {
-    flagVisible.value = true;
-    reloading.value = false;
-  }
-}
-
-async function tryReload() {
-  if (!sessionId.value) await createSession();
-  await loadFlag();
-}
-
-function handleAnswerError(err: unknown) {
-  // Any submit failure leaves the question in an indeterminate state — clear
-  // the flag and surface the retry banner. That's a single, consistent recovery
-  // path for both transient network errors and stale-session (404) cases.
-  if (err instanceof ApiError && err.status === 404) {
-    discardSessionState("Game session expired — starting over.");
-  } else if (!(err instanceof ApiError) && !(err instanceof NetworkError)) {
-    // Unexpected non-API, non-network error — log it for debugging.
-    console.error("Unexpected answer error:", err);
-  }
-  flag.value = null;
-  loadFailed.value = true;
-  selectedOption.value = "";
-}
-
-async function checkInput(option: string) {
-  if (!flag.value || showOverlay.value || submitting.value) return;
-  submitting.value = true;
-  selectedOption.value = option;
-
-  let result: AnswerResponse;
-  try {
-    result = await apiFetch<AnswerResponse>("/game/answer", {
-      method: "POST",
-      json: { question_id: flag.value.question_id, answer: option },
-    });
-  } catch (err) {
-    handleAnswerError(err);
-    return;
-  } finally {
-    submitting.value = false;
-  }
-
-  if (result.correct) score.value = result.score;
-  isCorrect.value = result.correct;
-  correctAnswer.value = result.correct_answer;
-
-  if (!result.correct) {
-    if (isAuthenticated.value && score.value > 0) saveScoreToBackend();
-    if (!isAuthenticated.value && score.value > 0 && !hasShownLoginPrompt.value) {
-      hasShownLoginPrompt.value = true;
-      showLoginPrompt.value = true;
-    }
-  }
-  showOverlay.value = true;
-}
-
-async function fetchPersonalBest() {
-  if (!props.token) return;
-  try {
-    const data = await apiFetch<{ score: number }>("/highscores/me", { token: props.token });
-    personalBest.value = data.score || null;
-  } catch (err) {
-    if (err instanceof ApiError && err.status === 401) {
-      emit('session-expired');
-      return;
-    }
-    // 404 means "no highscore yet" — that's fine, leave personalBest as null.
-    if (err instanceof ApiError && err.status === 404) return;
-    console.warn("Failed to fetch personal best:", err);
-  }
-}
-
-async function nextFlag() {
-  if (!isCorrect.value) score.value = 0;
-  showOverlay.value = false;
-  selectedOption.value = "";
-  if (!sessionId.value) await createSession();
-  loadFlag();
-}
-
-function openSignUpFromPrompt() {
-  showLoginPrompt.value = false;
-  emit('open-signup');
-}
-
-function openLoginFromPrompt() {
-  showLoginPrompt.value = false;
-  emit('open-login');
-}
-
-function dismissLoginPrompt() {
-  showLoginPrompt.value = false;
-}
-
-async function saveScoreToBackend() {
-  if (!props.token || !sessionId.value) return;
-  try {
-    const data = await apiFetch<{ highscore: number | null; is_new_best: boolean }>(
-      "/highscores/",
-      { method: "POST", token: props.token, json: { session_id: sessionId.value } },
-    );
-    if (data.highscore !== null) personalBest.value = data.highscore;
-    if (data.is_new_best && data.highscore !== null) emit('new-highscore', data.highscore);
-  } catch (err) {
-    handleApiError(err, "Could not save your score.");
-  }
-}
-
 </script>
 
 <style scoped>
@@ -555,33 +345,5 @@ async function saveScoreToBackend() {
 @keyframes fade-in {
   from { opacity: 0; transform: scale(0.8); }
   to   { opacity: 1; transform: scale(1); }
-}
-
-/* Login prompt */
-.prompt-title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: var(--text);
-}
-
-.prompt-text {
-  font-size: 0.875rem;
-  margin: 0 0 1.5rem;
-  color: var(--text-secondary);
-}
-
-.prompt-actions {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.prompt-action { flex: 1; }
-
-.prompt-footer {
-  text-align: center;
-  font-size: 0.75rem;
-  margin: 1rem 0 0;
-  color: var(--text-muted);
 }
 </style>

@@ -6,7 +6,7 @@ A flag-guessing game where players are shown a country flag and must pick the co
 
 | Layer | Technology |
 |---|---|
-| Frontend | Vue 3 + TypeScript + Tailwind CSS, served by nginx |
+| Frontend | Vue 3 + TypeScript, served by nginx |
 | Backend | Python 3.12 + FastAPI |
 | Database | PostgreSQL 16 |
 | External API | [restcountries.com](https://restcountries.com) |
