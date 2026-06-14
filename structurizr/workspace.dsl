@@ -20,27 +20,27 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
             frontend = container "Frontend" "provides UI for player - requests flags from backend - forwards player and game data" "Vue 3 / TypeScript" {
 
-                appShell = component "App" "Application shell. Manages global authentication state, persists the JWT token in localStorage, orchestrates modal visibility, and renders auth failures as inline form messages."
+                appShell = component "App" "App shell: holds global auth state, persists the JWT in localStorage, orchestrates modals."
 
-                gameBoard = component "GameBoard" "Presentational game view. Renders the flag, answer buttons, score / highscore, result strips, and loading / error states; forwards user interactions and delegates the full game lifecycle to the useGame composable."
+                gameBoard = component "GameBoard" "Presentational game view: flag, answer buttons, score, loading/error states. Logic via useGame."
 
-                authModal = component "AuthModal" "Combined login / sign-up modal. Toggles between modes and applies client-side validation (username format, password length/complexity) in sign-up mode before emitting credentials."
+                authModal = component "AuthModal" "Login / sign-up modal with client-side validation; emits credentials."
 
-                highscoresModal = component "HighscoresModal" "Fetches and displays the top-10 leaderboard from the backend when opened. Requires a valid JWT token."
+                highscoresModal = component "HighscoresModal" "Fetches and shows the top-10 leaderboard (requires JWT)."
 
-                saveScorePrompt = component "SaveScorePrompt" "Presentational prompt shown to anonymous players after a wrong answer, inviting them to sign up or log in to save their score. Emits navigation events; holds no auth logic."
+                saveScorePrompt = component "SaveScorePrompt" "Prompt for anonymous players after a wrong answer (sign up / log in). Presentational only."
 
-                baseModal = component "BaseModal" "Reusable, accessible modal shell (role=dialog, focus trap, Escape to close): backdrop, optional header, and a content slot. Used by the other modals."
+                baseModal = component "BaseModal" "Reusable, accessible modal shell (dialog, focus trap, Escape)."
 
                 notificationStack = component "NotificationStack" "Renders the active toast notifications."
 
-                errorBoundary = component "ErrorBoundary" "Catches render errors in the component tree and shows a fallback UI with a retry action."
+                errorBoundary = component "ErrorBoundary" "Catches render errors and shows a fallback with retry."
 
-                useGame = component "useGame" "Composable owning the game lifecycle: session creation, flag loading, answer checking, scoring, personal-best, and save-score logic. Surfaces API failures as toasts and keeps GameBoard purely presentational."
+                useGame = component "useGame" "Composable owning the game lifecycle: session, flags, answer checking, scoring, save-score."
 
-                apiClient = component "API Client" "Central fetch wrapper (apiFetch). Builds requests, attaches the Bearer token, encodes/parses JSON, and raises typed ApiError / NetworkError failures (mapped to user messages by a shared helper)."
+                apiClient = component "API Client" "Central fetch wrapper: builds requests, attaches the Bearer token, parses JSON, raises typed errors."
 
-                useNotifications = component "useNotifications" "Composable holding the shared notification state: add, auto-dismiss, manual dismiss, and dedupe by type+message."
+                useNotifications = component "useNotifications" "Composable with shared notification state: add, auto-dismiss, dedupe."
             }
 
             backend = container "Backend" "handles API requests - handles game logic - manages persistence" "Python / FastAPI" "API" {
@@ -97,32 +97,30 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # Beziehungen – Komponenten Frontend
         # ──────────────────────────────────────────
         # App shell wiring (render + events)
-        appShell -> errorBoundary     "Wraps the UI to catch and surface render errors"
-        appShell -> gameBoard         "Renders; passes JWT token as prop; reacts to open-login / open-signup / session-expired / new-highscore events"
-        appShell -> authModal         "Renders; receives submit event with credentials"
-        appShell -> highscoresModal   "Renders; passes JWT token as prop"
-        appShell -> notificationStack "Renders the active toast notifications"
-        appShell -> apiClient         "Registers and logs in the user via; shows auth failures as inline form messages"
-        appShell -> useNotifications  "Shows authentication feedback via"
+        appShell -> errorBoundary     "wraps to catch render errors"
+        appShell -> gameBoard         "renders, passes JWT, auth/highscore events"
+        appShell -> authModal         "renders, receives credentials"
+        appShell -> highscoresModal   "renders, passes JWT"
+        appShell -> notificationStack "renders"
+        appShell -> apiClient         "register / login"
+        appShell -> useNotifications  "shows auth feedback"
 
         # GameBoard delegates all game logic to the useGame composable
-        gameBoard -> useGame          "Delegates the full game lifecycle to"
-        gameBoard -> saveScorePrompt  "Renders; forwards signup / login events to the app"
+        gameBoard -> useGame          "delegates game lifecycle"
+        gameBoard -> saveScorePrompt  "renders, forwards signup / login"
 
-        useGame   -> apiClient        "Creates session, fetches flags, submits answers, and saves the score via"
-        useGame   -> useNotifications "Surfaces API failures as error / warning toasts via"
+        useGame   -> apiClient        "session, flags, answers, save score"
+        useGame   -> useNotifications "surfaces failures as toasts"
 
-        saveScorePrompt -> baseModal  "Built on the reusable modal shell"
-        authModal       -> baseModal  "Built on the reusable modal shell"
+        saveScorePrompt -> baseModal  "built on"
+        authModal       -> baseModal  "built on"
 
-        highscoresModal -> apiClient  "Fetches the leaderboard and the player's own score via; renders loading / error / empty states"
-        highscoresModal -> baseModal  "Built on the reusable modal shell"
+        highscoresModal -> apiClient  "fetches leaderboard & own score"
+        highscoresModal -> baseModal  "built on"
 
-        notificationStack -> useNotifications "Reads the active notifications from"
+        notificationStack -> useNotifications "reads notifications"
 
         # Frontend → Backend: all HTTP goes through the API Client
-        apiClient -> backend          "REST API calls (auth, game, highscores)" "JSON / REST"
-
         apiClient -> authRouter       "POST /auth/register, POST /auth/login" "JSON / REST"
         apiClient -> gameRouter       "POST /game/session, GET /game/flag, POST /game/answer" "JSON / REST"
         apiClient -> highscoresRouter "GET /highscores/, GET /highscores/me, POST /highscores/ (Bearer)" "JSON / REST"
