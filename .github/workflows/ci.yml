@@ -132,13 +132,15 @@ jobs:
         # binary is already installed via `npm ci --ignore-scripts`.
         run: npx --no --ignore-scripts --package=@playwright/test@1.60.0 playwright install --with-deps chromium
       - name: Create .env for docker compose
+        env:
+          RESTCOUNTRIES_API_KEY: ${{ secrets.RESTCOUNTRIES_API_KEY }}
         run: |
           cat > .env <<EOF
           POSTGRES_USER=postgres
           POSTGRES_PASSWORD=postgres
           POSTGRES_DB=funwithflags
           JWT_SECRET=ci-test-secret-not-for-production
-          RESTCOUNTRIES_API_KEY=${{ secrets.RESTCOUNTRIES_API_KEY }}
+          RESTCOUNTRIES_API_KEY=${RESTCOUNTRIES_API_KEY}
           EOF
       - name: Start stack
         run: docker compose up -d --build
