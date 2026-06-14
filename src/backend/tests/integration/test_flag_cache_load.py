@@ -4,13 +4,15 @@ import respx
 from app.config import settings
 from app.services.flag_cache import FlagCache
 
-_API_URL = f"{settings.restcountries_url}/all"
+_API_URL = settings.restcountries_url
 
 MOCK_COUNTRIES = [
-    {"name": {"common": "Germany"}, "flags": {"svg": "https://flagcdn.com/de.svg"}, "cca2": "DE"},
-    {"name": {"common": "France"}, "flags": {"svg": "https://flagcdn.com/fr.svg"}, "cca2": "FR"},
-    {"name": {"common": "Brazil"}, "flags": {"svg": "https://flagcdn.com/br.svg"}, "cca2": "BR"},
+    {"names": {"common": "Germany"}, "flag": {"url_svg": "https://flagcdn.com/de.svg", "url_png": ""}, "codes": {"alpha_2": "DE"}},
+    {"names": {"common": "France"}, "flag": {"url_svg": "https://flagcdn.com/fr.svg", "url_png": ""}, "codes": {"alpha_2": "FR"}},
+    {"names": {"common": "Brazil"}, "flag": {"url_svg": "https://flagcdn.com/br.svg", "url_png": ""}, "codes": {"alpha_2": "BR"}},
 ]
+
+MOCK_RESPONSE = {"data": {"objects": MOCK_COUNTRIES}}
 
 _FAKE_SVG = b"<svg>flag</svg>"
 
@@ -18,7 +20,7 @@ _FAKE_SVG = b"<svg>flag</svg>"
 async def test_load_success():
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_COUNTRIES))
+        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
         respx.get(url__regex=r"https://flagcdn\.com/.*\.svg").mock(
             return_value=httpx.Response(200, content=_FAKE_SVG)
         )
@@ -30,7 +32,7 @@ async def test_load_success():
 async def test_load_caches_svgs():
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_COUNTRIES))
+        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
         respx.get(url__regex=r"https://flagcdn\.com/.*\.svg").mock(
             return_value=httpx.Response(200, content=_FAKE_SVG)
         )
@@ -68,7 +70,7 @@ async def test_load_svg_fetch_failure_skips_country():
     """If a single SVG fetch fails, that country is removed from the playable pool."""
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_COUNTRIES))
+        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
         respx.get("https://flagcdn.com/de.svg").mock(
             side_effect=httpx.ConnectError("timeout")
         )

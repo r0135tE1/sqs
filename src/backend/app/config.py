@@ -8,7 +8,8 @@ class Settings(BaseSettings):
     jwt_secret: str
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60
-    restcountries_url: str = "https://restcountries.com/v3.1"
+    restcountries_url: str = "https://api.restcountries.com/countries/v5"
+    restcountries_api_key: str = ""
     cors_origins: list[str] = ["http://localhost:5173"]
     log_level: str = "INFO"
 
