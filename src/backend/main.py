@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.database.engine import SessionLocal
 from app.routers import auth, game, highscores
 from app.services.flag_cache import flag_cache
 from app.services.game_session import game_session_store
@@ -27,7 +28,8 @@ async def _session_cleanup_task() -> None:
 #API-Startup: cache Flags and run Server
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await flag_cache.load()
+    async with SessionLocal() as db:
+        await flag_cache.load(db)
     task = asyncio.create_task(_session_cleanup_task())
     yield
     task.cancel()

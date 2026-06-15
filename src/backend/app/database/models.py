@@ -1,11 +1,20 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import DateTime, ForeignKey, Integer, LargeBinary, String, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 #Base class
 class Base(DeclarativeBase):
     pass
+
+
+class Flag(Base):
+    __tablename__ = "flags"
+
+    code: Mapped[str] = mapped_column(String(10), primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    flag_svg: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    extracted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 #DB Table for Users
 class User(Base):

@@ -3,7 +3,7 @@ import pytest_asyncio
 from unittest.mock import AsyncMock, patch
 
 from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.engine.url import make_url
 from testcontainers.postgres import PostgresContainer
 
@@ -23,6 +23,18 @@ def db_async_url(pg_container):
     # Return a URL object (not str) — str(URL) in SQLAlchemy 2.x hides the password with *** which causes asyncpg auth failures.
     raw = pg_container.get_connection_url()
     return make_url(raw).set(drivername="postgresql+asyncpg")
+
+
+@pytest_asyncio.fixture
+async def db_session(db_async_url):
+    engine = create_async_engine(db_async_url)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    async with AsyncSession(engine) as session:
+        yield session
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await engine.dispose()
 
 
 @pytest_asyncio.fixture
