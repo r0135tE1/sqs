@@ -3,9 +3,19 @@ set -e
 
 RESTCOUNTRIES_API_KEY=""
 
+if [ "$#" -gt 1 ]; then
+    echo "Usage: ./setup.sh --key=<restcountries-api-key>" >&2
+    exit 1
+fi
+
 for arg in "$@"; do
     case "$arg" in
         --key=*) RESTCOUNTRIES_API_KEY="${arg#--key=}" ;;
+        *)
+            echo "Unknown argument: $arg" >&2
+            echo "Usage: ./setup.sh --key=<restcountries-api-key>" >&2
+            exit 1
+            ;;
     esac
 done
 
