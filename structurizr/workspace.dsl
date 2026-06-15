@@ -20,61 +20,61 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
             frontend = container "Frontend" "provides UI for player - requests flags from backend - forwards player and game data" "Vue 3 / TypeScript" {
 
-                appShell = component "App" "Application shell. Manages global authentication state, persists the JWT token in localStorage, orchestrates modal visibility, and renders auth failures as inline form messages."
+                appShell = component "App" "App shell: holds global auth state, persists the JWT in localStorage, orchestrates modals."
 
-                gameBoard = component "GameBoard" "Presentational game view. Renders the flag, answer buttons, score / highscore, result strips, and loading / error states; forwards user interactions and delegates the full game lifecycle to the useGame composable."
+                gameBoard = component "GameBoard" "Presentational game view: flag, answer buttons, score, loading/error states. Logic via useGame."
 
-                authModal = component "AuthModal" "Combined login / sign-up modal. Toggles between modes and applies client-side validation (username format, password length/complexity) in sign-up mode before emitting credentials."
+                authModal = component "AuthModal" "Login / sign-up modal with client-side validation; emits credentials."
 
-                highscoresModal = component "HighscoresModal" "Fetches and displays the top-10 leaderboard from the backend when opened. Requires a valid JWT token."
+                highscoresModal = component "HighscoresModal" "Fetches and shows the top-10 leaderboard (requires JWT)."
 
-                saveScorePrompt = component "SaveScorePrompt" "Presentational prompt shown to anonymous players after a wrong answer, inviting them to sign up or log in to save their score. Emits navigation events; holds no auth logic."
+                saveScorePrompt = component "SaveScorePrompt" "Prompt for anonymous players after a wrong answer (sign up / log in). Presentational only."
 
-                baseModal = component "BaseModal" "Reusable, accessible modal shell (role=dialog, focus trap, Escape to close): backdrop, optional header, and a content slot. Used by the other modals."
+                baseModal = component "BaseModal" "Reusable, accessible modal shell (dialog, focus trap, Escape)."
 
                 notificationStack = component "NotificationStack" "Renders the active toast notifications."
 
-                errorBoundary = component "ErrorBoundary" "Catches render errors in the component tree and shows a fallback UI with a retry action."
+                errorBoundary = component "ErrorBoundary" "Catches render errors and shows a fallback with retry."
 
-                useGame = component "useGame" "Composable owning the game lifecycle: session creation, flag loading, answer checking, scoring, personal-best, and save-score logic. Surfaces API failures as toasts and keeps GameBoard purely presentational."
+                useGame = component "useGame" "Composable owning the game lifecycle: session, flags, answer checking, scoring, save-score."
 
-                apiClient = component "API Client" "Central fetch wrapper (apiFetch). Builds requests, attaches the Bearer token, encodes/parses JSON, and raises typed ApiError / NetworkError failures (mapped to user messages by a shared helper)."
+                apiClient = component "API Client" "Central fetch wrapper: builds requests, attaches the Bearer token, parses JSON, raises typed errors."
 
-                useNotifications = component "useNotifications" "Composable holding the shared notification state: add, auto-dismiss, manual dismiss, and dedupe by type+message."
+                useNotifications = component "useNotifications" "Composable with shared notification state: add, auto-dismiss, dedupe."
             }
 
             backend = container "Backend" "handles API requests - handles game logic - manages persistence" "Python / FastAPI" "API" {
 
-                appBootstrap = component "Application Bootstrap" "Initialises the app, registers routers, configures CORS, and triggers FlagCache preload at startup."
+                appBootstrap = component "Application Bootstrap" "Initialises the app, registers routers, configures CORS, preloads FlagCache."
 
                 authRouter = component "Auth Router" "Handles user registration and login."
 
-                gameRouter = component "Game Router" "Manages game sessions: creates sessions, serves flags, and validates answers."
+                gameRouter = component "Game Router" "Manages game sessions: creates sessions, serves flags, validates answers."
 
-                highscoresRouter = component "Highscores Router" "Protected endpoints for leaderboard and score persistence. Requires valid JWT."
+                highscoresRouter = component "Highscores Router" "Protected leaderboard & score endpoints (requires JWT)."
 
                 authService = component "Auth Service" "Password hashing/verification and JWT creation/decoding."
 
-                flagCache = component "Flag Cache" "Loads country metadata and SVG images from the Public API at startup. Serves random unseen flags per session."
+                flagCache = component "Flag Cache" "Loads country data & SVGs from the Public API at startup; persists them to the database; serves random unseen flags."
 
-                gameSessionStore = component "Game Session Store" "In-memory store for active game sessions. Tracks flags, scores, and open questions. Cleans up inactive sessions."
+                gameSessionStore = component "Game Session Store" "In-memory store for active sessions: flags, scores, open questions; cleans up."
 
-                authDependency = component "Auth Dependency" "Validates the Bearer token and returns the authenticated username."
+                authDependency = component "Auth Dependency" "Validates the Bearer token, returns the authenticated user."
 
                 databaseLayer = component "Database Layer" "SQLAlchemy engine, session factory, and ORM models (User, Highscore)."
 
                 userRepository = component "User Repository" "DB queries for User records: lookup and creation."
 
-                highscoreRepository = component "Highscore Repository" "DB queries for Highscore records: top-10, upsert, and lookup by user."
+                highscoreRepository = component "Highscore Repository" "DB queries for Highscore records: top-10, upsert, lookup."
 
                 userService = component "User Service" "Registration and authentication logic."
 
-                highscoreService = component "Highscore Service" "Highscore business logic: leaderboard retrieval, user score lookup, and score persistence."
+                highscoreService = component "Highscore Service" "Highscore logic: leaderboard, user score lookup, persistence."
 
-                appConfig = component "Config" "Pydantic Settings for database URL, JWT secret, CORS origins, and API URL."
+                appConfig = component "Config" "Pydantic settings: DB URL, JWT secret, CORS origins, API URL."
             }
 
-            persistence = container "Persistence" "Saves player credentials and highscores." {
+            persistence = container "Persistence" "Saves player credentials, highscores, and flag data." {
                 tags "Database"
             }
         }
@@ -97,32 +97,30 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # Beziehungen – Komponenten Frontend
         # ──────────────────────────────────────────
         # App shell wiring (render + events)
-        appShell -> errorBoundary     "Wraps the UI to catch and surface render errors"
-        appShell -> gameBoard         "Renders; passes JWT token as prop; reacts to open-login / open-signup / session-expired / new-highscore events"
-        appShell -> authModal         "Renders; receives submit event with credentials"
-        appShell -> highscoresModal   "Renders; passes JWT token as prop"
-        appShell -> notificationStack "Renders the active toast notifications"
-        appShell -> apiClient         "Registers and logs in the user via; shows auth failures as inline form messages"
-        appShell -> useNotifications  "Shows authentication feedback via"
+        appShell -> errorBoundary     "wraps to catch render errors"
+        appShell -> gameBoard         "renders, passes JWT, auth/highscore events"
+        appShell -> authModal         "renders, receives credentials"
+        appShell -> highscoresModal   "renders, passes JWT"
+        appShell -> notificationStack "renders"
+        appShell -> apiClient         "register / login"
+        appShell -> useNotifications  "shows auth feedback"
 
         # GameBoard delegates all game logic to the useGame composable
-        gameBoard -> useGame          "Delegates the full game lifecycle to"
-        gameBoard -> saveScorePrompt  "Renders; forwards signup / login events to the app"
+        gameBoard -> useGame          "delegates game lifecycle"
+        gameBoard -> saveScorePrompt  "renders, forwards signup / login"
 
-        useGame   -> apiClient        "Creates session, fetches flags, submits answers, and saves the score via"
-        useGame   -> useNotifications "Surfaces API failures as error / warning toasts via"
+        useGame   -> apiClient        "session, flags, answers, save score"
+        useGame   -> useNotifications "surfaces failures as toasts"
 
-        saveScorePrompt -> baseModal  "Built on the reusable modal shell"
-        authModal       -> baseModal  "Built on the reusable modal shell"
+        saveScorePrompt -> baseModal  "built on"
+        authModal       -> baseModal  "built on"
 
-        highscoresModal -> apiClient  "Fetches the leaderboard and the player's own score via; renders loading / error / empty states"
-        highscoresModal -> baseModal  "Built on the reusable modal shell"
+        highscoresModal -> apiClient  "fetches leaderboard & own score"
+        highscoresModal -> baseModal  "built on"
 
-        notificationStack -> useNotifications "Reads the active notifications from"
+        notificationStack -> useNotifications "reads notifications"
 
         # Frontend → Backend: all HTTP goes through the API Client
-        apiClient -> backend          "REST API calls (auth, game, highscores)" "JSON / REST"
-
         apiClient -> authRouter       "POST /auth/register, POST /auth/login" "JSON / REST"
         apiClient -> gameRouter       "POST /game/session, GET /game/flag, POST /game/answer" "JSON / REST"
         apiClient -> highscoresRouter "GET /highscores/, GET /highscores/me, POST /highscores/ (Bearer)" "JSON / REST"
@@ -130,29 +128,31 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         # Beziehungen – Komponenten Backend
         # ──────────────────────────────────────────
-        appBootstrap -> authRouter        "Registers router" ""
-        appBootstrap -> gameRouter        "Registers router" ""
-        appBootstrap -> highscoresRouter  "Registers router" ""
-        appBootstrap -> flagCache         "Calls load() on startup" ""
-        appBootstrap -> gameSessionStore  "Runs cleanup task every hour" ""
+        appBootstrap -> authRouter        "registers" ""
+        appBootstrap -> gameRouter        "registers" ""
+        appBootstrap -> highscoresRouter  "registers" ""
+        appBootstrap -> flagCache         "preloads on startup" ""
+        appBootstrap -> gameSessionStore  "hourly cleanup" ""
 
-        authRouter       -> authService      "Creates JWT token via" ""
-        authRouter       -> userService      "Delegates registration and authentication to" ""
-        gameRouter       -> flagCache        "Retrieves random unseen flag from" ""
-        gameRouter       -> gameSessionStore "Creates sessions, stores questions, validates answers via" ""
-        highscoresRouter -> authDependency   "Validates Bearer token via" ""
-        highscoresRouter -> highscoreService "Delegates highscore operations to" ""
-        highscoresRouter -> gameSessionStore "Reads best score for a session via" ""
-        authDependency   -> authService      "Decodes JWT via" ""
-        flagCache        -> publicApi        "Fetches all countries and SVG images on startup from" "REST / HTTP"
-        databaseLayer    -> persistence      "Persists and queries data in" "SQL / asyncpg"
-        userService      -> authService      "Hashes and verifies passwords via" ""
-        userService      -> userRepository   "Reads/writes User records via" ""
-        userRepository   -> databaseLayer    "Executes queries via" "SQLAlchemy async"
-        highscoreService -> userRepository   "Looks up user by username via" ""
-        highscoreService -> highscoreRepository "Reads/writes Highscore records via" ""
-        highscoreRepository -> databaseLayer "Executes queries via" "SQLAlchemy async"
-        appBootstrap     -> appConfig        "Reads configuration from" ""
+        authRouter       -> authService      "creates JWT" ""
+        authRouter       -> userService      "register / authenticate" ""
+        gameRouter       -> flagCache        "gets random flag" ""
+        gameRouter       -> gameSessionStore "sessions, questions, answers" ""
+        highscoresRouter -> authDependency   "validates token" ""
+        highscoresRouter -> highscoreService "highscore ops" ""
+        highscoresRouter -> gameSessionStore "reads best score" ""
+        authDependency   -> authService      "decodes JWT" ""
+        flagCache        -> publicApi        "fetches countries & SVGs" "REST / HTTP"
+        flagCache        -> databaseLayer    "persists flags on successful load" "SQLAlchemy async"
+        databaseLayer    -> flagCache        "provides flag fallback if API unreachable" "SQLAlchemy async"
+        databaseLayer    -> persistence      "persists / queries" "SQL / asyncpg"
+        userService      -> authService      "hashes / verifies passwords" ""
+        userService      -> userRepository   "reads/writes users" ""
+        userRepository   -> databaseLayer    "queries" "SQLAlchemy async"
+        highscoreService -> userRepository   "looks up user" ""
+        highscoreService -> highscoreRepository "reads/writes highscores" ""
+        highscoreRepository -> databaseLayer "queries" "SQLAlchemy async"
+        appBootstrap     -> appConfig        "reads config" ""
 
         # ──────────────────────────────────────────
         # Deployment
@@ -205,7 +205,6 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         # ──────────────────────────────────────────
         component backend "Components_Backend" {
             include *
-            autolayout tb
             title "Component Diagram – Backend (FastAPI)"
         }
 
