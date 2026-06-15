@@ -9,7 +9,7 @@ Items are prioritized by their potential impact on system stability and security
 
 | Priority | Risk | Description | Mitigation |
 | ---------- | ------ | ------------- | ------------ |
-| 1 | **API availability** | The application depends on a free, uncontrolled external API. If it goes down permanently, no new country data can be fetched. | Country data is prefetched and cached on startup. Cached data serves as fallback during outages. If no information is cached we provide an in-app message that our service is not avaible |
+| 1 | **API availability** | The application depends on a free, uncontrolled external API. If it goes down permanently, no new country data can be fetched. | Country data is prefetched at startup, cached in-memory, and persisted to the database. On restart, the backend falls back to the database if the API is unreachable. Only on first boot with no connectivity does the service become unavailable, in which case an in-app message is shown. |
 | 2 | **JWT without revocation** | Issued JWTs remain valid until expiry. A stolen token cannot be invalidated server-side. | Keep token lifetime short; implement a token blocklist if required in the future. |
 | 3 | **No rate limiting** | The API has no rate limiting, making it vulnerable to abuse or accidental overload. Unauthenticated endpoints are particularly exposed. | Add rate limiting middleware |
 
