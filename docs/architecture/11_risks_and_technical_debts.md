@@ -15,8 +15,8 @@ Items are prioritized by their potential impact on system stability and security
 
 ## Technical Debts
 
-| Priority | Technical Debt | Description | Mitigation |
-| ---------- | --------------- | ------------- |------------ |
-| 1 | **Active game session stored in memory only** | The current in-game score (streak) is tracked in the server-side `GameSessionStore` which is in-memory only. A backend restart loses all active sessions and their in-progress scores. Saved highscores in the database are not affected. | Acceptable for MVP; consider persistent session storage if user experience requires it. |
-| 2 | **Single deployment environment** | The MVP runs on a single server with no redundancy or horizontal scaling | Acceptable for MVP scope; Docker Compose setup makes it straightforward to extend toward a multi-instance deployment later |
-| 3 | **No structured logging** | The backend has no centralized logging or observability tooling. Debugging in production relies on container stdout. | Introduce structured logging and consider a log aggregation solution post-MVP |
+| Priority | Technical Debt                                | Description | Mitigation                                                                                                                 |
+| ---------- |-----------------------------------------------| ------------- |----------------------------------------------------------------------------------------------------------------------------|
+| 1 | **Active game session stored in memory only** | The current in-game score (streak) is tracked in the server-side `GameSessionStore` which is in-memory only. A backend restart loses all active sessions and their in-progress scores. Saved highscores in the database are not affected. | Acceptable for MVP; consider persistent session storage if user experience requires it.                                    |
+| 2 | **Single deployment environment**             | The MVP runs on a single server with no redundancy or horizontal scaling | Acceptable for MVP scope; Docker Compose setup makes it straightforward to extend toward a multi-instance deployment later |
+| 3 | **Leftover Flags**                            | Flags with Country IDs, that are not provided by the API anymore, will still stay in the DB, because data is only overwriten, but not deleted | Acceptable, a DB delete can be implemented in the future                                                                   |
