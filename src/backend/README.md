@@ -23,7 +23,8 @@ Python/FastAPI backend for the "Fun with Flags" flag-guessing game.
 ```
 src/backend/
 ├── main.py                      # FastAPI app entry point
-├── requirements.txt
+├── requirements.in             # Top-level dependencies (source for pip-compile)
+├── requirements.lock           # Hash-pinned, fully-resolved dependencies
 ├── alembic.ini                  # Alembic configuration
 ├── .env.example                 # Copy to .env and fill in values
 ├── alembic/
@@ -199,7 +200,7 @@ CREATE DATABASE funwithflags;
 cd src/backend
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r requirements.lock
 cp .env.example .env
 # Edit .env and set JWT_SECRET
 ```
@@ -251,7 +252,7 @@ Install dev dependencies (requires an active Python virtualenv):
 
 ```bash
 cd src/backend
-pip install -r requirements.txt -r dev-requirements.txt
+pip install -r requirements.lock -r dev-requirements.txt
 ```
 
 > Integration tests spin up a real PostgreSQL container automatically via **testcontainers** — Docker must be running.
