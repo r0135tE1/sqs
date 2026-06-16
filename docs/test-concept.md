@@ -32,11 +32,13 @@ End-to-end coverage of the full stack lives in the frontend Playwright suite (se
 **Location:** `tests/unit/` — see the individual files for the concrete cases.
 
 - **`test_auth_service.py`** — Password hashing round-trips (correct password verifies, wrong one is rejected) and the full JWT lifecycle
-- **`test_flag_cache.py`** — Random flag selection: the returned question has the correct shape, always contains the correct answer among exactly four options, respects the exclude set (already-seen flags), and degrades gracefully to `None` on an empty / fully-excluded cache.
+- **`test_flag_cache.py`** — Random flag selection: the returned question has the correct shape, always contains the correct answer among the options, options contain exactly four entries when enough countries are available (and fewer otherwise), respects the exclude set (already-seen flags), and degrades gracefully to `None` on an empty / fully-excluded cache. Also covers the `count()` helper (reflects loaded state, returns 0 on empty) and `get_svg()` (returns cached bytes for a known code, `None` for unknown codes).
 - **`test_dependencies.py`** — The `get_current_user` FastAPI dependency returns the username for a valid token and raises `HTTP 401` for invalid or expired ones.
 - **`test_game_session.py`** — Session lifecycle (unique IDs, initial state, lookup), scoring (increment on correct, reset on wrong, personal-best preserved), the "seen flags" deduplication, single-use questions, and cleanup of expired sessions.
+- **`test_highscore_service.py`** — Service-layer logic for highscores with mocked repositories: `get_top_highscores` maps rows to response entries and handles an empty leaderboard; `get_user_highscore` returns the entry for an existing user/score and raises `HTTP 404` for an unknown user or a user without a score; `save_score` returns the correct `is_new_best` flag and stored highscore for new bests, non-bests, and a zero score (which maps to `None`), and raises `HTTP 404` for an unknown user without touching the repository.
+- **`test_user_service.py`** — Service-layer logic for registration and authentication with mocked repositories: `register_user` creates a new user, rejects a duplicate username with `HTTP 409`, and also maps an `IntegrityError` (race condition) to `409`; `authenticate_user` returns the username on success and raises `HTTP 401` for unknown users or wrong passwords.
 
-> **Mock strategy:** `FlagCache` state is set directly on the instance.
+> **Mock strategy:** `FlagCache` state is set directly on the instance; highscore and user service tests use `unittest.mock.AsyncMock` for repository calls.
 
 ### 2.2 Integration Tests
 
@@ -56,7 +58,7 @@ Coverage by file:
 - **`test_auth.py`** — Registration (success, duplicate username → `409`) and login (success, wrong password and unknown user → `401`).
 - **`test_game.py`** — The guest game flow: create session, fetch flags (valid inline SVG, exactly four options), submit answers (correct/wrong scoring, single-use questions), score streak/reset behaviour, and that seen flags are not repeated until exhausted (`404`).
 - **`test_highscores.py`** — Saving and reading scores on the JWT-protected endpoints: personal-best logic, ordering, per-user isolation, and that every endpoint rejects missing/invalid tokens.
-- **`test_flag_cache_load.py`** *(Resilience)* — `FlagCache.load()` against mocked HTTP responses: a 200 populates the cache, while HTTP errors, non-200 status, and malformed JSON leave it empty without crashing. Directly exercises the **Resilience** goal.
+- **`test_flag_cache_load.py`** *(Resilience)* — `FlagCache.load()` against mocked HTTP responses: a 200 populates the in-memory cache with the correct country count and caches all SVGs; HTTP errors, non-200 status, and malformed JSON leave the in-memory cache empty without crashing; and if a single SVG fetch fails for one country, that country is silently dropped from the playable pool while the rest are retained. Three additional tests cover the DB layer (require `db_session`): a successful load writes all flags to the database; when the API is unreachable and the database already contains data, the cache is populated from the database; when both the API and the database are empty, the cache stays empty. Directly exercises the **Resilience** goal.
 - **`test_security.py`** *(Security)* — Input validation (SQL injection, XSS, oversized username, weak/blank password → `422`), auth bypass (missing, forged, expired, wrong-secret, garbage tokens → `401`), and score manipulation (an arbitrary `score` in the body is ignored/rejected; the score is always read server-side).
 
 ### 2.3 Architecture Tests
@@ -188,7 +190,9 @@ src/backend/
 │   │   ├── test_auth_service.py
 │   │   ├── test_flag_cache.py
 │   │   ├── test_game_session.py
-│   │   └── test_dependencies.py
+│   │   ├── test_dependencies.py
+│   │   ├── test_highscore_service.py
+│   │   └── test_user_service.py
 │   └── integration/
 │       ├── conftest.py          # PostgreSQL container + async_client fixtures
 │       ├── test_health.py

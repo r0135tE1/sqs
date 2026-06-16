@@ -3,6 +3,7 @@ import logging
 import secrets
 
 import httpx
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 
@@ -15,14 +16,23 @@ _SVG_CONCURRENCY = 20
 
 class FlagCache:
     """Prefetches the full country dataset and all flag images from restcountries.com
-    on startup so the app stays functional even if external APIs become unavailable.
+    on startup. Persists them to the database so the app stays functional even if
+    the external API is unreachable on a subsequent restart.
     """
 
     def __init__(self) -> None:
         self._countries: list[dict] = []
         self._svgs: dict[str, bytes] = {}
 
-    async def load(self) -> None:
+    async def load(self, db: AsyncSession | None = None) -> None:
+        if await self._try_load_from_api():
+            if db is not None:
+                await self._persist_to_db(db)
+        elif db is not None:
+            await self._load_from_db(db)
+
+    async def _try_load_from_api(self) -> bool:
+        """Fetch countries + SVGs from the public API. Returns True on success."""
         try:
             headers = {}
             if settings.restcountries_api_key:
@@ -47,15 +57,37 @@ class FlagCache:
             logger.info("Flag cache loaded: %d countries", len(self._countries))
         except httpx.HTTPError as exc:
             logger.warning("Could not reach restcountries.com: %s", exc)
-            return
+            return False
         except (KeyError, ValueError) as exc:
             logger.warning("Unexpected response format from restcountries.com: %s", exc)
-            return
+            return False
 
         await self._load_svgs()
         # Only keep countries whose SVG was successfully cached.
         self._countries = [c for c in self._countries if c["code"] in self._svgs]
         logger.info("Countries with cached SVG: %d", len(self._countries))
+        return True
+
+    async def _persist_to_db(self, db: AsyncSession) -> None:
+        from app.repositories.flag import FlagRepository
+        repo = FlagRepository(db)
+        flags = [
+            {"code": c["code"], "name": c["name"], "flag_svg": self._svgs[c["code"]]}
+            for c in self._countries
+        ]
+        await repo.upsert_all(flags)
+        logger.info("Persisted %d flags to database", len(flags))
+
+    async def _load_from_db(self, db: AsyncSession) -> None:
+        from app.repositories.flag import FlagRepository
+        repo = FlagRepository(db)
+        rows = await repo.get_all()
+        if not rows:
+            logger.warning("API unreachable and database is empty — starting with no flags")
+            return
+        self._countries = [{"name": r.name, "flag_url": "", "code": r.code} for r in rows]
+        self._svgs = {r.code: r.flag_svg for r in rows}
+        logger.info("Loaded %d flags from database fallback", len(rows))
 
     async def _load_svgs(self) -> None:
         # max 20 flags loaded at one time

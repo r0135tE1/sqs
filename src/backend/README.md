@@ -48,7 +48,7 @@ src/backend/
     │   ├── auth.py              # POST /auth/register, POST /auth/login
     │   └── highscores.py        # GET /highscores/, GET /highscores/me, POST /highscores/
     └── services/
-        ├── flag_cache.py        # In-memory cache for restcountries.com data
+        ├── flag_cache.py        # In-memory cache for restcountries.com data (persisted to DB as fallback)
         ├── game_session.py      # GameSessionStore: server-side session and score tracking
         ├── auth.py              # Password hashing + JWT create/decode
         ├── highscore.py         # Highscore business logic
@@ -84,7 +84,7 @@ Interactive API docs (Swagger UI) are available at `http://localhost:8000/docs`.
 
 ## How the Game Works
 
-On startup, the app fetches the full country dataset (metadata + SVG images) from `restcountries.com/v3.1/all` and stores everything in memory (`FlagCache`). Flag data is never written to the database.
+On startup, the app fetches the full country dataset (metadata + SVG images) from `restcountries.com/v3.1/all` and stores everything in memory (`FlagCache`). The data is also persisted to the `flags` table in the database so that a subsequent restart can recover from it if the external API is unreachable at that point.
 
 ### 1. Start a session
 

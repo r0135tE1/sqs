@@ -4,7 +4,7 @@
 
 ![Runtime View Start](chapter5-7Pics/runtime_view/runtime-fetch-flag.svg)
 
-On application startup, the Backend fetches all country data and flag images from the public API and stores them exclusively in-memory (`FlagCache`). The cache is loaded once at startup and serves all flag requests for the lifetime of the process.
+On application startup, the Backend fetches all country data and flag images from the public API, loads them into the in-memory `FlagCache`, and persists them to the `flags` database table. If the API is unreachable on a subsequent restart, the Backend falls back to the database to populate the cache. The cache serves all flag requests for the lifetime of the process.
 
 The player starts a game by creating a session. The Frontend then requests the next flag. The Backend picks a random unseen country from the in-memory `FlagCache` and returns the flag SVG inline along with four answer options and a `question_id`. The correct answer is stored server-side and never sent to the client.
 

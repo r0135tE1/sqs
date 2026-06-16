@@ -55,7 +55,7 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
 
                 authService = component "Auth Service" "Password hashing/verification and JWT creation/decoding."
 
-                flagCache = component "Flag Cache" "Loads country data & SVGs from the Public API at startup; serves random unseen flags."
+                flagCache = component "Flag Cache" "Loads country data & SVGs from the Public API at startup; persists them to the database; serves random unseen flags."
 
                 gameSessionStore = component "Game Session Store" "In-memory store for active sessions: flags, scores, open questions; cleans up."
 
@@ -74,7 +74,7 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
                 appConfig = component "Config" "Pydantic settings: DB URL, JWT secret, CORS origins, API URL."
             }
 
-            persistence = container "Persistence" "Saves player credentials and highscores." {
+            persistence = container "Persistence" "Saves player credentials, highscores, and flag data." {
                 tags "Database"
             }
         }
@@ -143,6 +143,8 @@ workspace "Fun With Flags" "C4-Modell der Fun With Flags Architektur" {
         highscoresRouter -> gameSessionStore "reads best score" ""
         authDependency   -> authService      "decodes JWT" ""
         flagCache        -> publicApi        "fetches countries & SVGs" "REST / HTTP"
+        flagCache        -> databaseLayer    "persists flags on successful load" "SQLAlchemy async"
+        databaseLayer    -> flagCache        "provides flag fallback if API unreachable" "SQLAlchemy async"
         databaseLayer    -> persistence      "persists / queries" "SQL / asyncpg"
         userService      -> authService      "hashes / verifies passwords" ""
         userService      -> userRepository   "reads/writes users" ""

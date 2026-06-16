@@ -23,9 +23,9 @@ The system is decomposed into 3 distinct layers:
 
 ## Decisions to Achieve Quality Goals
 
-| Quality Goal | Approach |
-| ------------- | ---------- |
-| **Testability & Verifiability** | Documented test concept covering the entire test pyramid: <br> - unit test<br> - integration tests <br> - e2e tests <br> - penetration test <br> - load test <br> Static code analysis tool to guarantee 0 open issues and at least 80% test coverage in Sonarcube |
-| **Resilience** | Prefetch all flags from the public API (`restcountries.com`) to provide a functional service even if the external API fails |
-| **Deployability** | The source code is hosted in a public GitHub repository. By utilizing a runnable GitHub pipeline and containerization (Docker Compose), the checked-out code is fully runnable without further intervention using a maximum of 2 commands |
-| **Security** | The endpoint for requesting highscores is secured in the backend and can only be successfully accessed by authorized users |
+| Quality Goal | Approach                                                                                                                                                                                                                                                                                 |
+| ------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Testability & Verifiability** | Documented test concept covering the entire test pyramid: <br> - unit test<br> - integration tests <br> - e2e tests <br> - penetration test (as integration test) <br> - load test <br> Static code analysis tool to guarantee 0 open issues and at least 80% test coverage in Sonarcube |
+| **Resilience** | Prefetch all flags from the public API (`restcountries.com`) to provide a functional service even if the external API fails                                                                                                                                                              |
+| **Deployability** | The source code is hosted in a public GitHub repository. By utilizing a runnable GitHub pipeline and containerization (Docker Compose), the checked-out code is fully runnable without further intervention using a maximum of 2 commands                                                |
+| **Security** | The endpoint for requesting highscores is secured in the backend and can only be successfully accessed by authorized users                                                                                                                                                               |

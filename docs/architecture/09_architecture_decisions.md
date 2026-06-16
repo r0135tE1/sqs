@@ -58,6 +58,6 @@
 
 **Context:** The application depends on `restcountries.com` for country and flag data. Repeated live requests increase latency and create a single point of failure. The dataset is largely static and suitable for caching.
 
-**Decision:** The backend prefetches and caches the full country dataset from restcountries.com. The cache serves as a fallback if the external API is unreachable.
+**Decision:** The backend prefetches the full country dataset from restcountries.com at startup, loads it into an in-memory cache (`FlagCache`), and persists it to the `flags` database table. On a subsequent restart, if the API is unreachable, the backend falls back to the persisted data to populate the cache.
 
-**Consequences:** Improved resilience and response times during gameplay.
+**Consequences:** Improved resilience and response times during gameplay. The application remains functional across restarts even during extended API outages.

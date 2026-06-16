@@ -28,9 +28,9 @@ All sensitive configuration (DB credentials, JWT secret, API URLs) is stored in 
 
 ## Prefetch & Caching
 
-On application startup the backend fetches all country metadata and flag SVG images from the public API and stores them exclusively in-memory (`FlagCache`). Flag data is never written to the database. The cache is loaded once at startup and serves all flag requests for the lifetime of the process. There is no periodic refresh of flag data. A separate background task removes expired game sessions every hour, but does not reload flags.
+On application startup the backend fetches all country metadata and flag SVG images from the public API, loads them into the in-memory `FlagCache`, and persists them to the `flags` database table. The cache is loaded once at startup and serves all flag requests for the lifetime of the process. There is no periodic refresh of flag data. A separate background task removes expired game sessions every hour, but does not reload flags.
 
-If the external API is unreachable at startup, the cache remains empty and the backend degrades gracefully — no crash occurs. If the backend has no cached data and the external API is unreachable at the same time, the player is notified that the service is currently unavailable.
+If the external API is unreachable at startup, the backend falls back to the flag data previously persisted in the database and loads it into the in-memory cache. If both the API and the database are empty (e.g. on first boot with no connectivity), the cache stays empty and the backend degrades gracefully — no crash occurs, but the player is notified that the service is currently unavailable.
 
 ## Dependency Inversion
 
