@@ -37,13 +37,22 @@ class FlagCache:
             headers = {}
             if settings.restcountries_api_key:
                 headers["Authorization"] = f"Bearer {settings.restcountries_api_key}"
+            limit = 100
+            offset = 0
+            all_objects: list[dict] = []
             async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.get(
-                    settings.restcountries_url,
-                    headers=headers,
-                )
-                response.raise_for_status()
-                raw = response.json()["data"]["objects"]
+                while True:
+                    response = await client.get(
+                        settings.restcountries_url,
+                        params={"limit": limit, "offset": offset},
+                        headers=headers,
+                    )
+                    response.raise_for_status()
+                    body = response.json()["data"]
+                    all_objects.extend(body["objects"])
+                    if not body["meta"]["more"]:
+                        break
+                    offset += limit
 
             self._countries = [
                 {
@@ -51,7 +60,7 @@ class FlagCache:
                     "flag_url": c["flag"].get("url_svg") or c["flag"].get("url_png", ""),
                     "code": c.get("codes", {}).get("alpha_2", ""),
                 }
-                for c in raw
+                for c in all_objects
                 if c.get("flag") and c.get("names", {}).get("common")
             ]
             logger.info("Flag cache loaded: %d countries", len(self._countries))

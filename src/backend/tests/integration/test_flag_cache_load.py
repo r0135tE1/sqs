@@ -12,7 +12,12 @@ MOCK_COUNTRIES = [
     {"names": {"common": "Brazil"}, "flag": {"url_svg": "https://flagcdn.com/br.svg", "url_png": ""}, "codes": {"alpha_2": "BR"}},
 ]
 
-MOCK_RESPONSE = {"data": {"objects": MOCK_COUNTRIES}}
+MOCK_RESPONSE = {
+    "data": {
+        "objects": MOCK_COUNTRIES,
+        "meta": {"total": 3, "count": 3, "limit": 100, "offset": 0, "more": False},
+    }
+}
 
 _FAKE_SVG = b"<svg>flag</svg>"
 
@@ -20,7 +25,7 @@ _FAKE_SVG = b"<svg>flag</svg>"
 async def test_load_success():
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
+        respx.get(url__startswith=_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
         respx.get(url__regex=r"https://flagcdn\.com/.*\.svg").mock(
             return_value=httpx.Response(200, content=_FAKE_SVG)
         )
@@ -32,7 +37,7 @@ async def test_load_success():
 async def test_load_caches_svgs():
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
+        respx.get(url__startswith=_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
         respx.get(url__regex=r"https://flagcdn\.com/.*\.svg").mock(
             return_value=httpx.Response(200, content=_FAKE_SVG)
         )
@@ -45,7 +50,7 @@ async def test_load_caches_svgs():
 async def test_load_http_error():
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(side_effect=httpx.ConnectError("Connection refused"))
+        respx.get(url__startswith=_API_URL).mock(side_effect=httpx.ConnectError("Connection refused"))
         await cache.load()
     assert cache.count() == 0
 
@@ -53,7 +58,7 @@ async def test_load_http_error():
 async def test_load_bad_json():
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(200, text="this is not json"))
+        respx.get(url__startswith=_API_URL).mock(return_value=httpx.Response(200, text="this is not json"))
         await cache.load()
     assert cache.count() == 0
 
@@ -61,7 +66,7 @@ async def test_load_bad_json():
 async def test_load_non_200_status():
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(500))
+        respx.get(url__startswith=_API_URL).mock(return_value=httpx.Response(500))
         await cache.load()
     assert cache.count() == 0
 
@@ -70,7 +75,7 @@ async def test_load_svg_fetch_failure_skips_country():
     """If a single SVG fetch fails, that country is removed from the playable pool."""
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
+        respx.get(url__startswith=_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
         respx.get("https://flagcdn.com/de.svg").mock(
             side_effect=httpx.ConnectError("timeout")
         )
@@ -92,7 +97,7 @@ async def test_load_success_persists_to_db(db_session):
     from app.repositories.flag import FlagRepository
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
+        respx.get(url__startswith=_API_URL).mock(return_value=httpx.Response(200, json=MOCK_RESPONSE))
         respx.get(url__regex=r"https://flagcdn\.com/.*\.svg").mock(
             return_value=httpx.Response(200, content=_FAKE_SVG)
         )
@@ -113,7 +118,7 @@ async def test_load_http_error_falls_back_to_db(db_session):
 
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(side_effect=httpx.ConnectError("timeout"))
+        respx.get(url__startswith=_API_URL).mock(side_effect=httpx.ConnectError("timeout"))
         await cache.load(db=db_session)
 
     assert cache.count() == 2
@@ -125,7 +130,7 @@ async def test_load_http_error_empty_db_stays_empty(db_session):
     """When the API is unreachable and the DB is empty, the cache stays empty."""
     cache = FlagCache()
     with respx.mock:
-        respx.get(_API_URL).mock(side_effect=httpx.ConnectError("timeout"))
+        respx.get(url__startswith=_API_URL).mock(side_effect=httpx.ConnectError("timeout"))
         await cache.load(db=db_session)
 
     assert cache.count() == 0
