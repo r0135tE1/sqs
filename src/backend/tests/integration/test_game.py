@@ -136,15 +136,15 @@ async def test_seen_flags_not_repeated(async_client):
         await _answer(async_client, qid, correct)
 
 
-async def test_all_flags_shown_returns_404(async_client):
+async def test_all_flags_shown_returns_410(async_client):
     sid = await _create_session(async_client)
     for _ in range(10):
         flag_resp = await async_client.get("/game/flag", params={"session_id": sid})
-        if flag_resp.status_code == 404:
+        if flag_resp.status_code == 410:
             return
         qid = flag_resp.json()["question_id"]
         correct = game_session_store.get_correct_answer(qid)
         await _answer(async_client, qid, correct)
 
     resp = await async_client.get("/game/flag", params={"session_id": sid})
-    assert resp.status_code == 404
+    assert resp.status_code == 410

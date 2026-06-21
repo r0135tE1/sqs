@@ -103,6 +103,7 @@ export function useGame(token: Ref<string | null | undefined>, callbacks: GameCa
     reloading.value = true
     flagVisible.value = false
 
+    let completed = false
     try {
       const [data] = await Promise.all([
         apiFetch<FlagQuestion>(`/game/flag?session_id=${sessionId.value}`, { cache: "no-store" }),
@@ -111,17 +112,40 @@ export function useGame(token: Ref<string | null | undefined>, callbacks: GameCa
       flag.value = data
       loadFailed.value = false
     } catch (err) {
-      if (err instanceof ApiError && err.status === 404) {
-        // Session is gone (backend restart, TTL cleanup). Wipe local state so the
-        // next retry creates a fresh session — otherwise we'd re-send the dead id.
-        discardSessionState("Game session expired — starting over.")
+      if (err instanceof ApiError && err.status === 410) {
+        // The player has seen every country — a successful end-of-game, not an
+        // error. Handle it after the reloading guard is released (below) so the
+        // celebratory restart can call loadFlag again.
+        completed = true
+      } else {
+        if (err instanceof ApiError && err.status === 404) {
+          // Session is gone (backend restart, TTL cleanup). Wipe local state so the
+          // next retry creates a fresh session — otherwise we'd re-send the dead id.
+          discardSessionState("Game session expired — starting over.")
+        }
+        flag.value = null
+        loadFailed.value = true
       }
-      flag.value = null
-      loadFailed.value = true
     } finally {
       flagVisible.value = true
       reloading.value = false
     }
+
+    if (completed) await handleGameComplete()
+  }
+
+  async function handleGameComplete() {
+    flag.value = null
+    showOverlay.value = false
+    loadFailed.value = false
+    notify.success("🎉 Congratulations! You've seen every country. Starting a fresh round!", 5000)
+    // A perfect run never triggers the wrong-answer save path, so persist the
+    // streak here — while the token and session are still valid — before the
+    // session is discarded and a fresh one starts.
+    if (isAuthenticated.value && score.value > 0) await saveScoreToBackend()
+    discardSessionState()
+    await createSession()
+    await loadFlag()
   }
 
   async function tryReload() {

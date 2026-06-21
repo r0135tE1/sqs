@@ -37,8 +37,11 @@ async def get_flag(session_id: str) -> FlagQuestion:
 
     flag = flag_cache.random_flag(exclude=session.seen)
     if flag is None:
+        # Distinct from the 404 above: the session is valid, the player has simply
+        # completed every country. 410 lets the frontend celebrate this end-of-game
+        # state instead of treating it as a session error.
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_410_GONE,
             detail="No unseen flags left. All countries have been shown this session.",
         )
 
