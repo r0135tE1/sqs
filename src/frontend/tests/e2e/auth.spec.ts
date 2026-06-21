@@ -1,18 +1,5 @@
 import { test, expect } from '@playwright/test'
 
-/**
- * Auth round-trip: register, auto-login, then reload and verify the session
- * survives.
- *
- * This is the one E2E test that's genuinely irreplaceable by integration tests —
- * it proves:
- *   - the JWT issued by the backend can actually be persisted in localStorage
- *   - the persisted token is picked up correctly on next page load
- *   - the backend recognizes the same token after a fresh request
- *
- * Mocks would give us false confidence here: they'd happily return whatever
- * token we want and accept anything on reload.
- */
 test.beforeEach(async ({ page }) => {
   await page.goto('/')
   await page.evaluate(() => {

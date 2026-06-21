@@ -132,7 +132,7 @@ The score is read server-side from the session — the client cannot submit an a
 
 ### 5. End of game
 
-When all countries in a session have been shown, `GET /game/flag` returns `404`. The frontend treats this as end-of-game.
+When all countries in a session have been shown, `GET /game/flag` returns `410 Gone` (distinct from the `404` returned for an unknown/expired session). The frontend treats this as a successful end-of-game: it shows a congratulations toast and starts a fresh round.
 
 ---
 
