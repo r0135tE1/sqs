@@ -2,7 +2,7 @@
 
 ## Fetch Flag
 
-![Runtime View Start](chapter5-7Pics/runtime_view/runtime-fetch-flag.svg)
+![Runtime View Start](img/runtime_view/runtime-fetch-flag.svg)
 
 On application startup, the Backend fetches all country data and flag images from the public API, loads them into the in-memory `FlagCache`, and persists them to the `flags` database table. If the API is unreachable on a subsequent restart, the Backend falls back to the database to populate the cache. The cache serves all flag requests for the lifetime of the process.
 
@@ -12,18 +12,18 @@ The player starts a game by creating a session. The Frontend then requests the n
 
 We assume that the flags are already cached in the backend.
 
-![Runtime View Guess - Correct](chapter5-7Pics/runtime_view/runtime-correct-guess.svg)
+![Runtime View Guess - Correct](img/runtime_view/runtime-correct-guess.svg)
 
 The Player guesses a country. The Frontend submits the answer to the Backend. The Backend validates the answer server-side, increments the session score by 1, and returns it to the Frontend. The Frontend then requests a new flag to start the next round.
 
 ## Guess Country - Incorrect Guess
 
-![Runtime View Guess - Incorrect](chapter5-7Pics/runtime_view/runtime-incorrect-guess.svg)
+![Runtime View Guess - Incorrect](img/runtime_view/runtime-incorrect-guess.svg)
 
 The Player guesses a country. The Frontend submits the answer to the Backend. The Backend validates the answer server-side, resets the session score to 0, and returns it to the Frontend. The correct answer is shown to the Player. If the player had a score greater than 0, the backend writes the score to the database, provided the score exceeds the player's previous highscore.
 ## Sign Up and Login
 
-![Runtime View Sign Up](chapter5-7Pics/runtime_view/runtime-sign-up.svg)
+![Runtime View Sign Up](img/runtime_view/runtime-sign-up.svg)
 
 The Player requests sign up by entering corresponding data. The Frontend forwards the data to the Backend. The Backend checks if the user already exists. If no user exists, a new one will be created and the Player will be notified.
 
