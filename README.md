@@ -2,6 +2,8 @@
 
 A flag-guessing game where players are shown a country flag and must pick the correct country from four options. Correct answers extend your streak; a wrong answer resets it. Logged-in players can save their highscore and view the global leaderboard.
 
+The documentation can be found on [readthedocs](https://doc-sqs.readthedocs.io/en/latest/).
+
 ## Stack
 
 | Layer | Technology |
