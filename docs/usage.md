@@ -12,12 +12,14 @@ sets up the frontend, backend, and all required services for you.
 Before you begin, make sure [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 is installed and running on your machine.
 
+You also need to create an API Key on [restcountries](https://restcountries.com/)
+
 ### Starting the application
 
 After repository checkout, execute the setup script.
 
 ```bash
-./setup.sh
+./setup.sh --key=<your-restcountries-api-key>
 ```
 
 This will create an `.env` file in the project directory with the necessary configuration. It includes a randomly generated JWT secret.
