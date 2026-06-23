@@ -76,6 +76,7 @@ test('anonymous user sees signup prompt after wrong answer with score', async ({
   }
 
   if (!gotCorrect) {
+    // Reason: If no correct answer was found in 5 attempts we cannot test the high score prompt reliably
     test.skip(true, 'Could not get a correct answer in 5 attempts to set up prompt scenario')
   }
 
